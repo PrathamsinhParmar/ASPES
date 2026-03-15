@@ -1,0 +1,56 @@
+============================= test session starts =============================
+platform win32 -- Python 3.12.6, pytest-8.2.2, pluggy-1.6.0 -- C:\Users\PRATHANSINH\OneDrive\Desktop\ASPES - 2\backend\venv\Scripts\python.exe
+cachedir: .pytest_cache
+rootdir: C:\Users\PRATHANSINH\OneDrive\Desktop\ASPES - 2\backend
+plugins: anyio-4.12.1, asyncio-0.23.7, cov-7.0.0
+asyncio: mode=Mode.STRICT
+collecting ... collected 13 items
+
+tests/test_report_code_aligner.py::TestReportCodeAlignerExtraction::test_extract_report_features_basic PASSED [  7%]
+tests/test_report_code_aligner.py::TestReportCodeAlignerExtraction::test_extract_code_features_python PASSED [ 15%]
+tests/test_report_code_aligner.py::TestReportCodeAlignerExtraction::test_extract_code_features_fallback FAILED [ 23%]
+tests/test_report_code_aligner.py::TestReportCodeAlignerLogic::test_check_feature_alignment PASSED [ 30%]
+tests/test_report_code_aligner.py::TestReportCodeAlignerLogic::test_check_technology_stack PASSED [ 38%]
+tests/test_report_code_aligner.py::TestReportCodeAlignerLogic::test_check_architecture_match PASSED [ 46%]
+tests/test_report_code_aligner.py::TestReportCodeAlignerSemantic::test_calculate_semantic_similarity_mocked PASSED [ 53%]
+tests/test_report_code_aligner.py::TestReportCodeAlignerSemantic::test_keyword_overlap_fallback FAILED [ 61%]
+tests/test_report_code_aligner.py::TestReportCodeAlignerIntegration::test_analyze_alignment_full PASSED [ 69%]
+tests/test_report_code_aligner.py::TestReportCodeAlignerIntegration::test_analyze_alignment_empty_input PASSED [ 76%]
+tests/test_report_code_aligner.py::TestReportCodeAlignerEdgeCases::test_large_dataset_performance PASSED [ 84%]
+tests/test_report_code_aligner.py::TestReportCodeAlignerEdgeCases::test_various_formats_processing PASSED [ 92%]
+tests/test_report_code_aligner.py::TestReportCodeAlignerErrors::test_analyze_alignment_exception PASSED [100%]
+
+================================== FAILURES ===================================
+_____ TestReportCodeAlignerExtraction.test_extract_code_features_fallback _____
+
+self = <tests.test_report_code_aligner.TestReportCodeAlignerExtraction object at 0x000002000384A990>
+aligner = <app.ai_engine.report_code_aligner.ReportCodeAligner object at 0x000002000384BD10>
+
+    def test_extract_code_features_fallback(self, aligner):
+        # Invalid python code (syntax error)
+        code = "def non_python_function { print 'hello' }"
+        features = aligner._extract_code_features(code)
+    
+>       assert any(f["name"] == "non_python_function" for f in features["functions"])
+E       assert False
+E        +  where False = any(<generator object TestReportCodeAlignerExtraction.test_extract_code_features_fallback.<locals>.<genexpr> at 0x00000200038781E0>)
+
+tests\test_report_code_aligner.py:98: AssertionError
+_________ TestReportCodeAlignerSemantic.test_keyword_overlap_fallback _________
+
+self = <tests.test_report_code_aligner.TestReportCodeAlignerSemantic object at 0x000002000384B2C0>
+aligner = <app.ai_engine.report_code_aligner.ReportCodeAligner object at 0x0000020003883410>
+
+    def test_keyword_overlap_fallback(self, aligner):
+        # Without SBERT, should use Jaccard
+        text_a = "The quick brown fox"
+        text_b = "The quick brown dog"
+        score = aligner._keyword_overlap(text_a, text_b)
+>       assert 0 < score < 1.0
+E       assert 1.0 < 1.0
+
+tests\test_report_code_aligner.py:153: AssertionError
+=========================== short test summary info ===========================
+FAILED tests/test_report_code_aligner.py::TestReportCodeAlignerExtraction::test_extract_code_features_fallback
+FAILED tests/test_report_code_aligner.py::TestReportCodeAlignerSemantic::test_keyword_overlap_fallback
+======================== 2 failed, 11 passed in 0.65s =========================

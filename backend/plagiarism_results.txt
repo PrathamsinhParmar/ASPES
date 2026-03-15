@@ -1,0 +1,144 @@
+============================= test session starts =============================
+platform win32 -- Python 3.12.6, pytest-8.2.2, pluggy-1.6.0 -- C:\Users\PRATHANSINH\OneDrive\Desktop\ASPES - 2\backend\venv\Scripts\python.exe
+cachedir: .pytest_cache
+rootdir: C:\Users\PRATHANSINH\OneDrive\Desktop\ASPES - 2\backend
+plugins: anyio-4.12.1, asyncio-0.23.7, cov-7.0.0
+asyncio: mode=Mode.STRICT
+collecting ... collected 12 items
+
+tests/test_plagiarism_detector.py::TestPlagiarismNormalization::test_normalize_code_removes_comments PASSED [  8%]
+tests/test_plagiarism_detector.py::TestPlagiarismNormalization::test_normalize_code_fallback FAILED [ 16%]
+tests/test_plagiarism_detector.py::TestPlagiarismNormalization::test_chunk_code_logic PASSED [ 25%]
+tests/test_plagiarism_detector.py::TestPlagiarismNormalization::test_get_risk_level_mapping PASSED [ 33%]
+tests/test_plagiarism_detector.py::TestPlagiarismMLDetection::test_detect_no_projects PASSED [ 41%]
+tests/test_plagiarism_detector.py::TestPlagiarismMLDetection::test_detect_empty_input PASSED [ 50%]
+tests/test_plagiarism_detector.py::TestPlagiarismMLDetection::test_compare_code_jaccard_fallback PASSED [ 58%]
+tests/test_plagiarism_detector.py::TestPlagiarismMLDetection::test_ml_similarity_logic FAILED [ 66%]
+tests/test_plagiarism_detector.py::TestPlagiarismIntegration::test_generate_detailed_report_high_risk FAILED [ 75%]
+tests/test_plagiarism_detector.py::TestPlagiarismIntegration::test_generate_detailed_report_original PASSED [ 83%]
+tests/test_plagiarism_detector.py::TestPlagiarismIntegration::test_detect_with_database PASSED [ 91%]
+tests/test_plagiarism_detector.py::TestPlagiarismCaching::test_embedding_cache_hit PASSED [100%]
+
+================================== FAILURES ===================================
+__________ TestPlagiarismNormalization.test_normalize_code_fallback ___________
+
+self = <tests.test_plagiarism_detector.TestPlagiarismNormalization object at 0x00000210CDF38080>
+detector = <app.ai_engine.plagiarism_detector.PlagiarismDetector object at 0x00000210CDF39430>
+
+    def test_normalize_code_fallback(self, detector):
+        """Validates basic regex normalization when AST parsing fails (e.g. invalid syntax)."""
+        invalid_python = "def broken( # This is a comment"
+        normalized = detector._normalize_code(invalid_python)
+>       assert "this is a comment" not in normalized
+E       AssertionError: assert 'this is a comment' not in 'def broken(...is a comment'
+E         
+E         'this is a comment' is contained here:
+E           def broken( # this is a comment
+
+tests\test_plagiarism_detector.py:70: AssertionError
+_____________ TestPlagiarismMLDetection.test_ml_similarity_logic ______________
+
+args = (<tests.test_plagiarism_detector.TestPlagiarismMLDetection object at 0x00000210CDF38AD0>,)
+keywargs = {'detector': <app.ai_engine.plagiarism_detector.PlagiarismDetector object at 0x00000210CDF3B9B0>}
+
+    @wraps(func)
+    def patched(*args, **keywargs):
+>       with self.decoration_helper(patched,
+                                    args,
+                                    keywargs) as (newargs, newkeywargs):
+
+..\..\..\..\AppData\Local\Programs\Python\Python312\Lib\unittest\mock.py:1390: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+..\..\..\..\AppData\Local\Programs\Python\Python312\Lib\contextlib.py:137: in __enter__
+    return next(self.gen)
+..\..\..\..\AppData\Local\Programs\Python\Python312\Lib\unittest\mock.py:1372: in decoration_helper
+    arg = exit_stack.enter_context(patching)
+..\..\..\..\AppData\Local\Programs\Python\Python312\Lib\contextlib.py:526: in enter_context
+    result = _enter(cm)
+..\..\..\..\AppData\Local\Programs\Python\Python312\Lib\unittest\mock.py:1445: in __enter__
+    self.target = self.getter()
+..\..\..\..\AppData\Local\Programs\Python\Python312\Lib\pkgutil.py:513: in resolve_name
+    mod = importlib.import_module(modname)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+name = 'sentence_transformers', package = None
+
+    def import_module(name, package=None):
+        """Import a module.
+    
+        The 'package' argument is required when performing a relative import. It
+        specifies the package to use as the anchor point from which to resolve the
+        relative import to an absolute import.
+    
+        """
+        level = 0
+        if name.startswith('.'):
+            if not package:
+                raise TypeError("the 'package' argument is required to perform a "
+                                f"relative import for {name!r}")
+            for character in name:
+                if character != '.':
+                    break
+                level += 1
+>       return _bootstrap._gcd_import(name[level:], package, level)
+E       ModuleNotFoundError: No module named 'sentence_transformers'
+
+..\..\..\..\AppData\Local\Programs\Python\Python312\Lib\importlib\__init__.py:90: ModuleNotFoundError
+______ TestPlagiarismIntegration.test_generate_detailed_report_high_risk ______
+
+self = <tests.test_plagiarism_detector.TestPlagiarismIntegration object at 0x00000210CDF38D10>
+detector = <app.ai_engine.plagiarism_detector.PlagiarismDetector object at 0x00000210CDF3B3E0>
+
+    def test_generate_detailed_report_high_risk(self, detector):
+        """Validates report formatting for a high-risk plagiarism result."""
+        results = {
+            "originality_score": 5.0,
+            "max_similarity_percent": 95.0,
+            "risk_level": "HIGH",
+            "flagged": True,
+            "similar_projects": [{"id": 1, "student_name": "Bob", "similarity": 0.95}]
+        }
+>       report = detector.generate_detailed_report(results)
+
+tests\test_plagiarism_detector.py:157: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = <app.ai_engine.plagiarism_detector.PlagiarismDetector object at 0x00000210CDF3B3E0>
+results = {'flagged': True, 'max_similarity_percent': 95.0, 'originality_score': 5.0, 'risk_level': 'HIGH', ...}
+
+    def generate_detailed_report(self, results: Dict[str, Any]) -> str:
+        """
+        Generate a human-readable text report bridging the JSON results.
+        """
+        score = results.get("originality_score", 100.0)
+        risk = results.get("risk_level", "MINIMAL")
+        sim_pct = results.get("max_similarity_percent", 0.0)
+        flagged = results.get("flagged", False)
+        similar_projs = results.get("similar_projects", [])
+    
+        lines = [
+            "==================================",
+            "   PLAGIARISM DETECTION REPORT    ",
+            "==================================",
+            f"Originality Score:  {score:.2f} / 100",
+            f"Highest Similarity: {sim_pct:.2f}%",
+            f"Risk Level:         {risk}",
+            f"Flagged for Review: {'YES' if flagged else 'NO'}",
+            "----------------------------------",
+        ]
+    
+        if not similar_projs:
+            lines.append("No similar projects found.")
+            lines.append("Recommendation: Code is original. Proceed with evaluation.")
+        else:
+            lines.append("Top Similar Projects:")
+            for p in similar_projs:
+>               lines.append(f" - {p['student_name']} (ID: {p['project_id']}) -> {p['similarity']*100:.1f}%")
+E               KeyError: 'project_id'
+
+app\ai_engine\plagiarism_detector.py:175: KeyError
+=========================== short test summary info ===========================
+FAILED tests/test_plagiarism_detector.py::TestPlagiarismNormalization::test_normalize_code_fallback
+FAILED tests/test_plagiarism_detector.py::TestPlagiarismMLDetection::test_ml_similarity_logic
+FAILED tests/test_plagiarism_detector.py::TestPlagiarismIntegration::test_generate_detailed_report_high_risk
+========================= 3 failed, 9 passed in 1.12s =========================

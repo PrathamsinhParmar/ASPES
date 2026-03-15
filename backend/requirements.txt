@@ -1,0 +1,158 @@
+# ==============================================================================
+# ASPES Backend - Python Dependencies
+# Python 3.11+ required
+# Install: pip install -r requirements.txt
+# ==============================================================================
+
+# ------------------------------------------------------------------------------
+# FastAPI Core Ecosystem
+# ------------------------------------------------------------------------------
+fastapi==0.111.0
+uvicorn[standard]==0.30.1        # ASGI server with websocket + http2 support
+httpx==0.27.0                    # Async HTTP client (testing + outbound requests)
+python-multipart==0.0.9          # For form data / file uploads
+aiofiles==23.2.1                 # Async file I/O
+
+# ------------------------------------------------------------------------------
+# Data Validation & Settings
+# ------------------------------------------------------------------------------
+pydantic==2.7.4
+pydantic-settings==2.3.4         # Settings management with .env support
+email-validator==2.1.1           # Email validation for pydantic
+
+# ------------------------------------------------------------------------------
+# Database - PostgreSQL + ORM
+# ------------------------------------------------------------------------------
+sqlalchemy==2.0.31               # ORM (async-capable)
+asyncpg==0.29.0                  # Async PostgreSQL driver
+psycopg2-binary==2.9.9           # Sync PostgreSQL driver (for alembic)
+alembic==1.13.2                  # Database migrations
+
+# ------------------------------------------------------------------------------
+# Authentication & Security
+# ------------------------------------------------------------------------------
+python-jose[cryptography]==3.3.0 # JWT token generation & validation
+passlib[bcrypt]==1.7.4           # Password hashing (bcrypt algorithm)
+bcrypt==4.1.3                    # Bcrypt backend
+cryptography==42.0.8             # Cryptographic primitives
+
+# ------------------------------------------------------------------------------
+# Async Task Queue (Celery + Redis)
+# ------------------------------------------------------------------------------
+celery==5.4.0
+redis==5.0.7                     # Redis Python client
+flower==2.0.1                    # Celery monitoring dashboard
+kombu==5.3.7                     # Messaging library for Celery
+
+# ------------------------------------------------------------------------------
+# AI / Machine Learning Core
+# ------------------------------------------------------------------------------
+torch==2.3.1                     # PyTorch deep learning framework
+torchvision==0.18.1              # Vision utilities
+transformers==4.42.4             # HuggingFace Transformers
+sentence-transformers==3.0.1     # Sentence-BERT for semantic similarity
+openai==1.35.14                  # OpenAI API client (GPT-4 feedback)
+google-generativeai==0.8.2       # Gemini API client (Fallback/Replacement for OpenAI)
+datasets==2.20.0                 # HuggingFace datasets
+accelerate==0.31.0               # GPU acceleration utilities
+tokenizers==0.19.1               # Fast tokenizers
+
+# ------------------------------------------------------------------------------
+# Natural Language Processing
+# ------------------------------------------------------------------------------
+spacy==3.7.5                     # Industrial NLP (named entity, POS tagging)
+nltk==3.8.1                      # Classical NLP tools
+langdetect==1.0.9                # Language detection
+textstat==0.7.3                  # Text readability statistics
+scikit-learn==1.5.1              # ML utilities (cosine similarity, TF-IDF)
+numpy==1.26.4                    # Numerical computing
+scipy==1.13.1                    # Scientific computing
+
+# ------------------------------------------------------------------------------
+# Code Analysis
+# ------------------------------------------------------------------------------
+radon==6.0.1                     # Cyclomatic complexity, maintainability index
+pylint==3.2.4                    # Python code quality linter
+pyflakes==3.2.0                  # Passive code checker
+ast-grep-cli==0.26.0             # AST-based code search
+tree-sitter==0.22.3              # Incremental parsing library
+pygments==2.18.0                 # Syntax highlighting & lexing
+
+# ------------------------------------------------------------------------------
+# Document Processing
+# ------------------------------------------------------------------------------
+python-docx==1.1.2               # .docx file reading/writing
+pypdf==4.2.0                     # PDF reading (modern fork of PyPDF2)
+pdfplumber==0.11.1               # Advanced PDF text/table extraction
+docx2txt==0.8                    # Simple docx text extraction
+Pillow==10.4.0                   # Image processing (for PDF images)
+chardet==5.2.0                   # Character encoding detection
+
+# ------------------------------------------------------------------------------
+# File Handling & Archiving
+# ------------------------------------------------------------------------------
+python-magic==0.4.27             # File type detection by content
+zipfile36==0.1.3                 # Zip file handling
+patool==2.3.0                    # Universal archive unpacker
+
+# ------------------------------------------------------------------------------
+# HTTP & Networking
+# ------------------------------------------------------------------------------
+aiohttp==3.9.5                   # Async HTTP client/server
+requests==2.32.3                 # Sync HTTP client
+
+# ------------------------------------------------------------------------------
+# Serialization & Data Formats
+# ------------------------------------------------------------------------------
+orjson==3.10.5                   # Fast JSON serialization
+ujson==5.10.0                    # Ultra-fast JSON
+python-dateutil==2.9.0           # Date parsing utilities
+pytz==2024.1                     # Timezone handling
+
+# ------------------------------------------------------------------------------
+# Logging & Monitoring
+# ------------------------------------------------------------------------------
+loguru==0.7.2                    # Advanced logging
+structlog==24.2.0                # Structured JSON logging
+sentry-sdk[fastapi]==2.7.1       # Error tracking (optional)
+prometheus-fastapi-instrumentator==7.0.0  # Prometheus metrics
+
+# ------------------------------------------------------------------------------
+# Email
+# ------------------------------------------------------------------------------
+fastapi-mail==1.4.1              # Email sending for FastAPI
+jinja2==3.1.4                    # Template engine (for email templates)
+
+# ------------------------------------------------------------------------------
+# Caching
+# ------------------------------------------------------------------------------
+fastapi-cache2==0.2.2            # Response caching decorator
+
+# ------------------------------------------------------------------------------
+# Rate Limiting
+# ------------------------------------------------------------------------------
+slowapi==0.1.9                   # Rate limiting for FastAPI
+
+# ------------------------------------------------------------------------------
+# CORS & Middleware
+# ------------------------------------------------------------------------------
+starlette==0.37.2                # FastAPI's underlying ASGI framework
+
+# ------------------------------------------------------------------------------
+# Development & Testing
+# ------------------------------------------------------------------------------
+pytest==8.2.2
+pytest-asyncio==0.23.7          # Async test support
+pytest-cov==5.0.0               # Coverage reporting
+httpx==0.27.0                   # Async HTTP testing client
+factory-boy==3.3.0              # Test data factories
+faker==25.8.0                   # Fake data generator
+anyio==4.4.0                    # Async test utilities
+
+# ------------------------------------------------------------------------------
+# Code Quality (Development)
+# ------------------------------------------------------------------------------
+black==24.4.2                   # Code formatter
+isort==5.13.2                   # Import sorter
+mypy==1.10.1                    # Static type checker
+pre-commit==3.7.1               # Git pre-commit hooks

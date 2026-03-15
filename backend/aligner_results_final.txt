@@ -1,0 +1,23 @@
+============================= test session starts =============================
+platform win32 -- Python 3.12.6, pytest-8.2.2, pluggy-1.6.0 -- C:\Users\PRATHANSINH\OneDrive\Desktop\ASPES - 2\backend\venv\Scripts\python.exe
+cachedir: .pytest_cache
+rootdir: C:\Users\PRATHANSINH\OneDrive\Desktop\ASPES - 2\backend
+plugins: anyio-4.12.1, asyncio-0.23.7, cov-7.0.0
+asyncio: mode=Mode.STRICT
+collecting ... collected 13 items
+
+tests/test_report_code_aligner.py::TestReportCodeAlignerExtraction::test_extract_report_features_basic PASSED [  7%]
+tests/test_report_code_aligner.py::TestReportCodeAlignerExtraction::test_extract_code_features_python PASSED [ 15%]
+tests/test_report_code_aligner.py::TestReportCodeAlignerExtraction::test_extract_code_features_fallback PASSED [ 23%]
+tests/test_report_code_aligner.py::TestReportCodeAlignerLogic::test_check_feature_alignment PASSED [ 30%]
+tests/test_report_code_aligner.py::TestReportCodeAlignerLogic::test_check_technology_stack PASSED [ 38%]
+tests/test_report_code_aligner.py::TestReportCodeAlignerLogic::test_check_architecture_match PASSED [ 46%]
+tests/test_report_code_aligner.py::TestReportCodeAlignerSemantic::test_calculate_semantic_similarity_mocked PASSED [ 53%]
+tests/test_report_code_aligner.py::TestReportCodeAlignerSemantic::test_keyword_overlap_fallback PASSED [ 61%]
+tests/test_report_code_aligner.py::TestReportCodeAlignerIntegration::test_analyze_alignment_full PASSED [ 69%]
+tests/test_report_code_aligner.py::TestReportCodeAlignerIntegration::test_analyze_alignment_empty_input PASSED [ 76%]
+tests/test_report_code_aligner.py::TestReportCodeAlignerEdgeCases::test_large_dataset_performance PASSED [ 84%]
+tests/test_report_code_aligner.py::TestReportCodeAlignerEdgeCases::test_various_formats_processing PASSED [ 92%]
+tests/test_report_code_aligner.py::TestReportCodeAlignerErrors::test_analyze_alignment_exception PASSED [100%]
+
+============================= 13 passed in 0.52s ==============================

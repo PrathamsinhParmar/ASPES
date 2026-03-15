@@ -1,0 +1,22 @@
+============================= test session starts =============================
+platform win32 -- Python 3.12.6, pytest-8.2.2, pluggy-1.6.0 -- C:\Users\PRATHANSINH\OneDrive\Desktop\ASPES - 2\backend\venv\Scripts\python.exe
+cachedir: .pytest_cache
+rootdir: C:\Users\PRATHANSINH\OneDrive\Desktop\ASPES - 2\backend
+plugins: anyio-4.12.1, asyncio-0.23.7, cov-7.0.0
+asyncio: mode=Mode.STRICT
+collecting ... collected 12 items
+
+tests/test_plagiarism_detector.py::TestPlagiarismNormalization::test_normalize_code_removes_comments PASSED [  8%]
+tests/test_plagiarism_detector.py::TestPlagiarismNormalization::test_normalize_code_fallback PASSED [ 16%]
+tests/test_plagiarism_detector.py::TestPlagiarismNormalization::test_chunk_code_logic PASSED [ 25%]
+tests/test_plagiarism_detector.py::TestPlagiarismNormalization::test_get_risk_level_mapping PASSED [ 33%]
+tests/test_plagiarism_detector.py::TestPlagiarismMLDetection::test_detect_no_projects PASSED [ 41%]
+tests/test_plagiarism_detector.py::TestPlagiarismMLDetection::test_detect_empty_input PASSED [ 50%]
+tests/test_plagiarism_detector.py::TestPlagiarismMLDetection::test_compare_code_jaccard_fallback PASSED [ 58%]
+tests/test_plagiarism_detector.py::TestPlagiarismMLDetection::test_ml_similarity_logic PASSED [ 66%]
+tests/test_plagiarism_detector.py::TestPlagiarismIntegration::test_generate_detailed_report_high_risk PASSED [ 75%]
+tests/test_plagiarism_detector.py::TestPlagiarismIntegration::test_generate_detailed_report_original PASSED [ 83%]
+tests/test_plagiarism_detector.py::TestPlagiarismIntegration::test_detect_with_database PASSED [ 91%]
+tests/test_plagiarism_detector.py::TestPlagiarismCaching::test_embedding_cache_hit PASSED [100%]
+
+============================= 12 passed in 0.78s ==============================

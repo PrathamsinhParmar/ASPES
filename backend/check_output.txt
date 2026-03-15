@@ -1,0 +1,109 @@
+﻿2026-03-15 15:18:11,086 INFO sqlalchemy.engine.Engine BEGIN (implicit)
+2026-03-15 15:18:11,107 INFO sqlalchemy.engine.Engine SELECT users.id, users.email, users.username, users.full_name, users.hashed_password, users.role, users.is_active, users.is_verified, users.created_at, users.updated_at, users.last_login_at 
+FROM users
+2026-03-15 15:18:11,108 INFO sqlalchemy.engine.Engine [generated in 0.00032s] ()
+2026-03-15 15:18:11,112 INFO sqlalchemy.engine.Engine SELECT projects.id, projects.title, projects.description, projects.status, projects.code_file_path, projects.report_file_path, projects.owner_id, projects.course_name, projects.batch_year, projects.created_at, projects.updated_at, projects.submitted_at 
+FROM projects
+2026-03-15 15:18:11,113 INFO sqlalchemy.engine.Engine [generated in 0.00032s] ()
+2026-03-15 15:18:11,116 INFO sqlalchemy.engine.Engine SELECT evaluations.id, evaluations.project_id, evaluations.evaluator_id, evaluations.status, evaluations.celery_task_id, evaluations.total_score, evaluations.code_quality_score, evaluations.documentation_score, evaluations.plagiarism_score, evaluations.report_alignment_score, evaluations.ai_code_score, evaluations.ai_code_detected, evaluations.plagiarism_detected, evaluations.code_analysis_result, evaluations.doc_evaluation_result, evaluations.plagiarism_result, evaluations.alignment_result, evaluations.ai_detection_result, evaluations.ai_feedback, evaluations.professor_feedback, evaluations.professor_score_override, evaluations.created_at, evaluations.started_at, evaluations.completed_at, evaluations.is_finalized, evaluations.finalized_by, evaluations.finalized_at 
+FROM evaluations
+2026-03-15 15:18:11,118 INFO sqlalchemy.engine.Engine [generated in 0.00023s] ()
+
+=================================================================
+  USERS IN DATABASE
+=================================================================
+  [admin     ] System Administrator           admin@aspes.edu
+  [professor ] Prof. John Smith               prof.smith@aspes.edu
+  [student   ] Prathamsinh Parmar             prathamsinhparmar0@gmail.com
+  [professor ] Pratham Gujarat                prathamgj2@gmail.com
+  [student   ] Shyam Patel                    shyampatel@gmail.com
+  [student   ] Test Student                   teststudent_unique@example.com
+  [professor ] Ronaksinh Parmar               ronak17702@gmail.com
+  [professor ] Prof. Ankit Mehta              prof.mehta@aspes.edu
+  [student   ] Arjun Kumar                    arjun.kumar@student.edu
+  [student   ] Priya Patel                    priya.patel@student.edu
+  [student   ] Rahul Sharma                   rahul.sharma@student.edu
+  [student   ] Sneha Joshi                    sneha.joshi@student.edu
+
+=================================================================
+  PROJECTS IN DATABASE
+=================================================================
+  [submitted           ] Test Project
+    Course: python  |  Batch: None
+  [submitted           ] Test Project
+    Course: python  |  Batch: None
+  [submitted           ] API Test Project
+    Course: python  |  Batch: None
+  [evaluated           ] Student Management System
+    Course: Database Management Systems  |  Batch: 2024
+  [evaluated           ] Digital Library Catalog System
+    Course: Object Oriented Programming  |  Batch: 2024
+  [evaluated           ] Retail Inventory Manager
+    Course: Software Engineering  |  Batch: 2024
+  [evaluated           ] Historical Weather Data Analyzer
+    Course: Data Structures and Algorithms  |  Batch: 2024
+  [evaluated           ] Personal Expense Tracker
+    Course: Python Programming  |  Batch: 2024
+
+=================================================================
+  EVALUATION RESULTS
+=================================================================
+
+  Project : Test Project
+  Status  : completed  |  Score: 77.30/100  |  Grade: C+
+  Scores  -> Code: 83.9  Doc: 58.1  Plagiarism-Orig: 98.1  Alignment: 77.0  AI-Auth: 71.9
+2026-03-15 15:18:11,120 INFO sqlalchemy.engine.Engine ROLLBACK
+.\venv\Scripts\python.exe : Traceback 
+(most recent call last):
+At line:1 char:64
++ ...  2\backend" ; 
+.\venv\Scripts\python.exe 
+check_results.py *>&1 | Out-F ...
++                   ~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecif 
+   ied: (Traceback (most recent call l  
+  ast)::String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCom 
+   mandError
+ 
+  File "C:\Users\PRATHANSINH\OneDrive\De
+sktop\ASPES - 
+2\backend\check_results.py", line 95, 
+in <module>
+    asyncio.run(report())
+  File "C:\Users\PRATHANSINH\AppData\Loc
+al\Programs\Python\Python312\Lib\asyncio
+\runners.py", line 194, in run
+    return runner.run(main)
+           ^^^^^^^^^^^^^^^^
+  File "C:\Users\PRATHANSINH\AppData\Loc
+al\Programs\Python\Python312\Lib\asyncio
+\runners.py", line 118, in run
+    return 
+self._loop.run_until_complete(task)
+           
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\PRATHANSINH\AppData\Loc
+al\Programs\Python\Python312\Lib\asyncio
+\base_events.py", line 687, in 
+run_until_complete
+    return future.result()
+           ^^^^^^^^^^^^^^^
+  File "C:\Users\PRATHANSINH\OneDrive\De
+sktop\ASPES - 
+2\backend\check_results.py", line 68, 
+in report
+    print(f"  Flags   -> AI Detected: 
+{'Yes \u26a0\ufe0f' if 
+e.ai_code_detected else 'No \u2705'}  "
+  File "C:\Users\PRATHANSINH\AppData\Loc
+al\Programs\Python\Python312\Lib\encodin
+gs\cp1252.py", line 19, in encode
+    return codecs.charmap_encode(input,s
+elf.errors,encoding_table)[0]
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^
+UnicodeEncodeError: 'charmap' codec 
+can't encode characters in position 
+30-31: character maps to <undefined>

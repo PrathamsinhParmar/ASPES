@@ -1,0 +1,139 @@
+============================= test session starts =============================
+platform win32 -- Python 3.12.6, pytest-8.2.2, pluggy-1.6.0 -- C:\Users\PRATHANSINH\OneDrive\Desktop\ASPES - 2\backend\venv\Scripts\python.exe
+cachedir: .pytest_cache
+rootdir: C:\Users\PRATHANSINH\OneDrive\Desktop\ASPES - 2\backend
+plugins: anyio-4.12.1, asyncio-0.23.7, cov-7.0.0
+asyncio: mode=Mode.STRICT
+collecting ... collected 11 items
+
+tests/test_doc_evaluator.py::test_empty_response PASSED                  [  9%]
+tests/test_doc_evaluator.py::test_check_completeness PASSED              [ 18%]
+tests/test_doc_evaluator.py::test_assess_clarity PASSED                  [ 27%]
+tests/test_doc_evaluator.py::test_evaluate_structure PASSED              [ 36%]
+tests/test_doc_evaluator.py::test_calculate_readability_grade PASSED     [ 45%]
+tests/test_doc_evaluator.py::test_extract_plain PASSED                   [ 54%]
+tests/test_doc_evaluator.py::test_extract_text_routing PASSED            [ 63%]
+tests/test_doc_evaluator.py::test_extract_pdf_pdfplumber FAILED          [ 72%]
+tests/test_doc_evaluator.py::test_extract_docx FAILED                    [ 81%]
+tests/test_doc_evaluator.py::test_full_evaluate_integration FAILED       [ 90%]
+tests/test_doc_evaluator.py::test_evaluate_invalid_path PASSED           [100%]
+
+================================== FAILURES ===================================
+_________________________ test_extract_pdf_pdfplumber _________________________
+
+args = ()
+keywargs = {'evaluator': <app.ai_engine.doc_evaluator.DocumentationEvaluator object at 0x0000026D49552AE0>}
+
+    @wraps(func)
+    def patched(*args, **keywargs):
+>       with self.decoration_helper(patched,
+                                    args,
+                                    keywargs) as (newargs, newkeywargs):
+
+..\..\..\..\AppData\Local\Programs\Python\Python312\Lib\unittest\mock.py:1390: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+..\..\..\..\AppData\Local\Programs\Python\Python312\Lib\contextlib.py:137: in __enter__
+    return next(self.gen)
+..\..\..\..\AppData\Local\Programs\Python\Python312\Lib\unittest\mock.py:1372: in decoration_helper
+    arg = exit_stack.enter_context(patching)
+..\..\..\..\AppData\Local\Programs\Python\Python312\Lib\contextlib.py:526: in enter_context
+    result = _enter(cm)
+..\..\..\..\AppData\Local\Programs\Python\Python312\Lib\unittest\mock.py:1445: in __enter__
+    self.target = self.getter()
+..\..\..\..\AppData\Local\Programs\Python\Python312\Lib\pkgutil.py:513: in resolve_name
+    mod = importlib.import_module(modname)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+name = 'pdfplumber', package = None
+
+    def import_module(name, package=None):
+        """Import a module.
+    
+        The 'package' argument is required when performing a relative import. It
+        specifies the package to use as the anchor point from which to resolve the
+        relative import to an absolute import.
+    
+        """
+        level = 0
+        if name.startswith('.'):
+            if not package:
+                raise TypeError("the 'package' argument is required to perform a "
+                                f"relative import for {name!r}")
+            for character in name:
+                if character != '.':
+                    break
+                level += 1
+>       return _bootstrap._gcd_import(name[level:], package, level)
+E       ModuleNotFoundError: No module named 'pdfplumber'
+
+..\..\..\..\AppData\Local\Programs\Python\Python312\Lib\importlib\__init__.py:90: ModuleNotFoundError
+______________________________ test_extract_docx ______________________________
+
+args = ()
+keywargs = {'evaluator': <app.ai_engine.doc_evaluator.DocumentationEvaluator object at 0x0000026D49543BF0>}
+
+    @wraps(func)
+    def patched(*args, **keywargs):
+>       with self.decoration_helper(patched,
+                                    args,
+                                    keywargs) as (newargs, newkeywargs):
+
+..\..\..\..\AppData\Local\Programs\Python\Python312\Lib\unittest\mock.py:1390: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+..\..\..\..\AppData\Local\Programs\Python\Python312\Lib\contextlib.py:137: in __enter__
+    return next(self.gen)
+..\..\..\..\AppData\Local\Programs\Python\Python312\Lib\unittest\mock.py:1372: in decoration_helper
+    arg = exit_stack.enter_context(patching)
+..\..\..\..\AppData\Local\Programs\Python\Python312\Lib\contextlib.py:526: in enter_context
+    result = _enter(cm)
+..\..\..\..\AppData\Local\Programs\Python\Python312\Lib\unittest\mock.py:1445: in __enter__
+    self.target = self.getter()
+..\..\..\..\AppData\Local\Programs\Python\Python312\Lib\pkgutil.py:513: in resolve_name
+    mod = importlib.import_module(modname)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+name = 'docx', package = None
+
+    def import_module(name, package=None):
+        """Import a module.
+    
+        The 'package' argument is required when performing a relative import. It
+        specifies the package to use as the anchor point from which to resolve the
+        relative import to an absolute import.
+    
+        """
+        level = 0
+        if name.startswith('.'):
+            if not package:
+                raise TypeError("the 'package' argument is required to perform a "
+                                f"relative import for {name!r}")
+            for character in name:
+                if character != '.':
+                    break
+                level += 1
+>       return _bootstrap._gcd_import(name[level:], package, level)
+E       ModuleNotFoundError: No module named 'docx'
+
+..\..\..\..\AppData\Local\Programs\Python\Python312\Lib\importlib\__init__.py:90: ModuleNotFoundError
+_______________________ test_full_evaluate_integration ________________________
+
+mock_extract = <MagicMock name='_extract_text' id='2668404943056'>
+evaluator = <app.ai_engine.doc_evaluator.DocumentationEvaluator object at 0x0000026D49542750>
+complete_doc_content = '\n# Project Introduction\nThis is a sample project introduction.\n\n## Overview\nThe system provides a comprehensive ...is\n\n## Requirements\n- Python 3.9+\n- Node.js 16+\n\n## Examples\n```python\ndef hello():\n    print("world")\n```\n'
+
+    @patch("app.ai_engine.doc_evaluator.DocumentationEvaluator._extract_text")
+    def test_full_evaluate_integration(mock_extract, evaluator, complete_doc_content):
+        """Test the full evaluate pipeline integration."""
+        mock_extract.return_value = complete_doc_content
+    
+        result = evaluator.evaluate("mock_path.md")
+    
+>       assert result["final_score"] == 100.0
+E       assert 88.0 == 100.0
+
+tests\test_doc_evaluator.py:157: AssertionError
+=========================== short test summary info ===========================
+FAILED tests/test_doc_evaluator.py::test_extract_pdf_pdfplumber - ModuleNotFo...
+FAILED tests/test_doc_evaluator.py::test_extract_docx - ModuleNotFoundError: ...
+FAILED tests/test_doc_evaluator.py::test_full_evaluate_integration - assert 8...
+========================= 3 failed, 8 passed in 0.60s =========================

@@ -1,0 +1,99 @@
+============================= test session starts =============================
+platform win32 -- Python 3.12.6, pytest-8.2.2, pluggy-1.6.0 -- C:\Users\PRATHANSINH\OneDrive\Desktop\ASPES - 2\backend\venv\Scripts\python.exe
+cachedir: .pytest_cache
+rootdir: C:\Users\PRATHANSINH\OneDrive\Desktop\ASPES - 2\backend
+plugins: anyio-4.12.1, asyncio-0.23.7
+asyncio: mode=Mode.STRICT
+collecting ... collected 10 items
+
+tests/test_ai_code_detector.py::test_empty_code PASSED                   [ 10%]
+tests/test_ai_code_detector.py::test_check_perfect_comments PASSED       [ 20%]
+tests/test_ai_code_detector.py::test_check_verbose_names PASSED          [ 30%]
+tests/test_ai_code_detector.py::test_docstring_coverage PASSED           [ 40%]
+tests/test_ai_code_detector.py::test_style_consistency_check FAILED      [ 50%]
+tests/test_ai_code_detector.py::test_ml_detection_fallback PASSED        [ 60%]
+tests/test_ai_code_detector.py::test_ml_detection_success FAILED         [ 70%]
+tests/test_ai_code_detector.py::test_analyze_human_code PASSED           [ 80%]
+tests/test_ai_code_detector.py::test_analyze_ai_code FAILED              [ 90%]
+tests/test_ai_code_detector.py::test_calculate_confidence PASSED         [100%]
+
+================================== FAILURES ===================================
+________________________ test_style_consistency_check _________________________
+
+detector = <app.ai_engine.ai_code_detector.AICodeDetector object at 0x000001D77F647140>
+
+    def test_style_consistency_check(detector):
+        """Test consistency of quotes and spacing."""
+        # Highly consistent (AI)
+        consistent_code = "a = 1\\nb = 2\\nc = 3\\nmsg1 = 'hello'\\nmsg2 = 'world'"
+        # Inconsistent (Human)
+        inconsistent_code = """a=1\nb = 2\nc= 3\nmsg1 = 'hello'\nmsg2 = "world" """
+    
+        consistent_score = detector._style_consistency_check(consistent_code)
+        inconsistent_score = detector._style_consistency_check(inconsistent_code)
+    
+>       assert consistent_score > inconsistent_score
+E       assert 0.2 > 0.2
+
+tests\test_ai_code_detector.py:129: AssertionError
+__________________________ test_ml_detection_success __________________________
+
+mock_get_model = <MagicMock name='_get_ml_model' id='2025067169312'>
+detector = <app.ai_engine.ai_code_detector.AICodeDetector object at 0x000001D77F68C5F0>
+
+    @patch("app.ai_engine.ai_code_detector._get_ml_model")
+    def test_ml_detection_success(mock_get_model, detector):
+        """Test ML detection behaving normally."""
+        mock_model = MagicMock()
+        mock_tokenizer = MagicMock()
+    
+        # Setup mock tensor outputs (Needs to simulate torch.softmax output)
+        mock_logits = MagicMock()
+        mock_logits.logits = MagicMock()
+        mock_model.return_value = mock_logits
+    
+        # We patch torch.softmax inside the module if possible, or just mock the direct result
+>       with patch("torch.softmax") as mock_softmax, patch("torch.no_grad"):
+
+tests\test_ai_code_detector.py:154: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+..\..\..\..\AppData\Local\Programs\Python\Python312\Lib\unittest\mock.py:1445: in __enter__
+    self.target = self.getter()
+..\..\..\..\AppData\Local\Programs\Python\Python312\Lib\pkgutil.py:513: in resolve_name
+    mod = importlib.import_module(modname)
+..\..\..\..\AppData\Local\Programs\Python\Python312\Lib\importlib\__init__.py:90: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+<frozen importlib._bootstrap>:1387: in _gcd_import
+    ???
+<frozen importlib._bootstrap>:1360: in _find_and_load
+    ???
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+name = 'torch', import_ = <function _gcd_import at 0x000001D775B4C0E0>
+
+>   ???
+E   ModuleNotFoundError: No module named 'torch'
+
+<frozen importlib._bootstrap>:1324: ModuleNotFoundError
+____________________________ test_analyze_ai_code _____________________________
+
+mock_ml = <MagicMock name='_ml_detection' id='2025067225328'>
+detector = <app.ai_engine.ai_code_detector.AICodeDetector object at 0x000001D77F699CD0>
+ai_code_sample = '\ndef calculate_aggregate_total_with_applicable_discount(item_collection_list, discount_percentage_rate=0):\n    """\...out...")\n        return calculate_aggregate_total_with_applicable_discount(self.shopping_cart_item_collection_list)\n'
+
+    @patch("app.ai_engine.ai_code_detector.AICodeDetector._ml_detection")
+    def test_analyze_ai_code(mock_ml, detector, ai_code_sample):
+        """Integration: Test full analysis pipeline against highly suspect AI code."""
+        mock_ml.return_value = 0.85  # Simulate ML identifying AI code
+    
+        result = detector.analyze(ai_code_sample)
+    
+>       assert result["ai_generated_probability"] > 0.70
+E       assert 0.66 > 0.7
+
+tests\test_ai_code_detector.py:184: AssertionError
+=========================== short test summary info ===========================
+FAILED tests/test_ai_code_detector.py::test_style_consistency_check - assert ...
+FAILED tests/test_ai_code_detector.py::test_ml_detection_success - ModuleNotF...
+FAILED tests/test_ai_code_detector.py::test_analyze_ai_code - assert 0.66 > 0.7
+========================= 3 failed, 7 passed in 0.47s =========================

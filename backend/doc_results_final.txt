@@ -1,0 +1,21 @@
+============================= test session starts =============================
+platform win32 -- Python 3.12.6, pytest-8.2.2, pluggy-1.6.0 -- C:\Users\PRATHANSINH\OneDrive\Desktop\ASPES - 2\backend\venv\Scripts\python.exe
+cachedir: .pytest_cache
+rootdir: C:\Users\PRATHANSINH\OneDrive\Desktop\ASPES - 2\backend
+plugins: anyio-4.12.1, asyncio-0.23.7, cov-7.0.0
+asyncio: mode=Mode.STRICT
+collecting ... collected 11 items
+
+tests/test_doc_evaluator.py::test_empty_response PASSED                  [  9%]
+tests/test_doc_evaluator.py::test_check_completeness PASSED              [ 18%]
+tests/test_doc_evaluator.py::test_assess_clarity PASSED                  [ 27%]
+tests/test_doc_evaluator.py::test_evaluate_structure PASSED              [ 36%]
+tests/test_doc_evaluator.py::test_calculate_readability_grade PASSED     [ 45%]
+tests/test_doc_evaluator.py::test_extract_plain PASSED                   [ 54%]
+tests/test_doc_evaluator.py::test_extract_text_routing PASSED            [ 63%]
+tests/test_doc_evaluator.py::test_extract_pdf_pdfplumber PASSED          [ 72%]
+tests/test_doc_evaluator.py::test_extract_docx PASSED                    [ 81%]
+tests/test_doc_evaluator.py::test_full_evaluate_integration PASSED       [ 90%]
+tests/test_doc_evaluator.py::test_evaluate_invalid_path PASSED           [100%]
+
+============================= 11 passed in 0.08s ==============================

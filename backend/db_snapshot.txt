@@ -1,0 +1,81 @@
+===== USERS =====
+  ADMIN        | System Administrator           | admin@aspes.edu
+  PROFESSOR    | Prof. John Smith               | prof.smith@aspes.edu
+  STUDENT      | Prathamsinh Parmar             | prathamsinhparmar0@gmail.com
+  PROFESSOR    | Pratham Gujarat                | prathamgj2@gmail.com
+  STUDENT      | Shyam Patel                    | shyampatel@gmail.com
+  STUDENT      | Test Student                   | teststudent_unique@example.com
+  PROFESSOR    | Ronaksinh Parmar               | ronak17702@gmail.com
+  PROFESSOR    | Prof. Ankit Mehta              | prof.mehta@aspes.edu
+  STUDENT      | Arjun Kumar                    | arjun.kumar@student.edu
+  STUDENT      | Priya Patel                    | priya.patel@student.edu
+  STUDENT      | Rahul Sharma                   | rahul.sharma@student.edu
+  STUDENT      | Sneha Joshi                    | sneha.joshi@student.edu
+
+===== PROJECTS =====
+  [SUBMITTED           ] Test Project
+               Course: python  Batch: None
+  [SUBMITTED           ] Test Project
+               Course: python  Batch: None
+  [SUBMITTED           ] API Test Project
+               Course: python  Batch: None
+  [EVALUATED           ] Student Management System
+               Course: Database Management Systems  Batch: 2024
+  [EVALUATED           ] Digital Library Catalog System
+               Course: Object Oriented Programming  Batch: 2024
+  [EVALUATED           ] Retail Inventory Manager
+               Course: Software Engineering  Batch: 2024
+  [EVALUATED           ] Historical Weather Data Analyzer
+               Course: Data Structures and Algorithms  Batch: 2024
+  [EVALUATED           ] Personal Expense Tracker
+               Course: Python Programming  Batch: 2024
+
+===== EVALUATIONS =====
+
+  Project  : Test Project
+  Score    : 77.30/100  (COMPLETED)  Grade: C+
+  Breakdown: Code=83.9  Doc=58.1  PlagOrig=98.1  Align=77.0  AIAuth=71.9
+  Flags    : AI_detected=True  Plagiarism=False
+
+  Project  : Test Project
+  Score    : 73.70/100  (COMPLETED)  Grade: C
+  Breakdown: Code=63.0  Doc=72.6  PlagOrig=87.6  Align=85.4  AIAuth=76.0
+  Flags    : AI_detected=False  Plagiarism=False
+
+  Project  : API Test Project
+  Score    : 71.90/100  (COMPLETED)  Grade: C-
+  Breakdown: Code=68.1  Doc=57.6  PlagOrig=90.2  Align=77.9  AIAuth=84.0
+  Flags    : AI_detected=False  Plagiarism=False
+
+  Project  : Student Management System
+  Score    : 75.91/100  (COMPLETED)  Grade: C
+  Breakdown: Code=73.2  Doc=45.4  PlagOrig=100.0  Align=67.0  AIAuth=58.3
+  Flags    : AI_detected=False  Plagiarism=False
+
+  Project  : Digital Library Catalog System
+  Score    : 45.94/100  (COMPLETED)  Grade: F
+  Breakdown: Code=63.0  Doc=45.4  PlagOrig=78.7  Align=15.4  AIAuth=62.2
+  Flags    : AI_detected=False  Plagiarism=False
+
+  Project  : Retail Inventory Manager
+  Score    : 69.69/100  (COMPLETED)  Grade: D
+  Breakdown: Code=65.1  Doc=45.7  PlagOrig=80.1  Align=71.4  AIAuth=65.5
+  Flags    : AI_detected=False  Plagiarism=False
+
+  Project  : Historical Weather Data Analyzer
+  Score    : 48.67/100  (COMPLETED)  Grade: F
+  Breakdown: Code=55.5  Doc=39.7  PlagOrig=82.6  Align=16.6  AIAuth=65.5
+  Flags    : AI_detected=False  Plagiarism=False
+
+  Project  : Personal Expense Tracker
+  Score    : 65.17/100  (COMPLETED)  Grade: D
+  Breakdown: Code=63.0  Doc=39.7  PlagOrig=79.2  Align=44.9  AIAuth=72.5
+  Flags    : AI_detected=False  Plagiarism=False
+
+===== SUMMARY =====
+  Total Users       : 12
+  Total Projects    : 8
+  Total Evaluations : 8
+  Avg Score         : 66.03/100
+  Highest Score     : 77.30/100
+  Lowest Score      : 45.94/100

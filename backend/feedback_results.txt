@@ -1,0 +1,22 @@
+============================= test session starts =============================
+platform win32 -- Python 3.12.6, pytest-8.2.2, pluggy-1.6.0 -- C:\Users\PRATHANSINH\OneDrive\Desktop\ASPES - 2\backend\venv\Scripts\python.exe
+cachedir: .pytest_cache
+rootdir: C:\Users\PRATHANSINH\OneDrive\Desktop\ASPES - 2\backend
+plugins: anyio-4.12.1, asyncio-0.23.7, cov-7.0.0
+asyncio: mode=Mode.STRICT
+collecting ... collected 12 items
+
+tests/test_feedback_generator.py::TestEnhancedFeedbackGeneratorHeuristics::test_overall_assessment_excellent PASSED [  8%]
+tests/test_feedback_generator.py::TestEnhancedFeedbackGeneratorHeuristics::test_overall_assessment_poor PASSED [ 16%]
+tests/test_feedback_generator.py::TestEnhancedFeedbackGeneratorHeuristics::test_originality_feedback_critical PASSED [ 25%]
+tests/test_feedback_generator.py::TestEnhancedFeedbackGeneratorHeuristics::test_originality_feedback_clean PASSED [ 33%]
+tests/test_feedback_generator.py::TestEnhancedFeedbackGeneratorHeuristics::test_identify_strengths PASSED [ 41%]
+tests/test_feedback_generator.py::TestEnhancedFeedbackGeneratorHeuristics::test_estimate_improvement_time PASSED [ 50%]
+tests/test_feedback_generator.py::TestEnhancedFeedbackGeneratorLLM::test_fallback_narrative_feedback PASSED [ 58%]
+tests/test_feedback_generator.py::TestEnhancedFeedbackGeneratorLLM::test_generate_narrative_no_api_key PASSED [ 66%]
+tests/test_feedback_generator.py::TestEnhancedFeedbackGeneratorLLM::test_cache_mechanism PASSED [ 75%]
+tests/test_feedback_generator.py::TestEnhancedFeedbackGeneratorIntegration::test_generate_comprehensive_feedback_flow PASSED [ 83%]
+tests/test_feedback_generator.py::TestEnhancedFeedbackGeneratorIntegration::test_generate_comprehensive_feedback_empty_input PASSED [ 91%]
+tests/test_feedback_generator.py::TestEnhancedFeedbackGeneratorErrors::test_llm_api_failure_retry_and_fallback PASSED [100%]
+
+============================= 12 passed in 0.10s ==============================

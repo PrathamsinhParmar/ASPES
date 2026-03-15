@@ -1,0 +1,42 @@
+# ==============================================================================
+# Root .gitignore
+# ==============================================================================
+
+# OS
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# IDE / Editor
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Environment files
+.env
+.env.*
+!.env.example
+
+# Node / Frontend
+node_modules/
+frontend/build/
+frontend/dist/
+
+# Python / Backend
+__pycache__/
+*.pyc
+*.pyo
+.venv/
+venv/
+backend/uploads/
+backend/logs/
+backend/models/
+
+# Docker volumes
+postgres_data/
+redis_data/
+
+# Temporary files
+*.tmp
+*.log

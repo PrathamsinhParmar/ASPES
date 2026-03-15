@@ -1,0 +1,93 @@
+version: '3.8'
+
+services:
+  # Database
+  db:
+    image: postgres:15-alpine
+    container_name: aspes_db
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-aspes_user}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-aspes_pass}
+      POSTGRES_DB: ${POSTGRES_DB:-aspes_db}
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U aspes_user -d aspes_db"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  # Redis Cache & Message Broker
+  redis:
+    image: redis:7-alpine
+    container_name: aspes_redis
+    ports:
+      - "6379:6379"
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  # API Backend
+  api:
+    build: ./backend
+    container_name: aspes_api
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    env_file:
+      - ./backend/.env
+    environment:
+      - DATABASE_URL=postgresql://aspes_user:aspes_pass@db:5432/aspes_db
+      - REDIS_URL=redis://redis:6379/0
+      - CELERY_BROKER_URL=redis://redis:6379/0
+      - CELERY_RESULT_BACKEND=redis://redis:6379/1
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./backend/uploads:/app/uploads
+      - ./backend/logs:/app/logs
+    restart: always
+
+  # Celery Worker for AI Processing
+  worker:
+    build: ./backend
+    container_name: aspes_worker
+    command: celery -A app.tasks.evaluation_tasks.celery_app worker --loglevel=info --concurrency=2
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    env_file:
+      - ./backend/.env
+    environment:
+      - DATABASE_URL=postgresql://aspes_user:aspes_pass@db:5432/aspes_db
+      - REDIS_URL=redis://redis:6379/0
+      - CELERY_BROKER_URL=redis://redis:6379/0
+      - CELERY_RESULT_BACKEND=redis://redis:6379/1
+    volumes:
+      - ./backend/uploads:/app/uploads
+      - ./backend/logs:/app/logs
+    restart: always
+
+  # Frontend
+  frontend:
+    build:
+      context: ./frontend
+      args:
+        - REACT_APP_API_URL=http://localhost:8000/api/v1
+    container_name: aspes_frontend
+    ports:
+      - "3000:80"
+    depends_on:
+      - api
+    restart: always
+
+volumes:
+  postgres_data:

@@ -1,0 +1,21 @@
+============================= test session starts =============================
+platform win32 -- Python 3.12.6, pytest-8.2.2, pluggy-1.6.0 -- C:\Users\PRATHANSINH\OneDrive\Desktop\ASPES - 2\backend\venv\Scripts\python.exe
+cachedir: .pytest_cache
+rootdir: C:\Users\PRATHANSINH\OneDrive\Desktop\ASPES - 2\backend
+plugins: anyio-4.12.1, asyncio-0.23.7, cov-7.0.0
+asyncio: mode=Mode.STRICT
+collecting ... collected 11 items
+
+tests/test_code_analyzer.py::test_file_not_found PASSED                  [  9%]
+tests/test_code_analyzer.py::test_unsupported_language PASSED            [ 18%]
+tests/test_code_analyzer.py::test_empty_file PASSED                      [ 27%]
+tests/test_code_analyzer.py::test_large_file PASSED                      [ 36%]
+tests/test_code_analyzer.py::test_analyze_complexity PASSED              [ 45%]
+tests/test_code_analyzer.py::test_analyze_maintainability PASSED         [ 54%]
+tests/test_code_analyzer.py::test_analyze_quality_pylint PASSED          [ 63%]
+tests/test_code_analyzer.py::test_analyze_quality_fallback PASSED        [ 72%]
+tests/test_code_analyzer.py::test_get_code_details PASSED                [ 81%]
+tests/test_code_analyzer.py::test_full_analysis_integration PASSED       [ 90%]
+tests/test_code_analyzer.py::test_analyze_invalid_syntax PASSED          [100%]
+
+============================= 11 passed in 1.06s ==============================

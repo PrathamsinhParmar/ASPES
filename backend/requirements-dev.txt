@@ -1,0 +1,41 @@
+# ============================================================
+# Minimal dev requirements - enough to boot the FastAPI server
+# Heavy AI/ML packages (torch, transformers) go in requirements.txt
+# ============================================================
+
+# FastAPI core
+fastapi==0.111.0
+uvicorn[standard]==0.30.1
+python-multipart==0.0.9
+aiofiles==23.2.1
+
+# Pydantic + Settings
+pydantic==2.7.4
+pydantic-settings==2.3.4
+email-validator==2.1.1
+
+# Database (async)
+sqlalchemy==2.0.31
+aiosqlite==0.20.0           # SQLite async driver for dev
+asyncpg==0.29.0             # PostgreSQL async driver
+alembic==1.13.2
+
+# Auth / Security
+python-jose[cryptography]==3.3.0
+passlib[bcrypt]==1.7.4
+bcrypt==4.1.3
+
+# HTTP
+httpx==0.27.0
+requests==2.32.3
+
+# Serialization
+orjson==3.10.5
+python-dateutil==2.9.0
+
+# Logging
+loguru==0.7.2
+
+# Testing
+pytest==8.2.2
+pytest-asyncio==0.23.7

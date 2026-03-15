@@ -1,0 +1,7 @@
+{
+  "exclude": [
+    "app/ai_engine/**"
+  ],
+  "search_path": ["."],
+  "source_directories": ["."]
+}

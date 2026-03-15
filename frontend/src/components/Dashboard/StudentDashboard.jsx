@@ -130,6 +130,7 @@ const StudentDashboard = () => {
             <table className="min-w-full divide-y divide-slate-100">
               <thead className="bg-slate-50/50 dark:bg-slate-800/50">
                 <tr>
+                  <th scope="col" className="px-5 py-4 text-center text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-widest w-16">Sr.No</th>
                   <th scope="col" className="px-5 py-4 text-left text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-widest">Project Overview</th>
                   <th scope="col" className="px-5 py-4 text-left text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-widest">Timeline</th>
                   <th scope="col" className="px-5 py-4 text-left text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-widest">Phase</th>
@@ -138,8 +139,11 @@ const StudentDashboard = () => {
                 </tr>
               </thead>
               <tbody className="bg-white dark:bg-slate-900 divide-y divide-slate-50 dark:divide-slate-800">
-                {projects.slice(0, 5).map((project) => (
+                {projects.slice(0, 5).map((project, index) => (
                   <tr key={project.id} className="hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors group">
+                    <td className="px-5 py-4 whitespace-nowrap text-sm font-semibold text-slate-500 dark:text-slate-400 text-center">
+                      {index + 1}
+                    </td>
                     <td className="px-5 py-4 whitespace-nowrap">
                       <div className="flex items-center gap-3">
                          <div className="h-10 w-10 flex-shrink-0 rounded-lg bg-indigo-50 dark:bg-indigo-900/20 border border-indigo-100 dark:border-indigo-500/20 flex items-center justify-center">

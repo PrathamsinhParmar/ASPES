@@ -146,9 +146,6 @@ const StudentDashboard = () => {
                     </td>
                     <td className="px-5 py-4 whitespace-nowrap">
                       <div className="flex items-center gap-3">
-                         <div className="h-10 w-10 flex-shrink-0 rounded-lg bg-indigo-50 dark:bg-indigo-900/20 border border-indigo-100 dark:border-indigo-500/20 flex items-center justify-center">
-                          <span className="text-indigo-700 dark:text-indigo-400 font-bold text-base">{project.title.charAt(0)}</span>
-                        </div>
                         <div>
                           <div className="text-sm font-bold text-slate-900 dark:text-white leading-tight">{project.title}</div>
                           <div className="text-xs text-slate-500 dark:text-slate-400 font-medium">{project.course_name}</div>

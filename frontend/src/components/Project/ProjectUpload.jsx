@@ -7,10 +7,10 @@ import * as yup from 'yup';
 import { projectService } from '../../services/projectService';
 import { evaluationService } from '../../services/evaluationService';
 import toast from 'react-hot-toast';
-import { 
-  CloudArrowUpIcon, 
+import {
+  CloudArrowUpIcon,
   DocumentIcon,
-  DocumentTextIcon, 
+  DocumentTextIcon,
   CheckCircleIcon,
   ArrowRightIcon,
   ArrowLeftIcon,
@@ -35,13 +35,13 @@ const schema = yup.object().shape({
 
 // AI processing steps shown on the animated processing screen
 const AI_STEPS = [
-  { id: 1, label: 'Uploading project files to secure storage',     icon: CloudArrowUpIcon,  duration: 15 },
-  { id: 2, label: 'Running static code quality analysis',          icon: CpuChipIcon,        duration: 30 },
-  { id: 3, label: 'Detecting AI-generated code signatures',        icon: SparklesIcon,       duration: 25 },
-  { id: 4, label: 'Evaluating documentation coherence',            icon: DocumentTextIcon,   duration: 20 },
-  { id: 5, label: 'Cross-checking plagiarism database',            icon: ShieldCheckIcon,    duration: 25 },
-  { id: 6, label: 'Generating comprehensive AI feedback',          icon: SparklesIcon,       duration: 20 },
-  { id: 7, label: 'Aggregating scores & finalising report',        icon: CheckCircleIcon,    duration: 15 },
+  { id: 1, label: 'Uploading project files to secure storage', icon: CloudArrowUpIcon, duration: 15 },
+  { id: 2, label: 'Running static code quality analysis', icon: CpuChipIcon, duration: 30 },
+  { id: 3, label: 'Detecting AI-generated code signatures', icon: SparklesIcon, duration: 25 },
+  { id: 4, label: 'Evaluating documentation coherence', icon: DocumentTextIcon, duration: 20 },
+  { id: 5, label: 'Cross-checking plagiarism database', icon: ShieldCheckIcon, duration: 25 },
+  { id: 6, label: 'Generating comprehensive AI feedback', icon: SparklesIcon, duration: 20 },
+  { id: 7, label: 'Aggregating scores & finalising report', icon: CheckCircleIcon, duration: 15 },
 ];
 
 const ProjectUpload = () => {
@@ -61,8 +61,8 @@ const ProjectUpload = () => {
   const [evaluationId, setEvaluationId] = useState(null);
   const [currentStep, setCurrentStep] = useState(0);
   const [stepProgress, setStepProgress] = useState(0);
-  const [aiStatus, setAiStatus] = useState('PENDING'); 
-  
+  const [aiStatus, setAiStatus] = useState('PENDING');
+
   const pollingRef = useRef(null);
   const stepTimerRef = useRef(null);
 
@@ -100,7 +100,7 @@ const ProjectUpload = () => {
   const startStepAnimation = () => {
     let stepIdx = 0;
     let progress = 0;
-    const TICK_MS = 200; 
+    const TICK_MS = 200;
 
     stepTimerRef.current = setInterval(() => {
       if (stepIdx >= AI_STEPS.length) {
@@ -131,7 +131,7 @@ const ProjectUpload = () => {
           setAiStatus('COMPLETED');
           setCurrentStep(AI_STEPS.length - 1);
           setStepProgress(100);
-          await new Promise(res => setTimeout(res, 1500)); 
+          await new Promise(res => setTimeout(res, 1500));
           navigate(`/evaluations/${evaluation.id}`);
         } else if (evaluation.status === 'failed') {
           clearInterval(pollingRef.current);
@@ -209,33 +209,33 @@ const ProjectUpload = () => {
         <div className="w-full max-w-xl relative z-10">
           <div className="text-center mb-10">
             <div className="w-20 h-20 bg-indigo-500/10 rounded-3xl flex items-center justify-center mx-auto mb-6 border border-indigo-500/20 animate-pulse">
-               <CpuChipIcon className="w-10 h-10 text-indigo-400" />
+              <CpuChipIcon className="w-10 h-10 text-indigo-400" />
             </div>
             <h2 className="text-3xl font-black text-white tracking-tight">AI Evaluation Engine</h2>
             <p className="text-slate-400 mt-2 text-sm font-medium">Deep analysis initiated. Do not close this session.</p>
           </div>
-          
+
           <div className="bg-slate-900/50 backdrop-blur-xl border border-slate-800 rounded-3xl p-8 shadow-2xl">
-             <div className="flex justify-between items-end mb-4">
-                <span className="text-[10px] font-black text-slate-500 uppercase tracking-[0.2em]">Overall Analysis</span>
-                <span className="text-3xl font-black text-indigo-400 tracking-tighter">{overallPct}%</span>
-             </div>
-             <div className="h-2 w-full bg-slate-800 rounded-full overflow-hidden">
-                <div className="h-full bg-indigo-500 transition-all duration-500 ease-out shadow-[0_0_15px_rgba(99,102,241,0.5)]" style={{ width: `${overallPct}%` }}></div>
-             </div>
-             <div className="mt-8 space-y-4">
-                {AI_STEPS.map((s, idx) => {
-                  const isDone = idx < currentStep || aiStatus === 'COMPLETED';
-                  const isActive = idx === currentStep && aiStatus !== 'COMPLETED';
-                  return (
-                    <div key={s.id} className={`flex items-center gap-4 transition-all ${isActive ? 'translate-x-2' : 'opacity-60'}`}>
-                       <div className={`h-2 w-2 rounded-full ${isDone ? 'bg-emerald-400' : isActive ? 'bg-indigo-400 animate-ping' : 'bg-slate-700'}`}></div>
-                       <p className={`text-xs font-bold leading-none ${isDone ? 'text-emerald-400' : isActive ? 'text-white' : 'text-slate-500'}`}>{s.label}</p>
-                       {isActive && <div className="flex-1 h-px bg-slate-800 ml-4"></div>}
-                    </div>
-                  );
-                })}
-             </div>
+            <div className="flex justify-between items-end mb-4">
+              <span className="text-[10px] font-black text-slate-500 uppercase tracking-[0.2em]">Overall Analysis</span>
+              <span className="text-3xl font-black text-indigo-400 tracking-tighter">{overallPct}%</span>
+            </div>
+            <div className="h-2 w-full bg-slate-800 rounded-full overflow-hidden">
+              <div className="h-full bg-indigo-500 transition-all duration-500 ease-out shadow-[0_0_15px_rgba(99,102,241,0.5)]" style={{ width: `${overallPct}%` }}></div>
+            </div>
+            <div className="mt-8 space-y-4">
+              {AI_STEPS.map((s, idx) => {
+                const isDone = idx < currentStep || aiStatus === 'COMPLETED';
+                const isActive = idx === currentStep && aiStatus !== 'COMPLETED';
+                return (
+                  <div key={s.id} className={`flex items-center gap-4 transition-all ${isActive ? 'translate-x-2' : 'opacity-60'}`}>
+                    <div className={`h-2 w-2 rounded-full ${isDone ? 'bg-emerald-400' : isActive ? 'bg-indigo-400 animate-ping' : 'bg-slate-700'}`}></div>
+                    <p className={`text-xs font-bold leading-none ${isDone ? 'text-emerald-400' : isActive ? 'text-white' : 'text-slate-500'}`}>{s.label}</p>
+                    {isActive && <div className="flex-1 h-px bg-slate-800 ml-4"></div>}
+                  </div>
+                );
+              })}
+            </div>
           </div>
         </div>
       </div>
@@ -249,14 +249,14 @@ const ProjectUpload = () => {
       <div className="absolute bottom-20 left-20 w-80 h-80 bg-blue-500/5 rounded-full blur-[120px] -z-10"></div>
 
       <div className="space-y-12">
-        
+
         {/* Top Section: Centered Header & Description */}
         <div className="text-center max-w-2xl mx-auto space-y-4">
           <h1 className="text-4xl font-black text-slate-900 dark:text-white tracking-tight leading-none">
             Project <span className="text-indigo-600 dark:text-indigo-400">Submission</span>
           </h1>
           <p className="text-slate-500 dark:text-slate-400 text-sm font-medium leading-relaxed">
-            Submit your source code and documentation for a multi-layered AI analysis, 
+            Submit your source code and documentation for a multi-layered AI analysis,
             cross-plagiarism check, and modular evaluation.
           </p>
         </div>
@@ -266,17 +266,17 @@ const ProjectUpload = () => {
           {[1, 2, 3].map((s) => (
             <div key={s} className="flex items-center gap-4">
               <div className={`h-11 w-11 rounded-2xl flex items-center justify-center font-black text-sm transition-all shadow-sm
-                ${step > s ? 'bg-emerald-100 dark:bg-emerald-900/30 text-emerald-600 dark:text-emerald-400' : 
-                  step === s ? 'bg-indigo-600 dark:bg-indigo-600 text-white shadow-lg shadow-indigo-200 dark:shadow-none ring-4 ring-indigo-50 dark:ring-indigo-500/10' : 
-                  'bg-white dark:bg-slate-900 text-slate-300 dark:text-slate-700 border border-slate-100 dark:border-slate-800'}`}
+                ${step > s ? 'bg-emerald-100 dark:bg-emerald-900/30 text-emerald-600 dark:text-emerald-400' :
+                  step === s ? 'bg-indigo-600 dark:bg-indigo-600 text-white shadow-lg shadow-indigo-200 dark:shadow-none ring-4 ring-indigo-50 dark:ring-indigo-500/10' :
+                    'bg-white dark:bg-slate-900 text-slate-300 dark:text-slate-700 border border-slate-100 dark:border-slate-800'}`}
               >
                 {step > s ? <CheckCircleIcon className="w-5 h-5" /> : `0${s}`}
               </div>
               <div className={`hidden sm:block text-left ${step < s ? 'opacity-40' : ''}`}>
-                 <p className="text-[10px] font-black uppercase tracking-widest text-slate-400 dark:text-slate-500 leading-tight">Step {s}</p>
-                 <p className="text-xs font-bold text-slate-900 dark:text-white whitespace-nowrap">
-                   {s === 1 ? 'Metadata' : s === 2 ? 'Artifacts' : 'Validation'}
-                 </p>
+                <p className="text-[10px] font-black uppercase tracking-widest text-slate-400 dark:text-slate-500 leading-tight">Step {s}</p>
+                <p className="text-xs font-bold text-slate-900 dark:text-white whitespace-nowrap">
+                  {s === 1 ? 'Metadata' : s === 2 ? 'Artifacts' : 'Validation'}
+                </p>
               </div>
               {s < 3 && <div className="hidden lg:block w-12 h-px bg-slate-200 dark:bg-slate-800 mx-2"></div>}
             </div>
@@ -286,7 +286,7 @@ const ProjectUpload = () => {
         {/* Submission Form Area (Vertical & Centered) */}
         <div className="space-y-8 animate-slide-up">
           <form onSubmit={(e) => e.preventDefault()} className="space-y-10">
-            
+
             {step === 1 && (
               <div className="space-y-8">
                 <div className="bg-white/60 dark:bg-slate-900/60 backdrop-blur-md rounded-3xl p-8 border border-white dark:border-slate-800 shadow-xl shadow-slate-200/50 dark:shadow-none space-y-8">
@@ -322,10 +322,10 @@ const ProjectUpload = () => {
                         {selectedLang.name}
                       </span>
                       <div className={`transition-transform duration-300 ${isDropdownOpen ? 'rotate-180' : ''}`}>
-                         <svg className="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M19 9l-7 7-7-7"></path></svg>
+                        <svg className="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M19 9l-7 7-7-7"></path></svg>
                       </div>
                     </button>
-                    
+
                     {isDropdownOpen && (
                       <div className="absolute top-full left-0 w-full mt-2 bg-white dark:bg-slate-800 rounded-2xl shadow-2xl border border-slate-100 dark:border-slate-700 p-2 z-50 animate-fade-in overflow-hidden">
                         {languages.map((lang) => (
@@ -422,32 +422,32 @@ const ProjectUpload = () => {
                   <div className="absolute -top-10 -right-10 w-40 h-40 bg-indigo-500/20 rounded-full blur-3xl"></div>
                   <div className="relative z-10 space-y-8">
                     <h3 className="text-sm font-black uppercase tracking-[0.3em] text-indigo-400">Final Verification</h3>
-                    
+
                     <div className="grid grid-cols-2 gap-10">
-                       <div className="space-y-1">
-                          <p className="text-[10px] font-black text-slate-500 uppercase">Project Title</p>
-                          <p className="text-lg font-bold truncate leading-none">{formValues.title}</p>
-                       </div>
-                       <div className="space-y-1">
-                          <p className="text-[10px] font-black text-slate-500 uppercase">Target Runtime</p>
-                          <p className="text-lg font-bold capitalize leading-none">{formValues.programming_language}</p>
-                       </div>
+                      <div className="space-y-1">
+                        <p className="text-[10px] font-black text-slate-500 uppercase">Project Title</p>
+                        <p className="text-lg font-bold truncate leading-none">{formValues.title}</p>
+                      </div>
+                      <div className="space-y-1">
+                        <p className="text-[10px] font-black text-slate-500 uppercase">Target Runtime</p>
+                        <p className="text-lg font-bold capitalize leading-none">{formValues.programming_language}</p>
+                      </div>
                     </div>
 
                     <div className="space-y-4 pt-4 border-t border-slate-800 dark:border-slate-700">
                       <div className="flex items-center gap-4 bg-slate-800/50 dark:bg-slate-950/50 p-4 rounded-2xl border border-slate-700/50">
                         <DocumentIcon className="w-6 h-6 text-indigo-400" />
                         <div className="min-w-0 flex-1">
-                           <p className="text-[9px] font-black text-slate-500 uppercase">Source Registry</p>
-                           <p className="text-xs font-bold truncate">{codeFile?.name}</p>
+                          <p className="text-[9px] font-black text-slate-500 uppercase">Source Registry</p>
+                          <p className="text-xs font-bold truncate">{codeFile?.name}</p>
                         </div>
                         <CheckCircleIcon className="w-5 h-5 text-emerald-400" />
                       </div>
                       <div className="flex items-center gap-4 bg-slate-800/50 p-4 rounded-2xl border border-slate-700/50">
                         <DocumentTextIcon className="w-6 h-6 text-emerald-400" />
                         <div className="min-w-0 flex-1">
-                           <p className="text-[9px] font-black text-slate-500 uppercase">Academic Documentation</p>
-                           <p className="text-xs font-bold truncate">{docFile?.name}</p>
+                          <p className="text-[9px] font-black text-slate-500 uppercase">Academic Documentation</p>
+                          <p className="text-xs font-bold truncate">{docFile?.name}</p>
                         </div>
                         <CheckCircleIcon className="w-5 h-5 text-emerald-400" />
                       </div>
@@ -458,8 +458,8 @@ const ProjectUpload = () => {
                 {uploading ? (
                   <div className="bg-indigo-600 rounded-3xl p-6 text-white shadow-2xl">
                     <div className="flex justify-between items-center mb-3">
-                        <span className="text-[10px] font-black uppercase tracking-widest">Bridging secure connection...</span>
-                        <span className="text-2xl font-black">{uploadProgress}%</span>
+                      <span className="text-[10px] font-black uppercase tracking-widest">Bridging secure connection...</span>
+                      <span className="text-2xl font-black">{uploadProgress}%</span>
                     </div>
                     <div className="w-full bg-indigo-900/30 rounded-full h-1.5 backdrop-blur-sm overflow-hidden">
                       <div className="bg-white h-full transition-all duration-300 shadow-[0_0_10px_rgba(255,255,255,0.7)]" style={{ width: `${uploadProgress}%` }}></div>

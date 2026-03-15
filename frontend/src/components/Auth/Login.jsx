@@ -17,7 +17,7 @@ const Login = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const [apiError, setApiError] = useState('');
-  
+
   const from = location.state?.from?.pathname || '/dashboard';
 
   const { register, handleSubmit, formState: { errors, isSubmitting } } = useForm({

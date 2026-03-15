@@ -36,7 +36,7 @@ const Register = () => {
     try {
       setApiError('');
       setSuccessMsg('');
-      
+
       const userData = {
         email: data.email,
         username: data.username,
@@ -66,7 +66,7 @@ const Register = () => {
       <div className="absolute -top-32 -right-32 w-96 h-96 bg-indigo-400 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob animation-delay-4000"></div>
 
       <div className="w-full max-w-2xl px-8 py-10 bg-white dark:bg-slate-900 shadow-[0_8px_30px_rgb(0,0,0,0.06)] dark:shadow-[0_8px_30px_rgb(0,0,0,0.3)] sm:rounded-2xl border border-gray-100 dark:border-slate-800 backdrop-blur-sm relative z-10 my-8 transition-colors">
-        
+
         <div className="text-center mb-8">
           <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-cyan-50 dark:bg-cyan-900/20 mb-4 shadow-sm border border-cyan-100 dark:border-cyan-500/20">
             <UserPlus className="w-8 h-8 text-cyan-600 dark:text-cyan-400" />
@@ -98,9 +98,9 @@ const Register = () => {
         )}
 
         <form className="space-y-6" onSubmit={handleSubmit(onSubmit)}>
-          
+
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            
+
             {/* Left Column */}
             <div className="space-y-5">
               <div>
@@ -154,7 +154,7 @@ const Register = () => {
 
             {/* Right Column */}
             <div className="space-y-5">
-              
+
               <div className="grid grid-cols-2 gap-3">
                 <div className="col-span-1">
                   <label className="block text-sm font-semibold text-gray-700 dark:text-slate-300 mb-1.5 ml-1">Role</label>
@@ -229,14 +229,14 @@ const Register = () => {
                 Sign in instead
               </Link>
             </p>
-            
+
             <button
               type="submit"
               disabled={isSubmitting}
               className="group flex justify-center items-center py-3 px-8 border border-transparent rounded-xl shadow-md text-sm font-bold text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:opacity-70 transition-all duration-200 md:w-auto w-full"
             >
               {isSubmitting ? (
-                 <Loader2 className="animate-spin h-5 w-5" />
+                <Loader2 className="animate-spin h-5 w-5" />
               ) : (
                 <>
                   Register

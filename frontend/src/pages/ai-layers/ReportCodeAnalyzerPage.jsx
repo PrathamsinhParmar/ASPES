@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
-import { LinkIcon, DocumentCheckIcon } from '@heroicons/react/24/outline';
+import { DocumentIcon, DocumentCheckIcon } from '@heroicons/react/24/outline';
 import LayerPageShell from '../../components/AILayer/LayerPageShell';
 import { evaluationService } from '../../services/evaluationService';
 
@@ -25,7 +25,7 @@ const ReportCodeAnalyzerPage = () => {
   const implementedFeatures = result.implemented_features || [];
 
   const scoreBadge = !loading && !error && (
-    <div className={`px-6 py-3 rounded-2xl font-black text-sm shadow-lg border ${
+    <div className={`px-6 py-3 rounded-2xl font-semibold text-sm shadow-lg border ${
       alignScore >= 80 ? 'bg-cyan-50 dark:bg-cyan-900/20 text-cyan-700 dark:text-cyan-400 border-cyan-100 dark:border-cyan-500/20 shadow-cyan-100 dark:shadow-none'
         : alignScore >= 60 ? 'bg-amber-50 dark:bg-amber-900/20 text-amber-700 dark:text-amber-400 border-amber-100 dark:border-amber-500/20'
         : 'bg-red-50 dark:bg-rose-900/20 text-red-700 dark:text-rose-400 border-red-100 dark:border-rose-500/20'
@@ -36,14 +36,15 @@ const ReportCodeAnalyzerPage = () => {
 
   return (
     <LayerPageShell
-      title="Report Code Analyzer"
-      subtitle="Cross-references academic report claims against actual source code implementation"
-      icon={LinkIcon}
-      iconColor="bg-cyan-600"
+      title="Report Aligner"
+      subtitle="Gap analysis between technical implementation and documentation"
+      icon={DocumentIcon}
+      iconColor="bg-slate-700"
       scoreBadge={scoreBadge}
       evaluationId={id}
       loading={loading}
       error={error}
+      projectTitle={evaluation?.project?.title}
     >
       {evaluation && (
         <div className="space-y-8">

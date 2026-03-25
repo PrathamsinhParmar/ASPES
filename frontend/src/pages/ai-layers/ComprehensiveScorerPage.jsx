@@ -57,7 +57,7 @@ const ComprehensiveScorerPage = () => {
   ] : [];
 
   const scoreBadge = !loading && !error && (
-    <div className="px-6 py-3 bg-indigo-600 text-white rounded-2xl font-black text-sm shadow-lg shadow-indigo-200 dark:shadow-indigo-900/30">
+    <div className="px-6 py-3 bg-indigo-600 text-white rounded-2xl font-semibold text-sm shadow-lg shadow-indigo-200 dark:shadow-indigo-900/30">
       Grade: {stats.grade} — {stats.interpretation}
     </div>
   );
@@ -72,6 +72,7 @@ const ComprehensiveScorerPage = () => {
       evaluationId={id}
       loading={loading}
       error={error}
+      projectTitle={evaluation?.project?.title}
     >
       {evaluation && (
         <div className="space-y-8">
@@ -79,7 +80,7 @@ const ComprehensiveScorerPage = () => {
           <div className="bg-gray-950 rounded-[2.5rem] p-10 text-white shadow-2xl relative overflow-hidden">
             <div className="relative z-10 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-6">
               <div>
-                <p className="text-xs font-black uppercase tracking-[0.3em] text-gray-500 mb-4">Aggregate Performance Index</p>
+                <p className="text-sm font-semibold text-gray-500 mb-4">Aggregate Performance Index</p>
                 <div className="flex items-baseline gap-4">
                   <span className="text-[8rem] font-black leading-none tracking-tighter text-blue-500">
                     {Math.round(totalScore)}
@@ -88,7 +89,7 @@ const ComprehensiveScorerPage = () => {
                 </div>
               </div>
               <div className="bg-white/5 backdrop-blur-3xl rounded-[2rem] p-8 border border-white/10 flex flex-col items-center justify-center min-w-[130px]">
-                <span className="text-xs font-black text-gray-500 uppercase tracking-widest mb-2">Grade</span>
+                <span className="text-sm font-semibold text-gray-500 mb-2">Grade</span>
                 <span className="text-5xl font-black text-white">{stats.grade}</span>
               </div>
             </div>
@@ -100,7 +101,7 @@ const ComprehensiveScorerPage = () => {
                 { label: 'Model', value: 'ASPES-v2.0', color: 'text-gray-500' },
               ].map(({ label, value, color }) => (
                 <div key={label}>
-                  <p className="text-[10px] font-black text-gray-600 uppercase tracking-widest">{label}</p>
+                  <p className="text-sm font-semibold text-gray-500">{label}</p>
                   <p className={`text-base font-bold mt-1 ${color}`}>{value}</p>
                 </div>
               ))}
@@ -156,8 +157,8 @@ const ComprehensiveScorerPage = () => {
               { label: 'Documentation', score: evaluation.documentation_score, color: 'emerald' },
               { label: 'AI Discretion', score: evaluation.ai_code_score, color: 'indigo' },
             ].map((m, i) => (
-              <div key={i} className={`bg-${m.color}-50 dark:bg-${m.color}-900/10 border border-${m.color}-100 dark:border-${m.color}-500/20 rounded-2xl p-5 text-center`}>
-                <p className={`text-[10px] font-black uppercase tracking-widest text-${m.color}-400 mb-2`}>{m.label}</p>
+              <div key={i} className={`bg-${m.color}-50 dark:bg-${m.color}-900/10 border border-${m.color}-100 dark:border-${m.color}-500/20 rounded-2xl p-5 text-center transition-all duration-300 hover:scale-105 hover:shadow-lg`}>
+                <p className={`text-sm font-semibold text-${m.color}-500 mb-2`}>{m.label}</p>
                 <p className={`text-2xl font-black text-${m.color}-600 dark:text-${m.color}-400`}>{Math.round(m.score || 0)}%</p>
               </div>
             ))}

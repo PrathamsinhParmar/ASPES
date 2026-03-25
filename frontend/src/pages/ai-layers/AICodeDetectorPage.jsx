@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
-import { ShieldExclamationIcon, BoltIcon } from '@heroicons/react/24/outline';
+import { FingerPrintIcon, BoltIcon } from '@heroicons/react/24/outline';
 import LayerPageShell from '../../components/AILayer/LayerPageShell';
 import { evaluationService } from '../../services/evaluationService';
 
@@ -46,7 +46,7 @@ const AICodeDetectorPage = () => {
   const findings = det.findings || ['Consistent whitespace patterns', 'Boilerplate structure matches LLM templates'];
 
   const verdictBadge = !loading && !error && (
-    <div className={`px-6 py-3 rounded-2xl font-black text-xs uppercase tracking-widest shadow-lg ${
+    <div className={`px-6 py-3 rounded-2xl font-semibold text-sm shadow-lg ${
       isAI ? 'bg-red-50 dark:bg-rose-900/20 text-red-700 dark:text-rose-400 border border-red-100 dark:border-rose-500/20'
             : 'bg-green-50 dark:bg-emerald-900/20 text-green-700 dark:text-emerald-400 border border-green-100 dark:border-emerald-500/20'
     }`}>
@@ -57,13 +57,14 @@ const AICodeDetectorPage = () => {
   return (
     <LayerPageShell
       title="AI Code Detector"
-      subtitle="Probabilistic AI authorship forensics engine"
-      icon={ShieldExclamationIcon}
+      subtitle="Probabilistic assessment of AI-generated content in code submissions"
+      icon={FingerPrintIcon}
       iconColor="bg-violet-600"
       scoreBadge={verdictBadge}
       evaluationId={id}
       loading={loading}
       error={error}
+      projectTitle={evaluation?.project?.title}
     >
       {evaluation && (
         <div className="space-y-8">
@@ -114,7 +115,7 @@ const AICodeDetectorPage = () => {
           <div className="bg-violet-50 dark:bg-violet-900/10 border border-violet-100 dark:border-violet-500/20 rounded-3xl p-8">
             <div className="flex items-center gap-3 mb-4">
               <BoltIcon className="w-5 h-5 text-violet-600 dark:text-violet-400" />
-              <h3 className="font-black text-violet-900 dark:text-violet-300 text-sm uppercase tracking-widest">
+              <h3 className="font-semibold text-violet-900 dark:text-violet-300 text-base">
                 Engine Interpretation
               </h3>
             </div>

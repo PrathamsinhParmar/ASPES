@@ -21,7 +21,7 @@ const DocEvaluatorPage = () => {
   const docResult = evaluation?.doc_evaluation_result || {};
 
   const scoreBadge = !loading && !error && (
-    <div className={`px-6 py-3 rounded-2xl font-black text-sm shadow-lg border ${
+    <div className={`px-6 py-3 rounded-2xl font-semibold text-sm shadow-lg border ${
       docScore >= 80 ? 'bg-emerald-50 dark:bg-emerald-900/20 text-emerald-700 dark:text-emerald-400 border-emerald-100 dark:border-emerald-500/20 shadow-emerald-100 dark:shadow-none'
         : docScore >= 60 ? 'bg-amber-50 dark:bg-amber-900/20 text-amber-700 dark:text-amber-400 border-amber-100 dark:border-amber-500/20 shadow-amber-100 dark:shadow-none'
         : 'bg-red-50 dark:bg-rose-900/20 text-red-700 dark:text-rose-400 border-red-100 dark:border-rose-500/20 shadow-rose-100 dark:shadow-none'
@@ -42,14 +42,15 @@ const DocEvaluatorPage = () => {
 
   return (
     <LayerPageShell
-      title="Doc Evaluator"
-      subtitle="Academic report quality, completeness and structure analysis"
+      title="Documentation Evaluator"
+      subtitle="Comprehensive assessment of technical documentation and clarity"
       icon={DocumentTextIcon}
-      iconColor="bg-emerald-600"
+      iconColor="bg-sky-600"
       scoreBadge={scoreBadge}
       evaluationId={id}
       loading={loading}
       error={error}
+      projectTitle={evaluation?.project?.title}
     >
       {evaluation && (
         <div className="space-y-8">
@@ -107,7 +108,7 @@ const DocEvaluatorPage = () => {
             </div>
 
             <div className="bg-red-50 dark:bg-rose-900/10 border border-red-100 dark:border-rose-500/20 rounded-3xl p-8">
-              <h3 className="font-black text-rose-900 dark:text-rose-300 text-sm uppercase tracking-widest mb-4">
+              <h3 className="font-semibold text-rose-900 dark:text-rose-300 text-base mb-4">
                 Missing / Incomplete
               </h3>
               {missingSections.length > 0 ? (

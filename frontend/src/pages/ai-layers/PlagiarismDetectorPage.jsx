@@ -25,10 +25,10 @@ const PlagiarismDetectorPage = () => {
     : 0;
   const similarSections = result.similar_sections || [];
 
-  const verdict = isDetected ? 'RISK DETECTED' : 'ORIGINAL CONTENT';
+  const verdict = isDetected ? 'Risk Detected' : 'Original Content';
 
   const scoreBadge = !loading && !error && (
-    <div className={`flex items-center gap-3 px-6 py-3 rounded-2xl font-black text-sm shadow-lg border ${
+    <div className={`flex items-center gap-3 px-6 py-3 rounded-2xl font-semibold text-sm shadow-lg border ${
       isDetected ? 'bg-rose-50 dark:bg-rose-900/20 text-rose-700 dark:text-rose-400 border-rose-100 dark:border-rose-500/20 shadow-rose-100 dark:shadow-none'
                  : 'bg-emerald-50 dark:bg-emerald-900/20 text-emerald-700 dark:text-emerald-400 border-emerald-100 dark:border-emerald-500/20 shadow-emerald-100 dark:shadow-none'
     }`}>
@@ -50,6 +50,7 @@ const PlagiarismDetectorPage = () => {
       evaluationId={id}
       loading={loading}
       error={error}
+      projectTitle={evaluation?.project?.title}
     >
       {evaluation && (
         <div className="space-y-8">
@@ -115,7 +116,7 @@ const PlagiarismDetectorPage = () => {
                       <p className={`text-2xl font-black ${section.similarity_score > 50 ? 'text-red-600' : 'text-amber-600'}`}>
                         {typeof section.similarity_score === 'number' ? section.similarity_score.toFixed(1) : section.similarity_score}%
                       </p>
-                      <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest">overlap</p>
+                      <p className="text-sm font-semibold text-gray-400">Overlap</p>
                     </div>
                   </div>
                 ))}

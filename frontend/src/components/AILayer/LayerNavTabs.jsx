@@ -126,10 +126,10 @@ const LayerNavTabs = ({ evaluationId }) => {
               key={layer.segment}
               to={`/evaluations/${id}/${layer.segment}`}
               className={({ isActive }) =>
-                `flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-black uppercase tracking-widest whitespace-nowrap transition-all duration-200 flex-shrink-0 ${
+                `flex items-center gap-2.5 px-4 py-2.5 rounded-xl text-sm font-semibold whitespace-nowrap transition-all duration-200 flex-shrink-0 ${
                   isActive
-                    ? `${colors.active} shadow-lg`
-                    : 'text-gray-400 dark:text-slate-500 hover:text-gray-700 dark:hover:text-slate-300 hover:bg-gray-50 dark:hover:bg-slate-800'
+                    ? `${colors.active} shadow-lg scale-[1.02]`
+                    : 'text-gray-500 dark:text-slate-400 hover:text-gray-900 dark:hover:text-white hover:bg-gray-50/80 dark:hover:bg-slate-800/80'
                 }`
               }
             >

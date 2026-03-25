@@ -28,6 +28,7 @@ const LayerPageShell = ({
   loading,
   error,
   children,
+  projectTitle,
 }) => {
   const navigate = useNavigate();
 
@@ -36,14 +37,25 @@ const LayerPageShell = ({
 
       {/* ── HEADER ── */}
       <div className="space-y-6">
-        {/* Breadcrumb */}
-        <button
-          onClick={() => navigate(`/evaluations/${evaluationId}`)}
-          className="group flex items-center text-xs font-black text-gray-400 dark:text-slate-500 uppercase tracking-[0.2em] hover:text-blue-600 dark:hover:text-indigo-400 transition-colors"
-        >
-          <ArrowLeftIcon className="w-4 h-4 mr-2 group-hover:-translate-x-1 transition-transform" />
-          Back to Overview
-        </button>
+        {/* Breadcrumb row */}
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <button
+            onClick={() => navigate(`/evaluations/${evaluationId}`)}
+            className="group flex items-center text-xs font-black text-gray-400 dark:text-slate-500 uppercase tracking-[0.2em] hover:text-blue-600 dark:hover:text-indigo-400 transition-colors"
+          >
+            <ArrowLeftIcon className="w-4 h-4 mr-2 group-hover:-translate-x-1 transition-transform" />
+            Back to Overview
+          </button>
+
+          {projectTitle && (
+            <div className="flex items-center gap-2.5">
+              <span className="text-sm font-medium text-slate-400 dark:text-slate-500">Target Project:</span>
+              <span className="text-sm font-medium text-blue-600 dark:text-indigo-400 bg-blue-50/30 dark:bg-indigo-950/30 px-4 py-1.5 rounded-xl border border-blue-100/50 dark:border-indigo-900/30">
+                {projectTitle}
+              </span>
+            </div>
+          )}
+        </div>
 
         {/* Title row */}
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">

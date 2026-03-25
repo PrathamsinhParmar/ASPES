@@ -41,15 +41,21 @@ const FeedbackGeneratorPage = () => {
     { act: 'Correct Alignment', priority: 'HIGH' },
   ];
 
+  // scoreBadge is not defined in the original code, but the instruction snippet includes it.
+  // Assuming it's meant to be passed as undefined or will be defined elsewhere.
+  const scoreBadge = undefined; 
+
   return (
     <LayerPageShell
       title="Feedback Generator"
-      subtitle="AI-generated actionable narrative feedback and improvement roadmap"
+      subtitle="AI-curated improvement suggestions and technical insights"
       icon={ChatBubbleLeftRightIcon}
-      iconColor="bg-amber-500"
+      iconColor="bg-teal-600"
+      scoreBadge={scoreBadge}
       evaluationId={id}
       loading={loading}
       error={error}
+      projectTitle={evaluation?.project?.title}
     >
       {evaluation && (
         <div className="space-y-8">

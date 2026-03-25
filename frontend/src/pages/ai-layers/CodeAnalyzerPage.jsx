@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
-import { CommandLineIcon } from '@heroicons/react/24/outline';
+import { CodeBracketIcon } from '@heroicons/react/24/outline';
 import LayerPageShell from '../../components/AILayer/LayerPageShell';
 import { evaluationService } from '../../services/evaluationService';
 
@@ -46,8 +46,8 @@ const CodeAnalyzerPage = () => {
 
   const scoreBadge = !loading && !error && (
     <div className="flex items-center gap-3 px-6 py-3 bg-blue-600 text-white rounded-2xl shadow-lg shadow-blue-200 dark:shadow-blue-900/30">
-      <CommandLineIcon className="w-5 h-5" />
-      <span className="font-black text-sm">{Math.round(qualityScore)}% Quality</span>
+      <CodeBracketIcon className="w-5 h-5" />
+      <span className="font-semibold text-sm">{Math.round(qualityScore)}% Quality</span>
     </div>
   );
 
@@ -55,12 +55,13 @@ const CodeAnalyzerPage = () => {
     <LayerPageShell
       title="Code Analyzer"
       subtitle="Structural quality, maintainability and complexity assessment"
-      icon={CommandLineIcon}
+      icon={CodeBracketIcon}
       iconColor="bg-blue-600"
       scoreBadge={scoreBadge}
       evaluationId={id}
       loading={loading}
       error={error}
+      projectTitle={evaluation?.project?.title}
     >
       {evaluation && (
         <div className="space-y-8">
@@ -103,8 +104,8 @@ const CodeAnalyzerPage = () => {
                 desc: 'Measures the mental effort required to understand the control flow. Score shown here is inversed — higher means lower actual complexity.',
               },
             ].map((card) => (
-              <div key={card.title} className={`bg-${card.color}-50 dark:bg-${card.color}-900/10 border border-${card.color}-100 dark:border-${card.color}-500/20 rounded-2xl p-6`}>
-                <h3 className={`font-black text-${card.color}-900 dark:text-${card.color}-300 text-sm mb-3`}>{card.title}</h3>
+              <div key={card.title} className={`bg-${card.color}-50 dark:bg-${card.color}-900/10 border border-${card.color}-100 dark:border-${card.color}-500/20 rounded-2xl p-6 transition-all duration-300 hover:scale-105 hover:shadow-lg shadow-sm shadow-${card.color}-100/10`}>
+                <h3 className={`font-semibold text-${card.color}-900 dark:text-${card.color}-300 text-base mb-3`}>{card.title}</h3>
                 <p className={`text-xs text-${card.color}-800 dark:text-${card.color}-300/70 font-medium leading-relaxed`}>{card.desc}</p>
               </div>
             ))}

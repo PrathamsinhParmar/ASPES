@@ -50,6 +50,7 @@ class ProjectListResponse(BaseModel):
     batch_year: Optional[str]
     created_at: datetime
     has_evaluation: bool = False
+    total_score: Optional[float] = None
 
     model_config = {"from_attributes": True}
 

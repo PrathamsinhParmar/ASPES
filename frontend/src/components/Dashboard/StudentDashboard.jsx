@@ -234,9 +234,9 @@ const StudentDashboard = () => {
                       </span>
                     </td>
                     <td className="px-5 py-4 whitespace-nowrap">
-                       {project.evaluation?.total_score ? (
-                         <span className={`text-sm font-extrabold ${project.evaluation.total_score >= 80 ? 'text-emerald-600' : project.evaluation.total_score >= 60 ? 'text-amber-600' : 'text-rose-600'}`}>
-                           {project.evaluation.total_score.toFixed(1)} <span className="text-xs text-slate-400 font-medium">/ 100</span>
+                       {project.total_score !== null && project.total_score !== undefined ? (
+                         <span className={`text-sm font-extrabold ${project.total_score >= 80 ? 'text-emerald-600' : project.total_score >= 60 ? 'text-amber-600' : 'text-rose-600'}`}>
+                           {Number(project.total_score).toFixed(1)} <span className="text-xs text-slate-400 font-medium">/ 100</span>
                          </span>
                       ) : (
                         <span className="text-sm text-slate-300 font-bold">—</span>

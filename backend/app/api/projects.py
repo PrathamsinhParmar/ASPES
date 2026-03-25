@@ -187,7 +187,8 @@ async def get_my_projects(
             "course_name": p.course_name,
             "batch_year": p.batch_year,
             "created_at": p.created_at,
-            "has_evaluation": p.evaluation is not None
+            "has_evaluation": p.evaluation is not None,
+            "total_score": p.evaluation.total_score if p.evaluation else None
         } for p in projects
     ]
 
@@ -343,6 +344,7 @@ async def list_all_projects_admin(
             "course_name": p.course_name,
             "batch_year": p.batch_year,
             "created_at": p.created_at,
-            "has_evaluation": p.evaluation is not None
+            "has_evaluation": p.evaluation is not None,
+            "total_score": p.evaluation.total_score if p.evaluation else None
         } for p in projects
     ]

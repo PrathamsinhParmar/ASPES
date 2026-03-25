@@ -90,7 +90,7 @@ function DashboardLayout() {
             </div>
             <div>
               <p className="text-sm font-black text-gray-900 dark:text-white tracking-tight leading-tight">ASPES KPGU</p>
-              <p className="text-[10px] font-bold text-gray-500 dark:text-slate-400 uppercase tracking-widest leading-none mt-0.5">V2.0 AI Engine</p>
+              <p className="text-[10px] font-bold text-gray-500 dark:text-slate-400 uppercase tracking-widest leading-none mt-0.5">AI Evaluation System</p>
             </div>
           </div>
           <button 

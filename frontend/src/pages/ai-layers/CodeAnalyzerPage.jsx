@@ -12,9 +12,8 @@ const MetricBar = ({ label, value }) => (
     </div>
     <div className="h-2 bg-gray-100 dark:bg-slate-800 rounded-full overflow-hidden">
       <div
-        className={`h-full rounded-full transition-all duration-1000 ease-out ${
-          value >= 90 ? 'bg-indigo-500' : value >= 80 ? 'bg-green-500' : value >= 60 ? 'bg-blue-500' : value >= 40 ? 'bg-amber-500' : 'bg-red-500'
-        }`}
+        className={`h-full rounded-full transition-all duration-1000 ease-out ${value >= 90 ? 'bg-indigo-500' : value >= 80 ? 'bg-green-500' : value >= 60 ? 'bg-blue-500' : value >= 40 ? 'bg-amber-500' : 'bg-red-500'
+          }`}
         style={{ width: `${value ?? 0}%` }}
       />
     </div>

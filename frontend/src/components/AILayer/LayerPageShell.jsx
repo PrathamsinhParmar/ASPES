@@ -41,9 +41,9 @@ const LayerPageShell = ({
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <button
             onClick={() => navigate(`/evaluations/${evaluationId}`)}
-            className="group flex items-center text-xs font-black text-gray-400 dark:text-slate-500 uppercase tracking-[0.2em] hover:text-blue-600 dark:hover:text-indigo-400 transition-colors"
+            className="group flex items-center text-sm font-medium text-slate-500 dark:text-slate-400 hover:text-blue-600 dark:hover:text-indigo-400 transition-all duration-200"
           >
-            <ArrowLeftIcon className="w-4 h-4 mr-2 group-hover:-translate-x-1 transition-transform" />
+            <ArrowLeftIcon className="w-4 h-4 mr-2 group-hover:-translate-x-1.5 transition-transform" />
             Back to Overview
           </button>
 

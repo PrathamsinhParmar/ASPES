@@ -11,18 +11,20 @@ const ScorePill = ({ value, label, color }) => (
   </div>
 );
 
-const StatBox = ({ label, value, sub }) => (
-  <div className="bg-gray-50 dark:bg-slate-800/50 rounded-3xl p-6 text-center">
-    <p className="text-[10px] font-black text-gray-400 dark:text-slate-500 uppercase tracking-widest mb-2">{label}</p>
-    <p className="text-3xl font-black text-gray-900 dark:text-white">{value}</p>
-    {sub && <p className="text-xs text-gray-400 dark:text-slate-500 mt-1 font-medium">{sub}</p>}
+const StatBox = ({ label, value, sub, color = 'violet' }) => (
+  <div className={`bg-${color}-50/30 dark:bg-slate-800/40 rounded-[2.5rem] p-8 text-center border border-${color}-100/20 dark:border-slate-700/30 transition-all duration-300 hover:scale-[1.02]`}>
+    <p className="text-sm font-semibold text-gray-500 dark:text-slate-400 mb-2">{label}</p>
+    <p className="text-4xl font-black text-gray-900 dark:text-white tracking-tight">{value}</p>
+    {sub && <p className="text-xs text-gray-500 dark:text-slate-500 mt-2 font-medium tracking-wide">{sub}</p>}
   </div>
 );
 
 const FindingItem = ({ text }) => (
-  <li className="flex items-start gap-3 text-sm text-gray-600 dark:text-slate-400 px-2 py-2 rounded-xl hover:bg-gray-50 dark:hover:bg-slate-800/50 transition-colors">
-    <div className="w-2 h-2 rounded-full bg-violet-500 mt-1.5 flex-shrink-0" />
-    {text}
+  <li className="flex items-center gap-4 text-sm font-medium text-gray-700 dark:text-slate-300 px-5 py-4 rounded-2xl bg-gray-50/50 dark:bg-slate-800/30 border border-gray-100/50 dark:border-slate-700/30 hover:bg-white dark:hover:bg-slate-800 transition-all duration-200 group">
+    <div className="flex-shrink-0 w-8 h-8 rounded-full bg-violet-100 dark:bg-violet-900/30 flex items-center justify-center text-violet-600 dark:text-violet-400 group-hover:scale-110 transition-transform">
+      <FingerPrintIcon className="w-4 h-4" />
+    </div>
+    <span className="leading-tight">{text}</span>
   </li>
 );
 
@@ -103,27 +105,41 @@ const AICodeDetectorPage = () => {
 
           {/* Findings */}
           <div className="bg-white dark:bg-slate-900 border border-gray-100 dark:border-slate-800 rounded-3xl p-8 shadow-sm">
-            <h2 className="text-lg font-black text-gray-900 dark:text-white tracking-tight mb-6">
+            <h2 className="text-xl font-black text-gray-900 dark:text-white tracking-tight mb-8 flex items-center gap-3">
+              <span className="w-1.5 h-6 bg-violet-500 rounded-full" />
               Identified Signatures
             </h2>
-            <ul className="space-y-1">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               {findings.map((f, i) => <FindingItem key={i} text={f} />)}
-            </ul>
+            </div>
           </div>
 
-          {/* AI Score Breakdown */}
-          <div className="bg-violet-50 dark:bg-violet-900/10 border border-violet-100 dark:border-violet-500/20 rounded-3xl p-8">
-            <div className="flex items-center gap-3 mb-4">
-              <BoltIcon className="w-5 h-5 text-violet-600 dark:text-violet-400" />
-              <h3 className="font-semibold text-violet-900 dark:text-violet-300 text-base">
-                Engine Interpretation
-              </h3>
+          {/* Engine Interpretation */}
+          <div className="bg-indigo-600 rounded-[2.5rem] p-10 text-white shadow-2xl relative overflow-hidden group">
+            <div className="relative z-10">
+              <div className="flex items-center gap-4 mb-6">
+                <div className="w-12 h-12 rounded-2xl bg-white/10 backdrop-blur-xl flex items-center justify-center border border-white/20">
+                  <BoltIcon className="w-6 h-6 text-indigo-200" />
+                </div>
+                <div>
+                  <h3 className="text-xl font-bold text-white tracking-tight">
+                    Engine Interpretation
+                  </h3>
+                  <p className="text-sm text-indigo-200/80 font-medium">Heuristic Analysis Results</p>
+                </div>
+              </div>
+              <p className="text-lg text-indigo-50 font-medium leading-relaxed max-w-4xl">
+                {isAI
+                  ? 'Heuristic analysis indicates a high probability of AI-assisted code generation. Patterns including uniform indentation, idiomatic LLM phrase structures, and predictable comment placement were detected.'
+                  : 'The codebase exhibits characteristics consistent with organic human authorship. Variable naming inconsistencies, iterative refinement traces, and irregular comment density suggest authentic development.'}
+              </p>
             </div>
-            <p className="text-sm text-violet-800 dark:text-violet-300 font-medium leading-relaxed">
-              {isAI
-                ? 'Heuristic analysis indicates a high probability of AI-assisted code generation. Patterns including uniform indentation, idiomatic LLM phrase structures, and predictable comment placement were detected.'
-                : 'The codebase exhibits characteristics consistent with organic human authorship. Variable naming inconsistencies, iterative refinement traces, and irregular comment density suggest authentic development.'}
-            </p>
+            
+            {/* Decorative elements */}
+            <div className="absolute -right-20 -bottom-20 w-[300px] h-[300px] bg-white/10 rounded-full blur-[80px] pointer-events-none group-hover:bg-white/15 transition-all duration-700" />
+            <div className="absolute top-0 right-0 p-8 opacity-10">
+              <BoltIcon className="w-32 h-32 text-white" />
+            </div>
           </div>
         </div>
       )}

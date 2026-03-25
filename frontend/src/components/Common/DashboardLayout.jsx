@@ -65,27 +65,40 @@ function DashboardLayout() {
   const { user, logout } = useAuth();
   const [sidebarOpen, setSidebarOpen] = useState(true);
 
+  const toggleSidebar = () => setSidebarOpen(!sidebarOpen);
+
   const navItems = getNavItems(user?.role);
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-slate-950 flex text-gray-900 dark:text-gray-100">
       {/* ---- Sidebar ---- */}
       <aside className={`
-        fixed inset-y-0 left-0 z-30 flex flex-col
-        w-64 bg-white dark:bg-slate-900 border-r border-gray-200 dark:border-slate-800
-        transition-transform duration-300 ease-in-out
-        ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'}
-        md:translate-x-0 md:static
+        fixed inset-y-0 left-0 z-40 flex flex-col
+        bg-white dark:bg-slate-900 border-r border-gray-200 dark:border-slate-800
+        transition-all duration-500 ease-[cubic-bezier(0.4, 0, 0.2, 1)]
+        shadow-2xl md:shadow-none
+        ${sidebarOpen 
+          ? 'w-72 translate-x-0 opacity-100' 
+          : 'w-0 -translate-x-full opacity-0 overflow-hidden pointer-events-none'
+        }
       `}>
-        {/* Logo */}
-        <div className="flex items-center gap-3 px-5 py-5 border-b border-gray-200 dark:border-slate-800">
-          <div className="w-8 h-8 rounded-lg bg-blue-600 flex items-center justify-center shadow-lg shadow-blue-500/20">
-            <AcademicCapIcon className="w-5 h-5 text-white" />
+        {/* Logo Section */}
+        <div className="flex items-center justify-between px-5 py-6 border-b border-gray-100 dark:border-slate-800/50">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-blue-600 to-indigo-700 flex items-center justify-center shadow-lg shadow-blue-500/20">
+              <AcademicCapIcon className="w-6 h-6 text-white" />
+            </div>
+            <div>
+              <p className="text-sm font-black text-gray-900 dark:text-white tracking-tight leading-tight">ASPES KPGU</p>
+              <p className="text-[10px] font-bold text-gray-500 dark:text-slate-400 uppercase tracking-widest leading-none mt-0.5">V2.0 AI Engine</p>
+            </div>
           </div>
-          <div>
-            <p className="text-sm font-extrabold text-gray-900 dark:text-white tracking-tight leading-tight">ASPES KPGU</p>
-            <p className="text-[10px] font-semibold text-gray-500 dark:text-slate-400 uppercase tracking-wider leading-none">AI Evaluation System</p>
-          </div>
+          <button 
+            onClick={toggleSidebar}
+            className="p-1.5 rounded-lg hover:bg-gray-100 dark:hover:bg-slate-800 text-gray-400 dark:text-slate-500 transition-colors"
+          >
+            <XMarkIcon className="w-5 h-5" />
+          </button>
         </div>
 
         {/* Navigation */}
@@ -122,25 +135,19 @@ function DashboardLayout() {
       </aside>
 
       {/* ---- Main Content ---- */}
-      <div className="flex-1 flex flex-col min-w-0">
-        {/* Topbar (Mobile only) */}
-        <header className="md:hidden sticky top-0 z-20 h-14 bg-white dark:bg-slate-900 border-b border-gray-200 dark:border-slate-800 flex items-center justify-between px-4">
-          <div className="flex items-center gap-3">
-             <div className="w-8 h-8 rounded-lg bg-blue-600 flex items-center justify-center">
-              <AcademicCapIcon className="w-5 h-5 text-white" />
-            </div>
-            <p className="text-sm font-bold text-gray-900 dark:text-white">ASPES</p>
-          </div>
-          <div className="flex items-center gap-2">
-            <ThemeToggle />
-            <button
-              onClick={() => setSidebarOpen(!sidebarOpen)}
-              className="p-1.5 text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-slate-800 rounded-lg"
-            >
-              {sidebarOpen ? <XMarkIcon className="w-6 h-6" /> : <Bars3Icon className="w-6 h-6" />}
-            </button>
-          </div>
-        </header>
+      <div className={`
+        flex-1 flex flex-col min-w-0 transition-all duration-500 ease-[cubic-bezier(0.4, 0, 0.2, 1)]
+        ${sidebarOpen ? 'md:ml-72' : 'ml-0'}
+      `}>
+        {/* Floating Sidebar Toggle (Only visible when sidebar is closed) */}
+        {!sidebarOpen && (
+          <button
+            onClick={toggleSidebar}
+            className="fixed top-5 left-5 z-50 p-2.5 bg-white dark:bg-slate-900 border border-gray-200 dark:border-slate-800 rounded-xl shadow-lg text-blue-600 dark:text-blue-400 hover:scale-110 active:scale-95 transition-all duration-200 group animate-in slide-in-from-left-4 fade-in"
+          >
+            <Bars3Icon className="w-5 h-5 group-hover:rotate-12 transition-transform" />
+          </button>
+        )}
 
         {/* Page content */}
         <main className="flex-1 overflow-x-hidden overflow-y-auto bg-gray-50 dark:bg-slate-950">
@@ -151,7 +158,7 @@ function DashboardLayout() {
       {/* Mobile Sidebar Overlay */}
       {sidebarOpen && (
         <div 
-          className="fixed inset-0 bg-gray-900/50 z-20 md:hidden"
+          className="fixed inset-0 bg-slate-950/40 backdrop-blur-sm z-30 md:hidden animate-in fade-in duration-300"
           onClick={() => setSidebarOpen(false)}
         />
       )}

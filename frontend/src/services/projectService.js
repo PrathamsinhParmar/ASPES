@@ -18,7 +18,11 @@ export const projectService = {
 
   uploadProject: async (formData, config = {}) => {
     const response = await api.post('/projects/upload', formData, {
-      ...config
+      ...config,
+      headers: {
+        ...config.headers,
+        'Content-Type': 'multipart/form-data'
+      }
     });
     return response.data;
   },

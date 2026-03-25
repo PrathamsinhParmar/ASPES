@@ -24,6 +24,15 @@ const EvaluationPage = lazy(() => import('./pages/EvaluationPage'));
 const ProfilePage    = lazy(() => import('./pages/ProfilePage'));
 const NotFoundPage   = lazy(() => import('./pages/NotFoundPage'));
 
+// AI Layer Pages (lazy-loaded)
+const AICodeDetectorPage    = lazy(() => import('./pages/ai-layers/AICodeDetectorPage'));
+const CodeAnalyzerPage      = lazy(() => import('./pages/ai-layers/CodeAnalyzerPage'));
+const ComprehensiveScorerPage = lazy(() => import('./pages/ai-layers/ComprehensiveScorerPage'));
+const DocEvaluatorPage      = lazy(() => import('./pages/ai-layers/DocEvaluatorPage'));
+const FeedbackGeneratorPage = lazy(() => import('./pages/ai-layers/FeedbackGeneratorPage'));
+const PlagiarismDetectorPage = lazy(() => import('./pages/ai-layers/PlagiarismDetectorPage'));
+const ReportCodeAnalyzerPage = lazy(() => import('./pages/ai-layers/ReportCodeAnalyzerPage'));
+
 // Public Route wrapper (Redirect to dashboard if already logged in)
 
 function PublicRoute({ children }) {
@@ -58,8 +67,19 @@ function App() {
               <Route path="projects"           element={<ProjectsPage />} />
               <Route path="projects/new"       element={<SubmitProject />} />
               <Route path="projects/:id"       element={<ProjectDetail />} />
-              <Route path="evaluations/:id"    element={<EvaluationPage />} />
               <Route path="profile"            element={<ProfilePage />} />
+
+              {/* Evaluation Overview */}
+              <Route path="evaluations/:id"    element={<EvaluationPage />} />
+
+              {/* AI Layer Dedicated Pages */}
+              <Route path="evaluations/:id/code-detector"  element={<AICodeDetectorPage />} />
+              <Route path="evaluations/:id/code-analyzer"  element={<CodeAnalyzerPage />} />
+              <Route path="evaluations/:id/scorer"         element={<ComprehensiveScorerPage />} />
+              <Route path="evaluations/:id/doc-evaluator"  element={<DocEvaluatorPage />} />
+              <Route path="evaluations/:id/feedback"       element={<FeedbackGeneratorPage />} />
+              <Route path="evaluations/:id/plagiarism"     element={<PlagiarismDetectorPage />} />
+              <Route path="evaluations/:id/report-aligner" element={<ReportCodeAnalyzerPage />} />
             </Route>
 
             {/* 404 */}

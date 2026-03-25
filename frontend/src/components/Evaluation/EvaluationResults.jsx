@@ -1,26 +1,26 @@
 import { useState, useEffect } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams, useNavigate, Link } from 'react-router-dom';
 import {
   RadarChart, Radar, PolarGrid, PolarAngleAxis, PolarRadiusAxis,
   BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip,
   ResponsiveContainer, Cell
 } from 'recharts';
 import { useTheme } from '../../context/ThemeContext';
+import LayerNavTabs from '../AILayer/LayerNavTabs';
 
 import { evaluationService } from '../../services/evaluationService';
 import {
   CheckCircleIcon,
   ExclamationTriangleIcon,
-  InformationCircleIcon,
   ArrowLeftIcon,
   ChevronDownIcon,
-  ChevronUpIcon,
   ShieldCheckIcon,
   BuildingLibraryIcon,
   CommandLineIcon,
   PuzzlePieceIcon,
   BoltIcon,
-  DocumentArrowDownIcon
+  DocumentArrowDownIcon,
+  ArrowTopRightOnSquareIcon
 } from '@heroicons/react/24/outline';
 import { format } from 'date-fns';
 
@@ -209,10 +209,10 @@ const EvaluationResults = () => {
   ];
 
   return (
-    <div className="max-w-7xl mx-auto p-4 sm:p-6 lg:p-10 space-y-12 animate-fade-in mb-24">
+    <div className="max-w-7xl mx-auto p-4 sm:p-6 lg:p-10 space-y-10 animate-fade-in mb-24">
 
       {/* --- SUPER HEADER --- */}
-      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 border-b border-gray-100 dark:border-slate-800 pb-10">
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 border-b border-gray-100 dark:border-slate-800 pb-8">
         <div className="space-y-4">
           <button
             onClick={() => navigate(-1)}
@@ -251,6 +251,9 @@ const EvaluationResults = () => {
           </button>
         </div>
       </div>
+
+      {/* --- AI LAYER NAVIGATION TABS --- */}
+      <LayerNavTabs evaluationId={id} />
 
       {/* --- PERFORMANCE DASH --- */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-10">
@@ -413,6 +416,9 @@ const EvaluationResults = () => {
             <div className="mt-6 p-5 bg-gray-50 dark:bg-slate-800/50 rounded-2xl border border-gray-100 dark:border-slate-800 italic text-sm text-gray-600 dark:text-slate-400">
               &quot;The project structure follows SOLID principles with highly decoupled modules.&quot;
             </div>
+            <Link to={`/evaluations/${id}/code-analyzer`} className="mt-4 flex items-center gap-2 text-xs font-black text-blue-600 dark:text-indigo-400 hover:underline uppercase tracking-widest">
+              View Full Code Analysis <ArrowTopRightOnSquareIcon className="w-4 h-4" />
+            </Link>
           </AnalysisSection>
 
           {/* 2. AI Detection */}
@@ -442,6 +448,9 @@ const EvaluationResults = () => {
                 </li>
               ))}
             </ul>
+            <Link to={`/evaluations/${id}/code-detector`} className="mt-4 flex items-center gap-2 text-xs font-black text-blue-600 dark:text-indigo-400 hover:underline uppercase tracking-widest">
+              View Full AI Detection Report <ArrowTopRightOnSquareIcon className="w-4 h-4" />
+            </Link>
           </AnalysisSection>
 
           {/* 3. Plagiarism Check */}
@@ -478,6 +487,9 @@ const EvaluationResults = () => {
                   </div>
                 </div>
               )}
+              <Link to={`/evaluations/${id}/plagiarism`} className="flex items-center gap-2 text-xs font-black text-blue-600 dark:text-indigo-400 hover:underline uppercase tracking-widest">
+                View Full Plagiarism Report <ArrowTopRightOnSquareIcon className="w-4 h-4" />
+              </Link>
             </div>
           </AnalysisSection>
 
@@ -506,6 +518,9 @@ const EvaluationResults = () => {
                   </div>
                 </div>
               )}
+              <Link to={`/evaluations/${id}/report-aligner`} className="flex items-center gap-2 text-xs font-black text-blue-600 dark:text-indigo-400 hover:underline uppercase tracking-widest">
+                View Full Alignment Analysis <ArrowTopRightOnSquareIcon className="w-4 h-4" />
+              </Link>
             </div>
           </AnalysisSection>
         </div>

@@ -1,8 +1,8 @@
 import React from 'react';
-import EvaluationResults from '../components/Evaluation/EvaluationResults';
+import AILayerSelection from '../components/Evaluation/AILayerSelection';
 
 const EvaluationPage = () => {
-  return <EvaluationResults />;
+  return <AILayerSelection />;
 };
 
 export default EvaluationPage;

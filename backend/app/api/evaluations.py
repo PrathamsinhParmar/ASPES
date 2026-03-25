@@ -103,7 +103,18 @@ async def get_pending_evaluations(
         .limit(limit)
     )
     result = await db.execute(stmt)
-    return result.scalars().all()
+    evaluations = result.scalars().all()
+    validated_evals = []
+    for ev in evaluations:
+        v = EvaluationResponse.model_validate(ev)
+        if v.project:
+            v.project = {
+                "id": str(v.project.id),
+                "title": v.project.title,
+                "status": v.project.status
+            }
+        validated_evals.append(v)
+    return validated_evals
 
 
 @router.get("/{evaluation_id}", response_model=EvaluationResponse)
@@ -131,7 +142,14 @@ async def get_evaluation(
         if evaluation.project.owner_id != current_user.id:
             raise HTTPException(status_code=403, detail="Not authorized to view this evaluation")
             
-    return evaluation
+    validated = EvaluationResponse.model_validate(evaluation)
+    if validated.project:
+        validated.project = {
+            "id": str(validated.project.id),
+            "title": validated.project.title,
+            "status": validated.project.status
+        }
+    return validated
 
 
 @router.put("/{evaluation_id}/finalize", response_model=EvaluationResponse)
@@ -174,7 +192,14 @@ async def finalize_evaluation(
     
     # TODO: Send notification to student via email background task
     
-    return evaluation
+    validated = EvaluationResponse.model_validate(evaluation)
+    if validated.project:
+        validated.project = {
+            "id": str(validated.project.id),
+            "title": validated.project.title,
+            "status": validated.project.status
+        }
+    return validated
 
 
 @router.post("/{evaluation_id}/reprocess")

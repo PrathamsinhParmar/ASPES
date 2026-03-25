@@ -6,7 +6,7 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
 import { projectService } from '../../services/projectService';
 import { evaluationService } from '../../services/evaluationService';
-import toast from 'react-hot-toast';
+import { toast } from 'react-toastify';
 import {
   CloudArrowUpIcon,
   DocumentIcon,
@@ -285,7 +285,7 @@ const ProjectUpload = () => {
 
         {/* Submission Form Area (Vertical & Centered) */}
         <div className="space-y-8 animate-slide-up">
-          <form onSubmit={(e) => e.preventDefault()} className="space-y-10">
+          <form onSubmit={handleSubmit(onSubmit)} className="space-y-10">
 
             {step === 1 && (
               <div className="space-y-8">
@@ -468,7 +468,7 @@ const ProjectUpload = () => {
                 ) : (
                   <div className="flex flex-col sm:flex-row gap-4 pt-4">
                     <button onClick={prevStep} className="flex-1 py-4 bg-slate-50 dark:bg-slate-800 rounded-2xl text-xs font-bold uppercase tracking-widest text-slate-500 dark:text-slate-400 hover:bg-white dark:hover:bg-slate-700 hover:shadow-sm border border-slate-100 dark:border-slate-700 transition-all">Revise Input</button>
-                    <button id="confirm-execute-btn" onClick={() => onSubmit(formValues)} className="flex-[2] py-4 bg-indigo-600 rounded-2xl text-xs font-black uppercase tracking-widest text-white shadow-xl shadow-indigo-200 dark:shadow-none hover:bg-indigo-700 hover:-translate-y-0.5 transition-all">Trigger AI Analysis</button>
+                    <button type="submit" id="confirm-execute-btn" className="flex-[2] py-4 bg-indigo-600 rounded-2xl text-xs font-black uppercase tracking-widest text-white shadow-xl shadow-indigo-200 dark:shadow-none hover:bg-indigo-700 hover:-translate-y-0.5 transition-all">Analysis</button>
                   </div>
                 )}
               </div>

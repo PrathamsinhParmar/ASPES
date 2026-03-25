@@ -125,7 +125,7 @@ const ProjectDetailPage = () => {
                    to={`/evaluations/${project.evaluation.id}`}
                    className="block w-full text-center py-3 bg-white text-blue-600 font-bold rounded-xl hover:bg-blue-50 transition-colors"
                  >
-                   View Full Analysis
+                   View AI Layers
                  </Link>
               </div>
            ) : project.evaluation && project.evaluation.status === 'failed' ? (

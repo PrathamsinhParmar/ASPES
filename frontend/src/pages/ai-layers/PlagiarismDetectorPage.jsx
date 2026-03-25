@@ -20,7 +20,9 @@ const PlagiarismDetectorPage = () => {
   const plagScore = evaluation?.plagiarism_score ?? 0;
   const isDetected = evaluation?.plagiarism_detected;
   const result = evaluation?.plagiarism_result || {};
-  const maxSimilarity = result.max_similarity_percent ?? 0;
+  const maxSimilarity = typeof result.max_similarity_percent === 'number' 
+    ? Number(result.max_similarity_percent.toFixed(1)) 
+    : 0;
   const similarSections = result.similar_sections || [];
 
   const verdict = isDetected ? 'RISK DETECTED' : 'ORIGINAL CONTENT';
@@ -111,7 +113,7 @@ const PlagiarismDetectorPage = () => {
                     </div>
                     <div className="text-right flex-shrink-0">
                       <p className={`text-2xl font-black ${section.similarity_score > 50 ? 'text-red-600' : 'text-amber-600'}`}>
-                        {section.similarity_score}%
+                        {typeof section.similarity_score === 'number' ? section.similarity_score.toFixed(1) : section.similarity_score}%
                       </p>
                       <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest">overlap</p>
                     </div>

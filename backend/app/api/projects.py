@@ -15,7 +15,7 @@ from app.database.connection import get_db
 from app.models.user import User, UserRole
 from app.models.project import Project, ProjectStatus
 from app.models.evaluation import Evaluation, EvaluationStatus
-from app.schemas.project import ProjectCreate, ProjectResponse, ProjectWithEvaluation, ProjectListResponse
+from app.schemas.project import ProjectCreate, ProjectUpdate, ProjectResponse, ProjectWithEvaluation, ProjectListResponse
 from app.utils.dependencies import get_current_user, require_role
 from app.services.file_service import FileService
 
@@ -230,6 +230,38 @@ async def get_project_details(
     return ProjectWithEvaluation.model_validate(project)
 
 
+@router.put("/{project_id}", response_model=ProjectResponse)
+async def update_project_metadata(
+    project_id: uuid.UUID,
+    project_update: ProjectUpdate,
+    current_user: User = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db)
+):
+    """
+    Update project basic metadata (title, description, course_name, batch_year).
+    Only the owner or an admin can update project details.
+    """
+    stmt = select(Project).where(Project.id == project_id)
+    result = await db.execute(stmt)
+    project = result.scalar_one_or_none()
+    
+    if not project:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Project not found")
+        
+    if project.owner_id != current_user.id and current_user.role != UserRole.ADMIN:
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Not authorized to update this project")
+    
+    # Update fields if provided
+    update_data = project_update.model_dump(exclude_unset=True)
+    for field, value in update_data.items():
+        setattr(project, field, value)
+        
+    await db.commit()
+    await db.refresh(project)
+    
+    return project
+
+
 @router.delete("/{project_id}", status_code=status.HTTP_200_OK)
 async def delete_project(
     project_id: uuid.UUID,
@@ -258,7 +290,12 @@ async def delete_project(
         fs.delete_file(project.report_file_path)
         
     # 2. Delete database record
-    # Due to cascade constraints, deleting project removes evaluation
+    # Manually handle evaluation deletion if cascade is not set in DB
+    result = await db.execute(select(Evaluation).where(Evaluation.project_id == project.id))
+    evaluation = result.scalar_one_or_none()
+    if evaluation:
+        await db.delete(evaluation)
+        
     await db.delete(project)
     await db.commit()
     

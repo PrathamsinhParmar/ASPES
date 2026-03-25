@@ -30,5 +30,10 @@ export const projectService = {
   deleteProject: async (id) => {
     const response = await api.delete(`/projects/${id}`);
     return response.data;
+  },
+  
+  updateProjectMetadata: async (id, data) => {
+    const response = await api.put(`/projects/${id}`, data);
+    return response.data;
   }
 };

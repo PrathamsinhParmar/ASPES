@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import { projectService } from '../services/projectService';
-import { ChartBarIcon, DocumentIcon, CodeBracketIcon, ArrowPathIcon, CheckCircleIcon } from '@heroicons/react/24/outline';
+import { ChartBarIcon, DocumentIcon, CodeBracketIcon, ArrowPathIcon, CheckCircleIcon, UserGroupIcon, IdentificationIcon } from '@heroicons/react/24/outline';
 
 const POLL_INTERVAL_MS = 3000; // Poll every 3 seconds
 
@@ -17,11 +17,9 @@ const ProjectDetailPage = () => {
       const data = await projectService.getProject(id);
       setProject(data);
 
-      // If evaluation is complete, navigate directly to results
+      // If evaluation is complete, stop polling
       if (data.evaluation && data.evaluation.status === 'completed') {
         clearInterval(pollingRef.current);
-        navigate(`/evaluations/${data.evaluation.id}`, { replace: true });
-        return;
       }
 
       // If evaluation has failed, stop polling
@@ -66,18 +64,25 @@ const ProjectDetailPage = () => {
     project.evaluation.status === 'processing';
 
   return (
-    <div className="p-6 max-w-5xl mx-auto">
+    <div className="p-6 max-w-5xl mx-auto dark:text-white text-slate-900">
       <div className="flex justify-between items-start mb-8">
         <div>
-          <h1 className="text-4xl font-bold text-gray-900">{project.title}</h1>
-          <p className="text-gray-500 mt-2">{project.course_name}</p>
+          <h1 className="text-4xl font-bold dark:text-white text-slate-900 flex items-center gap-3">
+            {project.title}
+            {project.team_name && (
+              <span className="px-3 py-1 rounded-full text-xs font-bold bg-indigo-100 dark:bg-indigo-900/30 text-indigo-700 dark:text-indigo-400 border border-indigo-200 dark:border-indigo-800 mt-1">
+                Team: {project.team_name}
+              </span>
+            )}
+          </h1>
+          <p className="text-gray-500 dark:text-gray-400 mt-2">{project.course_name}</p>
         </div>
         <div className={`px-4 py-1 rounded-full font-bold uppercase text-sm ${
           project.status === 'published' || project.status === 'evaluated'
-            ? 'bg-green-100 text-green-700' 
+            ? 'bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400' 
             : project.status === 'under_evaluation'
-            ? 'bg-blue-100 text-blue-700'
-            : 'bg-yellow-100 text-yellow-700'
+            ? 'bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-400'
+            : 'bg-yellow-100 dark:bg-yellow-900/30 text-yellow-700 dark:text-yellow-400'
         }`}>
           {project.status.replace(/_/g, ' ')}
         </div>
@@ -85,30 +90,57 @@ const ProjectDetailPage = () => {
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
         <div className="md:col-span-2 space-y-8">
-          <div className="bg-white p-8 rounded-2xl shadow-sm border border-gray-100">
-             <h3 className="text-xl font-bold mb-4">Description</h3>
-             <p className="text-gray-600 leading-relaxed">{project.description || "No description provided."}</p>
+          <div className="bg-white dark:bg-[#161B22] p-8 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-800">
+             <h3 className="text-xl font-bold mb-4 dark:text-slate-200">Description</h3>
+             <p className="text-gray-600 dark:text-gray-400 leading-relaxed">{project.description || "No description provided."}</p>
           </div>
 
-          <div className="bg-white p-8 rounded-2xl shadow-sm border border-gray-100">
-             <h3 className="text-xl font-bold mb-4">Assets</h3>
+          <div className="bg-white dark:bg-[#161B22] p-8 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-800">
+             <h3 className="text-xl font-bold mb-4 dark:text-slate-200">Assets</h3>
              <div className="space-y-4">
-                <div className="flex items-center justify-between p-4 bg-gray-50 rounded-xl">
+                <div className="flex items-center justify-between p-4 bg-slate-50 dark:bg-slate-800/50 rounded-xl">
                    <div className="flex items-center gap-3">
-                      <CodeBracketIcon className="w-6 h-6 text-gray-400" />
-                      <span className="font-medium">Source Code Bundle</span>
+                      <CodeBracketIcon className="w-6 h-6 text-gray-400 dark:text-gray-500" />
+                      <span className="font-medium dark:text-slate-300">Source Code Bundle</span>
                    </div>
-                   <span className="text-sm text-gray-500">Stored Securely</span>
+                   <span className="text-sm text-gray-500 dark:text-gray-500">Stored Securely</span>
                 </div>
-                <div className="flex items-center justify-between p-4 bg-gray-50 rounded-xl">
+                <div className="flex items-center justify-between p-4 bg-slate-50 dark:bg-slate-800/50 rounded-xl">
                    <div className="flex items-center gap-3">
-                      <DocumentIcon className="w-6 h-6 text-gray-400" />
-                      <span className="font-medium">Academic Report</span>
+                      <DocumentIcon className="w-6 h-6 text-gray-400 dark:text-gray-500" />
+                      <span className="font-medium dark:text-slate-300">Academic Report</span>
                    </div>
-                   <span className="text-sm text-gray-500">Stored Securely</span>
-                </div>
-             </div>
+                   <span className="text-sm text-gray-500 dark:text-gray-500">Stored Securely</span>
+                 </div>
+              </div>
           </div>
+
+          {project.team_members && (
+            <div className="bg-white dark:bg-[#161B22] p-8 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-800">
+               <h3 className="text-xl font-bold mb-6 flex items-center gap-2 dark:text-slate-200">
+                 <UserGroupIcon className="w-6 h-6 text-indigo-500" />
+                 Team Members
+               </h3>
+               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                 {(() => {
+                   try {
+                     const members = typeof project.team_members === 'string' ? JSON.parse(project.team_members) : project.team_members;
+                     return members?.map((member, idx) => (
+                       <div key={idx} className="flex items-center gap-4 p-4 bg-slate-50 dark:bg-slate-800 rounded-xl border border-slate-100 dark:border-slate-700">
+                         <div className="h-10 w-10 flex items-center justify-center rounded-full bg-indigo-100 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-400">
+                           <IdentificationIcon className="w-5 h-5" />
+                         </div>
+                         <div>
+                           <p className="text-sm font-bold text-slate-900 dark:text-white leading-tight">{member.name}</p>
+                           <p className="text-[11px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-widest">{member.enrollment}</p>
+                         </div>
+                       </div>
+                     ));
+                   } catch(e) { return <p className="text-xs text-gray-400 dark:text-gray-500">Unable to display team members</p>; }
+                 })()}
+               </div>
+            </div>
+          )}
         </div>
 
         <div className="space-y-6">
@@ -125,13 +157,13 @@ const ProjectDetailPage = () => {
                    to={`/evaluations/${project.evaluation.id}`}
                    className="block w-full text-center py-3 bg-white text-blue-600 font-bold rounded-xl hover:bg-blue-50 transition-colors"
                  >
-                   View AI Layers
+                   View Analysis
                  </Link>
               </div>
            ) : project.evaluation && project.evaluation.status === 'failed' ? (
-              <div className="bg-red-50 p-8 rounded-2xl border border-red-200">
-                 <h3 className="text-lg font-bold text-red-900 mb-2">Evaluation Failed</h3>
-                 <p className="text-sm text-red-600 mb-4">The AI evaluation encountered an error. Please try resubmitting your project.</p>
+              <div className="bg-red-50 dark:bg-red-900/10 p-8 rounded-2xl border border-red-200 dark:border-red-900/30">
+                 <h3 className="text-lg font-bold text-red-900 dark:text-red-400 mb-2">Evaluation Failed</h3>
+                 <p className="text-sm text-red-600 dark:text-red-300 mb-4">The AI evaluation encountered an error. Please try resubmitting your project.</p>
                  <Link to="/projects/new" className="block w-full text-center py-3 bg-red-600 text-white font-bold rounded-xl hover:bg-red-700 transition-colors">
                    Resubmit
                  </Link>
@@ -161,8 +193,8 @@ const ProjectDetailPage = () => {
                    ))}
                  </div>
 
-                 <p className="mt-6 text-[10px] font-bold text-gray-600 uppercase tracking-widest">
-                   Auto-refreshing... you&apos;ll be redirected automatically.
+                 <p className="mt-6 text-[10px] font-bold text-gray-600 dark:text-gray-500 uppercase tracking-widest">
+                   Auto-refreshing... analysis results will appear here when ready.
                  </p>
               </div>
            )}

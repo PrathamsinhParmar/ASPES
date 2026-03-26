@@ -7,6 +7,8 @@ import * as yup from 'yup';
 import { projectService } from '../../services/projectService';
 import { evaluationService } from '../../services/evaluationService';
 import { toast } from 'react-toastify';
+import { useAuth } from '../../context/AuthContext';
+import { groupService } from '../../services/groupService';
 import {
   CloudArrowUpIcon,
   DocumentIcon,
@@ -17,7 +19,10 @@ import {
   InformationCircleIcon,
   CpuChipIcon,
   SparklesIcon,
-  ShieldCheckIcon
+  ShieldCheckIcon,
+  UserGroupIcon,
+  UserPlusIcon,
+  MinusCircleIcon
 } from '@heroicons/react/24/outline';
 
 /**
@@ -45,11 +50,22 @@ const AI_STEPS = [
 ];
 
 const ProjectUpload = () => {
+  const { user } = useAuth();
+  const normRole = (user?.role || '').toString().trim().toUpperCase();
+  const isFaculty = normRole === 'PROFESSOR' || normRole === 'FACULTY' || normRole === 'ADMIN';
+  const urlParams = new URLSearchParams(window.location.search);
+  const initialGroupId = urlParams.get('groupId') || '';
+
   const [step, setStep] = useState(1);
   const [codeFile, setCodeFile] = useState(null);
   const [docFile, setDocFile] = useState(null);
   const [uploading, setUploading] = useState(false);
   const [uploadProgress, setUploadProgress] = useState(0);
+
+  // Faculty Specific State
+  const [groups, setGroups] = useState([]);
+  const [selectedGroupId, setSelectedGroupId] = useState(initialGroupId);
+  const [teamMembers, setTeamMembers] = useState([{ name: '', enrollment: '' }]);
 
   // Custom Dropdown State
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
@@ -81,12 +97,25 @@ const ProjectUpload = () => {
       }
     };
     document.addEventListener('mousedown', handleClickOutside);
+
+    if (isFaculty) {
+      groupService.getGroups().then(data => setGroups(data)).catch(err => console.error(err));
+    }
+
     return () => {
       document.removeEventListener('mousedown', handleClickOutside);
       if (pollingRef.current) clearInterval(pollingRef.current);
       if (stepTimerRef.current) clearInterval(stepTimerRef.current);
     };
-  }, []);
+  }, [isFaculty]);
+
+  const addTeamMember = () => setTeamMembers([...teamMembers, { name: '', enrollment: '' }]);
+  const removeTeamMember = (index) => setTeamMembers(teamMembers.filter((_, i) => i !== index));
+  const updateTeamMember = (index, field, value) => {
+    const newMembers = [...teamMembers];
+    newMembers[index][field] = value;
+    setTeamMembers(newMembers);
+  };
 
   const languages = [
     { id: 'python', name: 'Python 3.x', icon: '🐍' },
@@ -168,6 +197,17 @@ const ProjectUpload = () => {
     formData.append('title', data.title);
     formData.append('description', data.description || '');
     formData.append('programming_language', data.programming_language);
+    
+    if (isFaculty) {
+      if (data.team_name) formData.append('team_name', data.team_name);
+      if (selectedGroupId) formData.append('group_id', selectedGroupId);
+      
+      const validMembers = teamMembers.filter(m => m.name.trim() || m.enrollment.trim());
+      if (validMembers.length > 0) {
+        formData.append('team_members', JSON.stringify(validMembers));
+      }
+    }
+
     formData.append('code_file', codeFile);
     formData.append('doc_file', docFile);
 
@@ -343,6 +383,86 @@ const ProjectUpload = () => {
                       </div>
                     )}
                   </div>
+
+                  {isFaculty && (
+                    <>
+                      <div className="my-8 border-t border-slate-200 dark:border-slate-700/50 pt-8" />
+                      
+                      <div className="space-y-6">
+                        <div className="flex items-center gap-3 mb-6">
+                          <div className="h-10 w-10 flex items-center justify-center rounded-xl bg-indigo-50 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-400">
+                            <UserGroupIcon className="h-5 w-5" />
+                          </div>
+                          <div>
+                            <h3 className="text-sm font-black text-slate-800 dark:text-white leading-tight uppercase tracking-widest">Team Composition</h3>
+                            <p className="text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest">Faculty Management Data</p>
+                          </div>
+                        </div>
+
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                          <div className="space-y-2">
+                            <label className="text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest ml-1">Team Name (Optional)</label>
+                            <input
+                              {...register('team_name')}
+                              className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-800 border border-slate-100 dark:border-slate-700 focus:bg-white dark:focus:bg-slate-700/50 focus:border-indigo-500 rounded-xl transition-all outline-none text-sm font-semibold text-slate-800 dark:text-white"
+                              placeholder="e.g. Alpha Devs"
+                            />
+                          </div>
+
+                          <div className="space-y-2 relative">
+                            <label className="text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest ml-1">Assign to Group</label>
+                            <select
+                              value={selectedGroupId}
+                              onChange={(e) => setSelectedGroupId(e.target.value)}
+                              className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-800 border border-slate-100 dark:border-slate-700 focus:bg-white dark:focus:bg-slate-700/50 focus:border-indigo-500 rounded-xl transition-all outline-none text-sm font-semibold text-slate-800 dark:text-white appearance-none"
+                            >
+                              <option value="">-- No Group Assigned --</option>
+                              {groups.map(g => (
+                                <option key={g.id} value={g.id}>{g.name}</option>
+                              ))}
+                            </select>
+                          </div>
+                        </div>
+
+                        <div className="space-y-4 pt-4">
+                          <label className="text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest ml-1 block border-b border-slate-200 dark:border-slate-700/50 pb-2">Student Members</label>
+                          {teamMembers.map((member, index) => (
+                            <div key={index} className="flex flex-col sm:flex-row gap-3">
+                              <input
+                                placeholder="Full Name"
+                                value={member.name}
+                                onChange={(e) => updateTeamMember(index, 'name', e.target.value)}
+                                className="flex-1 px-4 py-3 bg-slate-50 dark:bg-slate-800 border border-slate-100 dark:border-slate-700 focus:bg-white dark:focus:border-indigo-500 rounded-xl outline-none text-sm font-medium dark:text-white"
+                              />
+                              <input
+                                placeholder="Enrollment / ID"
+                                value={member.enrollment}
+                                onChange={(e) => updateTeamMember(index, 'enrollment', e.target.value)}
+                                className="flex-1 px-4 py-3 bg-slate-50 dark:bg-slate-800 border border-slate-100 dark:border-slate-700 focus:bg-white dark:focus:border-indigo-500 rounded-xl outline-none text-sm font-medium dark:text-white"
+                              />
+                              <button
+                                type="button"
+                                onClick={() => removeTeamMember(index)}
+                                disabled={teamMembers.length === 1}
+                                className="p-3 text-rose-500 bg-rose-50 dark:bg-rose-900/10 rounded-xl hover:bg-rose-100 dark:hover:bg-rose-900/30 transition-colors disabled:opacity-30 self-stretch sm:self-auto flex items-center justify-center border border-rose-100 dark:border-rose-900/30"
+                              >
+                                <MinusCircleIcon className="w-5 h-5" />
+                              </button>
+                            </div>
+                          ))}
+                          <div className="pt-2">
+                            <button
+                              type="button"
+                              onClick={addTeamMember}
+                              className="inline-flex items-center gap-2 text-xs font-bold text-indigo-600 dark:text-indigo-400 bg-indigo-50 dark:bg-indigo-900/20 px-4 py-2 rounded-xl hover:bg-indigo-100 dark:hover:bg-indigo-900/40 transition-colors border border-indigo-100 dark:border-indigo-900/30"
+                            >
+                              <UserPlusIcon className="w-4 h-4" /> Add Team Member
+                            </button>
+                          </div>
+                        </div>
+                      </div>
+                    </>
+                  )}
                 </div>
 
                 <div className="flex justify-center pt-1">

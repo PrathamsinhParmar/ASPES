@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { projectService } from '../services/projectService';
-import { Link } from 'react-router-dom';
+import { groupService } from '../services/groupService';
+import { Link, useNavigate } from 'react-router-dom';
 import { FolderIcon, PlusIcon, MagnifyingGlassIcon, TrashIcon, ExclamationTriangleIcon, PencilSquareIcon, XMarkIcon } from '@heroicons/react/24/outline';
 import { toast } from 'react-toastify';
 
@@ -16,6 +17,12 @@ const ProjectsPage = () => {
   const [projectToEdit, setProjectToEdit] = useState(null);
   const [editForm, setEditForm] = useState({ title: '', description: '' });
   const [isSaving, setIsSaving] = useState(false);
+  
+  const navigate = useNavigate();
+  const urlParams = new URLSearchParams(window.location.search);
+  const selectionMode = urlParams.get('selectionMode') === 'true';
+  const groupIdFromUrl = urlParams.get('groupId');
+  const [selectedProjectIds, setSelectedProjectIds] = useState([]);
 
   useEffect(() => {
     const fetch = async () => {
@@ -30,6 +37,41 @@ const ProjectsPage = () => {
     };
     fetch();
   }, []);
+
+  const toggleProjectSelection = (projectId) => {
+    setSelectedProjectIds(prev => 
+      prev.includes(projectId) 
+        ? prev.filter(id => id !== projectId) 
+        : [...prev, projectId]
+    );
+  };
+
+  const handleCompleteSelection = async () => {
+    if (selectedProjectIds.length === 0) {
+      toast.warn('Please select at least one project');
+      return;
+    }
+
+    try {
+      setIsSaving(true);
+      await groupService.addProjectsToGroup(groupIdFromUrl, selectedProjectIds);
+      toast.success(`Successfully added ${selectedProjectIds.length} projects to group`);
+      navigate('/groups');
+    } catch (err) {
+      console.error('Group addition error:', err);
+      let errorMsg = err.response?.data?.detail || 'Failed to add projects to group';
+      
+      // If it's a validation error, try to show the specific details
+      if (err.response?.data?.errors) {
+        const firstError = err.response.data.errors[0];
+        errorMsg = `Validation Error: ${firstError.loc.join('.')} - ${firstError.msg}`;
+      }
+      
+      toast.error(errorMsg);
+    } finally {
+      setIsSaving(false);
+    }
+  };
 
   const handleDeleteClick = (e, project) => {
     e.preventDefault();
@@ -110,19 +152,41 @@ const ProjectsPage = () => {
       {/* Header Area */}
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-white/70 dark:bg-slate-900/70 backdrop-blur-md p-5 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm relative z-10">
         <div>
-          <h1 className="text-2xl font-extrabold text-slate-900 dark:text-white tracking-tight">Project Portfolio</h1>
-          <p className="mt-1 text-sm font-medium text-slate-500 dark:text-slate-400">Overview of all your academic project submissions.</p>
+          <h1 className="text-2xl font-extrabold text-slate-900 dark:text-white tracking-tight">
+            {selectionMode ? 'Select Projects to Group' : 'Project Portfolio'}
+          </h1>
+          <p className="mt-1 text-sm font-medium text-slate-500 dark:text-slate-400">
+            {selectionMode ? 'Choose existing projects to add to the selected group.' : 'Overview of all your academic project submissions.'}
+          </p>
         </div>
-        <Link 
-          to="/projects/new" 
-          className="group relative overflow-hidden inline-flex items-center px-6 py-3 rounded-2xl shadow-[0_10px_25px_-5px_rgba(79,70,229,0.4)] text-sm font-black uppercase tracking-widest text-white bg-gradient-to-r from-indigo-600 via-indigo-500 to-blue-600 hover:shadow-[0_15px_30px_-5px_rgba(79,70,229,0.5)] hover:-translate-y-0.5 transition-all duration-300 shadow-md"
-        >
-          <div className="absolute inset-0 bg-white/20 translate-y-full group-hover:translate-y-0 transition-transform duration-300"></div>
-          <span className="relative flex items-center">
-            <PlusIcon className="-ml-1 mr-2 h-5 w-5" />
-            New Project
-          </span>
-        </Link>
+        {!selectionMode ? (
+          <Link 
+            to="/projects/new" 
+            className="group relative overflow-hidden inline-flex items-center px-6 py-3 rounded-2xl shadow-[0_10px_25px_-5px_rgba(79,70,229,0.4)] text-sm font-black uppercase tracking-widest text-white bg-gradient-to-r from-indigo-600 via-indigo-500 to-blue-600 hover:shadow-[0_15px_30px_-5px_rgba(79,70,229,0.5)] hover:-translate-y-0.5 transition-all duration-300 shadow-md"
+          >
+            <div className="absolute inset-0 bg-white/20 translate-y-full group-hover:translate-y-0 transition-transform duration-300"></div>
+            <span className="relative flex items-center">
+              <PlusIcon className="-ml-1 mr-2 h-5 w-5" />
+              New Project
+            </span>
+          </Link>
+        ) : (
+          <div className="flex gap-3">
+            <button 
+              onClick={() => navigate('/groups')}
+              className="px-6 py-3 rounded-2xl text-sm font-black uppercase bg-white dark:bg-slate-800 text-slate-500 border border-slate-200 dark:border-slate-700 hover:bg-slate-50 transition-all font-bold tracking-widest"
+            >
+              Cancel
+            </button>
+            <button 
+              onClick={handleCompleteSelection}
+              disabled={isSaving || selectedProjectIds.length === 0}
+              className="px-6 py-3 bg-indigo-600 text-white rounded-2xl shadow-lg shadow-indigo-500/20 text-sm font-black uppercase tracking-widest hover:bg-indigo-700 disabled:opacity-50 transition-all"
+            >
+              {isSaving ? 'Processing...' : `Add Selected (${selectedProjectIds.length})`}
+            </button>
+          </div>
+        )}
       </div>
 
       {loading ? (
@@ -142,11 +206,19 @@ const ProjectsPage = () => {
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 relative z-10">
           {projects.map(p => (
-            <Link 
+            <div 
               key={p.id} 
-              to={`/projects/${p.id}`} 
-              className="group bg-white dark:bg-slate-900 rounded-2xl p-5 border border-slate-100 dark:border-slate-800 shadow-sm hover:shadow-xl hover:shadow-indigo-500/5 dark:hover:shadow-indigo-500/10 hover:-translate-y-1 transition-all duration-300 relative overflow-hidden"
+              onClick={() => selectionMode ? toggleProjectSelection(p.id) : navigate(`/projects/${p.id}`)}
+              className={`group bg-white dark:bg-slate-900 rounded-2xl p-5 border shadow-sm hover:shadow-xl hover:shadow-indigo-500/5 dark:hover:shadow-indigo-500/10 hover:-translate-y-1 transition-all duration-300 relative overflow-hidden cursor-pointer
+                ${selectionMode && selectedProjectIds.includes(p.id) ? 'ring-2 ring-indigo-500 border-indigo-500 bg-indigo-50/10 dark:bg-indigo-900/10' : 'border-slate-100 dark:border-slate-800'}`}
             >
+               {selectionMode && (
+                 <div className="absolute top-4 left-4 z-30">
+                   <div className={`w-6 h-6 rounded-lg border-2 flex items-center justify-center transition-all ${selectedProjectIds.includes(p.id) ? 'bg-indigo-600 border-indigo-600' : 'bg-white/50 border-slate-300'}`}>
+                     {selectedProjectIds.includes(p.id) && <XMarkIcon className="w-4 h-4 text-white rotate-45" />}
+                   </div>
+                 </div>
+               )}
                {/* Accent decoration */}
                <div className="absolute top-0 left-0 w-1 h-full bg-indigo-500/0 group-hover:bg-indigo-500 transition-all duration-300"></div>
                 <div className="flex items-start mb-6">
@@ -180,15 +252,21 @@ const ProjectsPage = () => {
                   </div>
                 </div>
                               <h3 className="font-extrabold text-slate-900 dark:text-white text-lg leading-tight group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors">{p.title}</h3>
-                <p className="text-xs font-bold text-slate-400 dark:text-slate-500 mt-1 uppercase tracking-wider">{p.course_name}</p>
+                <div className="flex items-center gap-2 mt-1">
+                  <p className="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider">{p.course_name}</p>
+                  {p.team_name && (
+                    <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-indigo-50 text-indigo-500 dark:bg-indigo-900/30 dark:text-indigo-400 border border-indigo-100 dark:border-indigo-800">
+                      Team: {p.team_name}
+                    </span>
+                  )}
+                </div>
                               <div className="mt-6 flex items-center justify-between pt-4 border-t border-slate-50 dark:border-slate-800">
                   <div className="flex items-center gap-2">
                      <div className="h-1.5 w-1.5 rounded-full bg-indigo-400"></div>
                      <span className="text-[11px] font-bold text-slate-500 dark:text-slate-500">View detailed metrics</span>
                   </div>
-                  <PlusIcon className="w-4 h-4 text-slate-300 dark:text-slate-700 group-hover:text-indigo-500 dark:group-hover:text-indigo-400 group-hover:translate-x-1 transition-all" />
                 </div>
-            </Link>
+            </div>
           ))}
         </div>
       )}

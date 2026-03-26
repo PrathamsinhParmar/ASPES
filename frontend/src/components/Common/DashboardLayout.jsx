@@ -13,26 +13,29 @@ import {
   AcademicCapIcon,
   ArrowRightOnRectangleIcon,
   ClipboardDocumentCheckIcon,
-  ServerIcon
+  ServerIcon,
+  UserGroupIcon
 } from '@heroicons/react/24/outline';
 
 const API_BASE_URL = api.defaults.baseURL?.replace('/api/v1', '') || 'http://localhost:8000';
 
 const getNavItems = (role) => {
+  const normRole = (role || '').toString().trim().toUpperCase();
   const common = [
     { path: '/profile', label: 'Profile', icon: UserIcon },
   ];
 
-  if (role === 'admin') {
+  if (normRole === 'ADMIN') {
     return [
       { path: '/dashboard', label: 'Admin Dashboard', icon: ServerIcon },
       { path: '/faculty', label: 'Faculty Members', icon: AcademicCapIcon },
       ...common
     ];
-  } else if (role === 'faculty') {
+  } else if (normRole === 'FACULTY' || normRole === 'PROFESSOR') {
     return [
       { path: '/dashboard', label: 'Review Portal', icon: ClipboardDocumentCheckIcon },
       { path: '/projects', label: 'All Projects', icon: FolderIcon },
+      { path: '/groups', label: 'Groups', icon: UserGroupIcon },
       ...common
     ];
   } else {

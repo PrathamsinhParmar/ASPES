@@ -27,6 +27,9 @@ async def upload_project(
     title: str = Form(...),
     programming_language: str = Form(...),
     description: Optional[str] = Form(None),
+    team_name: Optional[str] = Form(None),
+    team_members: Optional[str] = Form(None),  # JSON string: [{name, enrollment}]
+    group_id: Optional[str] = Form(None),       # UUID string
     code_file: UploadFile = File(...),
     doc_file: UploadFile = File(...),
     current_user: User = Depends(get_current_user),
@@ -53,12 +56,15 @@ async def upload_project(
     new_project = Project(
         title=title,
         description=description,
-        course_name=programming_language, # Mapped from prompt requirement
+        course_name=programming_language,
         status=ProjectStatus.SUBMITTED,
         owner_id=current_user.id,
         code_file_path=code_path,
         report_file_path=doc_path,
-        submitted_at=datetime.now(timezone.utc)
+        submitted_at=datetime.now(timezone.utc),
+        team_name=team_name or None,
+        team_members=team_members or None,
+        group_id=uuid.UUID(group_id) if group_id else None,
     )
     
     db.add(new_project)
@@ -186,6 +192,7 @@ async def get_my_projects(
             "status": p.status,
             "course_name": p.course_name,
             "batch_year": p.batch_year,
+            "team_name": p.team_name,
             "created_at": p.created_at,
             "has_evaluation": p.evaluation is not None,
             "total_score": p.evaluation.total_score if p.evaluation else None
@@ -343,6 +350,7 @@ async def list_all_projects_admin(
             "status": p.status,
             "course_name": p.course_name,
             "batch_year": p.batch_year,
+            "team_name": p.team_name,
             "created_at": p.created_at,
             "has_evaluation": p.evaluation is not None,
             "total_score": p.evaluation.total_score if p.evaluation else None

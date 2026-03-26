@@ -32,8 +32,11 @@ class ProjectResponse(BaseModel):
     code_file_path: Optional[str]
     report_file_path: Optional[str]
     owner_id: uuid.UUID
+    group_id: Optional[uuid.UUID] = None
     course_name: Optional[str]
     batch_year: Optional[str]
+    team_name: Optional[str] = None
+    team_members: Optional[str] = None
     created_at: datetime
     updated_at: datetime
     submitted_at: Optional[datetime]
@@ -48,6 +51,8 @@ class ProjectListResponse(BaseModel):
     status: ProjectStatus
     course_name: Optional[str]
     batch_year: Optional[str]
+    team_name: Optional[str] = None
+    team_members: Optional[str] = None
     created_at: datetime
     has_evaluation: bool = False
     total_score: Optional[float] = None

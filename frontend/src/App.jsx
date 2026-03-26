@@ -25,6 +25,7 @@ const ProfilePage    = lazy(() => import('./pages/ProfilePage'));
 const NotFoundPage   = lazy(() => import('./pages/NotFoundPage'));
 const FacultyListPage = lazy(() => import('./pages/FacultyListPage'));
 const FacultyDashboardViewPage = lazy(() => import('./pages/FacultyDashboardViewPage'));
+const GroupsPage = lazy(() => import('./pages/GroupsPage'));
 
 // AI Layer Pages (lazy-loaded)
 const AICodeDetectorPage    = lazy(() => import('./pages/ai-layers/AICodeDetectorPage'));
@@ -72,6 +73,8 @@ function App() {
               <Route path="profile"            element={<ProfilePage />} />
               <Route path="faculty"            element={<FacultyListPage />} />
               <Route path="faculty/:facultyId/dashboard" element={<FacultyDashboardViewPage />} />
+              
+              <Route path="groups" element={<GroupsPage />} />
 
               {/* Evaluation Overview */}
               <Route path="evaluations/:id"    element={<EvaluationPage />} />

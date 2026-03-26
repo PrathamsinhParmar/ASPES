@@ -164,9 +164,9 @@ function DashboardLayout() {
         {!sidebarOpen && (
           <button
             onClick={toggleSidebar}
-            className="fixed top-5 left-5 z-50 p-2.5 bg-white dark:bg-slate-900 border border-gray-200 dark:border-slate-800 rounded-xl shadow-lg text-blue-600 dark:text-blue-400 hover:scale-110 active:scale-95 transition-all duration-200 group animate-in slide-in-from-left-4 fade-in"
+            className="fixed top-5 left-5 z-50 p-2 bg-white/30 dark:bg-slate-900/40 backdrop-blur-md border border-white/50 dark:border-slate-700/50 rounded-xl shadow-lg shadow-black/5 dark:shadow-black/20 text-blue-600 dark:text-blue-400 hover:bg-white/50 dark:hover:bg-slate-800/60 hover:scale-110 active:scale-95 transition-all duration-200 group animate-in slide-in-from-left-4 fade-in"
           >
-            <Bars3Icon className="w-5 h-5 group-hover:rotate-12 transition-transform" />
+            <Bars3Icon className="w-4 h-4 group-hover:rotate-12 transition-transform" />
           </button>
         )}
 

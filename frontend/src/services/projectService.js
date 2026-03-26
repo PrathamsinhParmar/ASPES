@@ -6,6 +6,11 @@ export const projectService = {
     return response.data;
   },
 
+  getAssignedProjects: async (skip = 0, limit = 50) => {
+    const response = await api.get(`/projects/assigned?skip=${skip}&limit=${limit}`);
+    return response.data;
+  },
+
   getAllProjects: async (skip = 0, limit = 50) => {
     const response = await api.get(`/projects/?skip=${skip}&limit=${limit}`);
     return response.data;

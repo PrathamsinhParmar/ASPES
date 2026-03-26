@@ -7,7 +7,7 @@ from typing import List, Optional
 
 from fastapi import APIRouter, Depends, HTTPException, status
 from pydantic import BaseModel, Field
-from sqlalchemy import select, desc
+from sqlalchemy import select, desc, or_
 from sqlalchemy.orm import selectinload
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -194,7 +194,8 @@ async def add_projects_to_group_bulk(
 
     project_result = await db.execute(
         select(Project).where(
-            Project.id.in_(data.project_ids), Project.owner_id == current_user.id
+            Project.id.in_(data.project_ids),
+            or_(Project.owner_id == current_user.id, Project.faculty_id == current_user.id)
         )
     )
     projects = project_result.scalars().all()
@@ -225,7 +226,10 @@ async def add_project_to_group(
         raise HTTPException(status_code=404, detail="Group not found")
 
     project_result = await db.execute(
-        select(Project).where(Project.id == project_id, Project.owner_id == current_user.id)
+        select(Project).where(
+            Project.id == project_id,
+            or_(Project.owner_id == current_user.id, Project.faculty_id == current_user.id)
+        )
     )
     project = project_result.scalar_one_or_none()
     if not project:
@@ -249,7 +253,7 @@ async def remove_project_from_group(
     project_result = await db.execute(
         select(Project).where(
             Project.id == project_id,
-            Project.owner_id == current_user.id,
+            or_(Project.owner_id == current_user.id, Project.faculty_id == current_user.id),
             Project.group_id == group_id,
         )
     )

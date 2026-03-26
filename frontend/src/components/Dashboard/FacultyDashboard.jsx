@@ -143,8 +143,8 @@ const FacultyDashboard = () => {
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                       <button
-                        onClick={() => navigate(`/evaluations/${evaluation.id}`)}
-                        className="inline-flex items-center px-3 py-1 border border-transparent text-sm leading-4 font-medium rounded-md text-indigo-700 bg-indigo-100 hover:bg-indigo-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                        onClick={() => navigate(`/projects/${evaluation.project_id || evaluation.project?.id}`)}
+                        className="inline-flex items-center px-5 py-2.5 rounded-2xl text-xs font-medium uppercase tracking-wider text-white bg-gradient-to-r from-indigo-500 to-indigo-600 shadow-sm hover:shadow-indigo-500/20 hover:-translate-y-0.5 transition-all"
                       >
                         Review & Finalize
                       </button>

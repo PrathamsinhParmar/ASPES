@@ -2,7 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { projectService } from '../services/projectService';
 import { groupService } from '../services/groupService';
 import { Link, useNavigate } from 'react-router-dom';
-import { FolderIcon, PlusIcon, MagnifyingGlassIcon, TrashIcon, ExclamationTriangleIcon, PencilSquareIcon, XMarkIcon } from '@heroicons/react/24/outline';
+import { useAuth } from '../context/AuthContext';
+import { FolderIcon, InboxArrowDownIcon, PlusIcon, MagnifyingGlassIcon, TrashIcon, ExclamationTriangleIcon, PencilSquareIcon, XMarkIcon } from '@heroicons/react/24/outline';
 import { toast } from 'react-toastify';
 
 const ProjectsPage = () => {
@@ -18,7 +19,9 @@ const ProjectsPage = () => {
   const [editForm, setEditForm] = useState({ title: '', description: '' });
   const [isSaving, setIsSaving] = useState(false);
   
+  const { user } = useAuth();
   const navigate = useNavigate();
+  const isFaculty = ['faculty', 'professor'].includes((user?.role || '').toLowerCase());
   const urlParams = new URLSearchParams(window.location.search);
   const selectionMode = urlParams.get('selectionMode') === 'true';
   const groupIdFromUrl = urlParams.get('groupId');
@@ -27,7 +30,9 @@ const ProjectsPage = () => {
   useEffect(() => {
     const fetch = async () => {
       try {
-        const data = await projectService.getMyProjects();
+        const data = isFaculty
+          ? await projectService.getAssignedProjects()
+          : await projectService.getMyProjects();
         setProjects(data);
       } catch (err) {
         console.error(err);
@@ -36,7 +41,7 @@ const ProjectsPage = () => {
       }
     };
     fetch();
-  }, []);
+  }, [isFaculty]);
 
   const toggleProjectSelection = (projectId) => {
     setSelectedProjectIds(prev => 
@@ -152,24 +157,33 @@ const ProjectsPage = () => {
       {/* Header Area */}
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-white/70 dark:bg-slate-900/70 backdrop-blur-md p-5 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm relative z-10">
         <div>
-          <h1 className="text-2xl font-extrabold text-slate-900 dark:text-white tracking-tight">
-            {selectionMode ? 'Select Projects to Group' : 'Project Portfolio'}
-          </h1>
+          <div className="flex items-center gap-3">
+            {isFaculty && (
+              <div className="w-10 h-10 rounded-xl bg-indigo-50 dark:bg-indigo-900/30 flex items-center justify-center text-indigo-600 dark:text-indigo-400">
+                <InboxArrowDownIcon className="w-5 h-5" />
+              </div>
+            )}
+            <h1 className="text-2xl font-extrabold text-slate-900 dark:text-white tracking-tight">
+              {selectionMode ? 'Select Projects to Group' : isFaculty ? 'All Assigned Projects' : 'Project Portfolio'}
+            </h1>
+          </div>
           <p className="mt-1 text-sm font-medium text-slate-500 dark:text-slate-400">
-            {selectionMode ? 'Choose existing projects to add to the selected group.' : 'Overview of all your academic project submissions.'}
+            {selectionMode ? 'Choose existing projects to add to the selected group.' : isFaculty ? 'All student projects assigned to you.' : 'Overview of all your academic project submissions.'}
           </p>
         </div>
         {!selectionMode ? (
-          <Link 
-            to="/projects/new" 
-            className="group relative overflow-hidden inline-flex items-center px-6 py-3 rounded-2xl shadow-[0_10px_25px_-5px_rgba(79,70,229,0.4)] text-sm font-black uppercase tracking-widest text-white bg-gradient-to-r from-indigo-600 via-indigo-500 to-blue-600 hover:shadow-[0_15px_30px_-5px_rgba(79,70,229,0.5)] hover:-translate-y-0.5 transition-all duration-300 shadow-md"
-          >
-            <div className="absolute inset-0 bg-white/20 translate-y-full group-hover:translate-y-0 transition-transform duration-300"></div>
-            <span className="relative flex items-center">
-              <PlusIcon className="-ml-1 mr-2 h-5 w-5" />
-              New Project
-            </span>
-          </Link>
+          !isFaculty && (
+            <Link 
+              to="/projects/new" 
+              className="group relative overflow-hidden inline-flex items-center px-6 py-3 rounded-2xl shadow-[0_10px_25px_-5px_rgba(79,70,229,0.4)] text-sm font-black uppercase tracking-widest text-white bg-gradient-to-r from-indigo-600 via-indigo-500 to-blue-600 hover:shadow-[0_15px_30px_-5px_rgba(79,70,229,0.5)] hover:-translate-y-0.5 transition-all duration-300 shadow-md"
+            >
+              <div className="absolute inset-0 bg-white/20 translate-y-full group-hover:translate-y-0 transition-transform duration-300"></div>
+              <span className="relative flex items-center">
+                <PlusIcon className="-ml-1 mr-2 h-5 w-5" />
+                New Project
+              </span>
+            </Link>
+          )
         ) : (
           <div className="flex gap-3">
             <button 
@@ -233,23 +247,25 @@ const ProjectsPage = () => {
                     </span>
                   </div>
 
-                  {/* Action Buttons Stack - Centered on Middle Right */}
-                  <div className="absolute right-5 top-1/2 -translate-y-1/2 flex flex-col gap-2 z-20 scale-90 opacity-0 group-hover:opacity-100 group-hover:scale-100 transition-all duration-300 pointer-events-auto">
-                    <button
-                      onClick={(e) => handleEditClick(e, p)}
-                      className="p-2.5 rounded-xl bg-white/80 dark:bg-slate-800/80 backdrop-blur-sm border border-slate-200 dark:border-slate-700 text-slate-400 dark:text-slate-500 hover:text-indigo-600 dark:hover:text-indigo-400 hover:border-indigo-500 hover:shadow-lg hover:shadow-indigo-500/20 active:scale-90 transition-all"
-                      title="Edit Project"
-                    >
-                      <PencilSquareIcon className="w-4 h-4" />
-                    </button>
-                    <button
-                      onClick={(e) => handleDeleteClick(e, p)}
-                      className="p-2.5 rounded-xl bg-white/80 dark:bg-slate-800/80 backdrop-blur-sm border border-slate-200 dark:border-slate-700 text-slate-400 dark:text-slate-500 hover:text-rose-600 dark:hover:text-rose-400 hover:border-rose-500 hover:shadow-lg hover:shadow-rose-500/20 active:scale-90 transition-all"
-                      title="Remove Project"
-                    >
-                      <TrashIcon className="w-4 h-4" />
-                    </button>
-                  </div>
+                  {/* Action Buttons Stack - only for students */}
+                  {!isFaculty && (
+                    <div className="absolute right-5 top-1/2 -translate-y-1/2 flex flex-col gap-2 z-20 scale-90 opacity-0 group-hover:opacity-100 group-hover:scale-100 transition-all duration-300 pointer-events-auto">
+                      <button
+                        onClick={(e) => handleEditClick(e, p)}
+                        className="p-2.5 rounded-xl bg-white/80 dark:bg-slate-800/80 backdrop-blur-sm border border-slate-200 dark:border-slate-700 text-slate-400 dark:text-slate-500 hover:text-indigo-600 dark:hover:text-indigo-400 hover:border-indigo-500 hover:shadow-lg hover:shadow-indigo-500/20 active:scale-90 transition-all"
+                        title="Edit Project"
+                      >
+                        <PencilSquareIcon className="w-4 h-4" />
+                      </button>
+                      <button
+                        onClick={(e) => handleDeleteClick(e, p)}
+                        className="p-2.5 rounded-xl bg-white/80 dark:bg-slate-800/80 backdrop-blur-sm border border-slate-200 dark:border-slate-700 text-slate-400 dark:text-slate-500 hover:text-rose-600 dark:hover:text-rose-400 hover:border-rose-500 hover:shadow-lg hover:shadow-rose-500/20 active:scale-90 transition-all"
+                        title="Remove Project"
+                      >
+                        <TrashIcon className="w-4 h-4" />
+                      </button>
+                    </div>
+                  )}
                 </div>
                               <h3 className="font-extrabold text-slate-900 dark:text-white text-lg leading-tight group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors">{p.title}</h3>
                 <div className="flex items-center gap-2 mt-1">

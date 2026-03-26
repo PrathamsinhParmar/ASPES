@@ -278,7 +278,10 @@ const ProjectUpload = () => {
   const prevStep = () => setStep(prev => prev - 1);
 
   if (processing) {
-    const overallPct = aiStatus === 'COMPLETED' ? 100 : Math.round(((currentStep / AI_STEPS.length) * 100) + (stepProgress / AI_STEPS.length));
+    const stepWeight = 100 / AI_STEPS.length;
+    const overallPct = aiStatus === 'COMPLETED'
+      ? 100
+      : Math.min(99, Math.round((currentStep * stepWeight) + (stepProgress / 100) * stepWeight));
     return (
       <div className="min-h-screen bg-slate-950 flex items-center justify-center p-6 relative overflow-hidden">
         <div className="absolute top-0 left-0 w-full h-full bg-[radial-gradient(circle_at_50%_50%,rgba(79,70,229,0.1),transparent_50%)]"></div>

@@ -91,15 +91,13 @@ function DashboardLayout() {
         }
       `}>
         {/* Logo Section */}
-        <div className="flex items-center justify-between px-5 py-6 border-b border-gray-100 dark:border-slate-800/50">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-blue-600 to-indigo-700 flex items-center justify-center shadow-lg shadow-blue-500/20">
-              <AcademicCapIcon className="w-6 h-6 text-white" />
-            </div>
-            <div>
-              <p className="text-sm font-black text-gray-900 dark:text-white tracking-tight leading-tight">ASPES KPGU</p>
-              <p className="text-[10px] font-bold text-gray-500 dark:text-slate-400 uppercase tracking-widest leading-none mt-0.5">AI Evaluation System</p>
-            </div>
+        <div className="flex items-center justify-between px-5 py-2 border-b border-gray-100 dark:border-slate-800/50">
+          <div className="flex items-center">
+            <img 
+              src="/ASPESDark.png" 
+              alt="ASPES Logo" 
+              className="h-10 sm:h-20 w-auto max-w-[210px] object-contain"
+            />
           </div>
           <button 
             onClick={toggleSidebar}

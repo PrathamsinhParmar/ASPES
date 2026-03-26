@@ -111,21 +111,28 @@ const AssignedProjectsPage = () => {
       </div>
 
       {/* Stats */}
-      <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         {[
-          { label: 'Total Assigned', value: stats.total, icon: FolderOpenIcon, color: 'blue' },
-          { label: 'Pending Review', value: stats.pending, icon: ClockIcon, color: 'amber' },
-          { label: 'Evaluated', value: stats.evaluated, icon: CheckCircleIcon, color: 'emerald' },
-          { label: 'Avg AI Score', value: stats.avgScore ?? '—', icon: SparklesIcon, color: 'indigo' },
-        ].map(({ label, value, icon: Icon, color }) => (
-          <div key={label} className="bg-white/80 dark:bg-slate-900/80 backdrop-blur-md rounded-2xl border border-slate-200 dark:border-slate-800 p-5 shadow-sm">
-            <div className="flex items-center gap-3 mb-3">
-              <div className={`w-9 h-9 rounded-xl flex items-center justify-center bg-${color}-50 dark:bg-${color}-900/20`}>
-                <Icon className={`w-5 h-5 text-${color}-500`} />
+          { label: 'Total Projects', value: stats.total, icon: FolderOpenIcon, color: 'blue' },
+          { label: 'Pending Review', value: stats.pending, icon: ClockIcon, color: 'amber', badge: '↑ Queue' },
+          { label: 'Successfully Scored', value: stats.evaluated, icon: CheckCircleIcon, color: 'emerald' },
+          { label: 'Global Average', value: stats.avgScore ?? '0', icon: SparklesIcon, color: 'indigo' },
+        ].map(({ label, value, icon: Icon, color, badge }) => (
+          <div key={label} className="group bg-white dark:bg-[#0F172A] rounded-2xl border border-slate-200 dark:border-slate-800/60 p-6 flex justify-between items-center shadow-sm hover:shadow-xl hover:shadow-indigo-500/5 hover:-translate-y-1 hover:border-indigo-200 dark:hover:border-indigo-500/30 transition-all duration-300 cursor-pointer">
+            <div>
+              <p className="text-sm font-semibold text-slate-500 dark:text-slate-400 mb-1 group-hover:text-slate-700 dark:group-hover:text-slate-300 transition-colors">{label}</p>
+              <div className="flex items-center gap-3">
+                <p className="text-3xl font-extrabold text-slate-900 dark:text-white">{value}</p>
+                {badge && (
+                  <span className="px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400 group-hover:bg-emerald-200 dark:group-hover:bg-emerald-900/50 transition-colors">
+                    {badge}
+                  </span>
+                )}
               </div>
-              <p className="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest">{label}</p>
             </div>
-            <p className="text-3xl font-black text-slate-900 dark:text-white">{value}</p>
+            <div className={`w-14 h-14 rounded-full flex items-center justify-center bg-${color}-50 dark:bg-${color}-900/20 group-hover:bg-${color}-100 dark:group-hover:bg-${color}-900/40 group-hover:scale-110 transition-all duration-300`}>
+              <Icon className={`w-6 h-6 text-${color}-500 dark:text-${color}-400 group-hover:text-${color}-600 dark:group-hover:text-${color}-300`} />
+            </div>
           </div>
         ))}
       </div>
@@ -151,7 +158,7 @@ const AssignedProjectsPage = () => {
               <thead className="bg-slate-50/50 dark:bg-slate-800/50">
                 <tr>
                   {['#', 'Project', 'Language', 'Team', 'Submitted', 'Status', 'AI Score', 'Actions'].map(h => (
-                    <th key={h} className="px-5 py-3.5 text-left text-[10px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-widest whitespace-nowrap">
+                    <th key={h} className="px-4 py-4 text-left text-xs font-black text-slate-400 dark:text-slate-500 uppercase tracking-widest whitespace-nowrap">
                       {h}
                     </th>
                   ))}
@@ -160,36 +167,36 @@ const AssignedProjectsPage = () => {
               <tbody className="bg-white dark:bg-slate-900 divide-y divide-slate-50 dark:divide-slate-800">
                 {filtered.map((project, index) => (
                   <tr key={project.id} className="hover:bg-indigo-50/30 dark:hover:bg-indigo-900/5 transition-colors group">
-                    <td className="px-5 py-4 text-sm font-semibold text-slate-400 dark:text-slate-500">{index + 1}</td>
-                    <td className="px-5 py-4">
-                      <p className="text-sm font-bold text-slate-900 dark:text-white leading-tight truncate max-w-[200px]">{project.title}</p>
+                    <td className="px-4 py-4 text-base font-semibold text-slate-400 dark:text-slate-500">{index + 1}</td>
+                    <td className="px-4 py-4">
+                      <p className="text-base font-bold text-slate-900 dark:text-white leading-tight truncate max-w-[200px]">{project.title}</p>
                     </td>
-                    <td className="px-5 py-4">
-                      <span className="text-xs font-semibold text-slate-500 dark:text-slate-400 capitalize">{project.course_name || '—'}</span>
+                    <td className="px-4 py-4">
+                      <span className="text-sm font-semibold text-slate-500 dark:text-slate-400 capitalize">{project.course_name || '—'}</span>
                     </td>
-                    <td className="px-5 py-4">
-                      <span className="text-xs font-semibold text-slate-500 dark:text-slate-400">{project.team_name || '—'}</span>
+                    <td className="px-4 py-4">
+                      <span className="text-sm font-semibold text-slate-500 dark:text-slate-400">{project.team_name || '—'}</span>
                     </td>
-                    <td className="px-5 py-4 whitespace-nowrap">
-                      <span className="text-xs font-medium text-slate-500 dark:text-slate-400">
+                    <td className="px-4 py-4 whitespace-nowrap">
+                      <span className="text-sm font-medium text-slate-500 dark:text-slate-400">
                         {project.created_at ? format(new Date(project.created_at), 'MMM dd, yyyy') : '—'}
                       </span>
                     </td>
-                    <td className="px-5 py-4">
-                      <span className={`px-2.5 py-1 inline-flex text-[10px] leading-4 font-bold rounded-md ${statusColorMap[project.status?.toLowerCase()] || statusColorMap.draft}`}>
+                    <td className="px-4 py-4">
+                      <span className={`px-2.5 py-1 inline-flex text-xs leading-4 font-bold rounded-md ${statusColorMap[project.status?.toLowerCase()] || statusColorMap.draft}`}>
                         {(project.status || 'draft').replace('_', ' ').toUpperCase()}
                       </span>
                     </td>
-                    <td className="px-5 py-4 whitespace-nowrap">
+                    <td className="px-4 py-4 whitespace-nowrap">
                       {project.total_score != null ? (
-                        <span className={`text-sm font-extrabold ${project.total_score >= 80 ? 'text-emerald-600 dark:text-emerald-400' : project.total_score >= 60 ? 'text-amber-600 dark:text-amber-400' : 'text-rose-600 dark:text-rose-400'}`}>
-                          {Number(project.total_score).toFixed(1)} <span className="text-xs text-slate-400 font-medium">/ 100</span>
+                        <span className={`text-base font-extrabold ${project.total_score >= 80 ? 'text-emerald-600 dark:text-emerald-400' : project.total_score >= 60 ? 'text-amber-600 dark:text-amber-400' : 'text-rose-600 dark:text-rose-400'}`}>
+                          {Number(project.total_score).toFixed(1)} <span className="text-sm text-slate-400 font-medium">/ 100</span>
                         </span>
                       ) : (
-                        <span className="text-sm text-slate-300 dark:text-slate-600 font-bold">—</span>
+                        <span className="text-base text-slate-300 dark:text-slate-600 font-bold">—</span>
                       )}
                     </td>
-                    <td className="px-5 py-4 whitespace-nowrap">
+                    <td className="px-4 py-4 whitespace-nowrap">
                       <div className="flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
                         <button
                           onClick={() => navigate(`/projects/${project.id}`)}

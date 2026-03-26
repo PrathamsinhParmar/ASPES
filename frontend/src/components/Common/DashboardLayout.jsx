@@ -93,10 +93,17 @@ function DashboardLayout() {
         {/* Logo Section */}
         <div className="flex items-center justify-between px-5 py-2 border-b border-gray-100 dark:border-slate-800/50">
           <div className="flex items-center">
+            {/* Light Mode Logo (Visible when not in dark mode) */}
+            <img 
+              src="/ASPESLight.png" 
+              alt="ASPES Light" 
+              className="h-10 sm:h-20 w-auto max-w-[210px] object-contain block dark:hidden"
+            />
+            {/* Dark Mode Logo (Visible only in dark mode) */}
             <img 
               src="/ASPESDark.png" 
-              alt="ASPES Logo" 
-              className="h-10 sm:h-20 w-auto max-w-[210px] object-contain"
+              alt="ASPES Dark" 
+              className="h-10 sm:h-20 w-auto max-w-[202px] object-contain hidden dark:block"
             />
           </div>
           <button 

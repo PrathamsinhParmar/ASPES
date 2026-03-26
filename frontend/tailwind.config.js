@@ -84,9 +84,9 @@ module.exports = {
       // Typography
       // ------------------------------------------------------------------
       fontFamily: {
-        sans:  ["Google Sans Flex", "system-ui", "sans-serif"],
+        sans:  ["Figtree", "system-ui", "sans-serif"],
         mono:  ["JetBrains Mono", "Fira Code", "monospace"],
-        serif: ["Merriweather", "Georgia", "serif"],
+        serif: ["Figtree", "system-ui", "sans-serif"],
       },
       fontSize: {
         "2xs": ["0.625rem", { lineHeight: "1rem" }],

@@ -33,6 +33,7 @@ class ProjectResponse(BaseModel):
     report_file_path: Optional[str]
     owner_id: uuid.UUID
     group_id: Optional[uuid.UUID] = None
+    faculty_id: Optional[uuid.UUID] = None
     course_name: Optional[str]
     batch_year: Optional[str]
     team_name: Optional[str] = None

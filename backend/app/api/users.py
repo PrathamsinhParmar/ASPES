@@ -59,6 +59,28 @@ async def change_password(
     await db.commit()
 
 
+# NOTE: /faculty must be registered BEFORE the generic /{user_id} wildcard route
+# and also before the role-restricted GET / list to ensure correct FastAPI routing.
+@router.get("/faculty", response_model=List[UserResponse])
+async def list_faculty(
+    skip: int = 0,
+    limit: int = 100,
+    current_user: User = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db),
+):
+    """
+    List all faculty (professor) accounts.
+    Accessible by ALL authenticated users (students need this to pick a supervisor).
+    """
+    result = await db.execute(
+        select(User)
+        .where(User.role == UserRole.PROFESSOR)
+        .offset(skip)
+        .limit(limit)
+    )
+    return result.scalars().all()
+
+
 @router.get("/", response_model=List[UserResponse])
 async def list_users(
     skip: int = 0,
@@ -70,28 +92,6 @@ async def list_users(
     if current_user.role not in [UserRole.ADMIN, UserRole.PROFESSOR]:
         raise HTTPException(status_code=403, detail="Insufficient permissions")
     result = await db.execute(select(User).offset(skip).limit(limit))
-    return result.scalars().all()
-
-
-@router.get("/faculty", response_model=List[UserResponse])
-async def list_faculty(
-    skip: int = 0,
-    limit: int = 100,
-    current_user: User = Depends(get_current_user),
-    db: AsyncSession = Depends(get_db),
-):
-    """
-    List all faculty (professor) accounts.
-    Accessible by Admin only.
-    """
-    if current_user.role != UserRole.ADMIN:
-        raise HTTPException(status_code=403, detail="Admin access required")
-    result = await db.execute(
-        select(User)
-        .where(User.role == UserRole.PROFESSOR)
-        .offset(skip)
-        .limit(limit)
-    )
     return result.scalars().all()
 
 

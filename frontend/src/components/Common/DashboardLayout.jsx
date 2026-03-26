@@ -14,7 +14,8 @@ import {
   ArrowRightOnRectangleIcon,
   ClipboardDocumentCheckIcon,
   ServerIcon,
-  UserGroupIcon
+  UserGroupIcon,
+  InboxArrowDownIcon
 } from '@heroicons/react/24/outline';
 
 const API_BASE_URL = api.defaults.baseURL?.replace('/api/v1', '') || 'http://localhost:8000';
@@ -35,6 +36,7 @@ const getNavItems = (role) => {
     return [
       { path: '/dashboard', label: 'Review Portal', icon: ClipboardDocumentCheckIcon },
       { path: '/projects', label: 'All Projects', icon: FolderIcon },
+      { path: '/assigned', label: 'Assigned Projects', icon: InboxArrowDownIcon },
       { path: '/groups', label: 'Groups', icon: UserGroupIcon },
       ...common
     ];

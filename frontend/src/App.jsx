@@ -26,6 +26,7 @@ const NotFoundPage   = lazy(() => import('./pages/NotFoundPage'));
 const FacultyListPage = lazy(() => import('./pages/FacultyListPage'));
 const FacultyDashboardViewPage = lazy(() => import('./pages/FacultyDashboardViewPage'));
 const GroupsPage = lazy(() => import('./pages/GroupsPage'));
+const AssignedProjectsPage = lazy(() => import('./pages/AssignedProjectsPage'));
 
 // AI Layer Pages (lazy-loaded)
 const AICodeDetectorPage    = lazy(() => import('./pages/ai-layers/AICodeDetectorPage'));
@@ -75,6 +76,7 @@ function App() {
               <Route path="faculty/:facultyId/dashboard" element={<FacultyDashboardViewPage />} />
               
               <Route path="groups" element={<GroupsPage />} />
+              <Route path="assigned" element={<AssignedProjectsPage />} />
 
               {/* Evaluation Overview */}
               <Route path="evaluations/:id"    element={<EvaluationPage />} />

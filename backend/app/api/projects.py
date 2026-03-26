@@ -30,6 +30,7 @@ async def upload_project(
     team_name: Optional[str] = Form(None),
     team_members: Optional[str] = Form(None),  # JSON string: [{name, enrollment}]
     group_id: Optional[str] = Form(None),       # UUID string
+    faculty_id: Optional[str] = Form(None),     # UUID string — chosen by student
     code_file: UploadFile = File(...),
     doc_file: UploadFile = File(...),
     current_user: User = Depends(get_current_user),
@@ -65,6 +66,7 @@ async def upload_project(
         team_name=team_name or None,
         team_members=team_members or None,
         group_id=uuid.UUID(group_id) if group_id else None,
+        faculty_id=uuid.UUID(faculty_id) if faculty_id else None,
     )
     
     db.add(new_project)
@@ -185,6 +187,42 @@ async def get_my_projects(
     result = await db.execute(stmt)
     projects = result.scalars().all()
     
+    return [
+        {
+            "id": p.id,
+            "title": p.title,
+            "status": p.status,
+            "course_name": p.course_name,
+            "batch_year": p.batch_year,
+            "team_name": p.team_name,
+            "created_at": p.created_at,
+            "has_evaluation": p.evaluation is not None,
+            "total_score": p.evaluation.total_score if p.evaluation else None
+        } for p in projects
+    ]
+
+
+@router.get("/assigned", response_model=List[ProjectListResponse])
+async def get_assigned_projects(
+    skip: int = Query(0, ge=0),
+    limit: int = Query(50, ge=1, le=100),
+    current_user: User = Depends(require_role(UserRole.PROFESSOR, UserRole.ADMIN)),
+    db: AsyncSession = Depends(get_db)
+):
+    """
+    Get all projects assigned to this faculty member by students.
+    """
+    stmt = (
+        select(Project)
+        .options(selectinload(Project.evaluation))
+        .where(Project.faculty_id == current_user.id)
+        .order_by(desc(Project.created_at))
+        .offset(skip)
+        .limit(limit)
+    )
+    result = await db.execute(stmt)
+    projects = result.scalars().all()
+
     return [
         {
             "id": p.id,

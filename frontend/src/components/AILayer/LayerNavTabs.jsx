@@ -26,25 +26,11 @@ const LAYERS = [
     color: 'blue',
   },
   {
-    segment: 'scorer',
-    label: 'Comprehensive Scorer',
-    shortLabel: 'Scorer',
-    icon: ChartBarSquareIcon,
-    color: 'indigo',
-  },
-  {
     segment: 'doc-evaluator',
     label: 'Doc Evaluator',
     shortLabel: 'Docs',
     icon: DocumentTextIcon,
     color: 'emerald',
-  },
-  {
-    segment: 'feedback',
-    label: 'Feedback Generator',
-    shortLabel: 'Feedback',
-    icon: ChatBubbleLeftRightIcon,
-    color: 'amber',
   },
   {
     segment: 'plagiarism',
@@ -59,6 +45,20 @@ const LAYERS = [
     shortLabel: 'Alignment',
     icon: LinkIcon,
     color: 'cyan',
+  },
+  {
+    segment: 'scorer',
+    label: 'Comprehensive Scorer',
+    shortLabel: 'Scorer',
+    icon: ChartBarSquareIcon,
+    color: 'indigo',
+  },
+  {
+    segment: 'feedback',
+    label: 'Feedback Generator',
+    shortLabel: 'Feedback',
+    icon: ChatBubbleLeftRightIcon,
+    color: 'amber',
   },
 ];
 

@@ -135,17 +135,17 @@ const StudentDashboard = () => {
       <div className="bg-white/70 dark:bg-slate-900/70 backdrop-blur-md rounded-2xl shadow-sm border border-slate-200 dark:border-slate-800 p-6 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 z-10">
         <div>
           <h1 className="text-2xl font-extrabold text-slate-900 dark:text-white tracking-tight flex items-center gap-2">
-            Welcome back, {user?.full_name?.split(' ')[0] || 'Student'}! <span className="animate-pulse-slow">👋</span>
+            {`${user?.full_name?.split(' ')[0] || 'Student'}'s Dashboard`}
           </h1>
-          <p className="mt-1.5 text-sm font-medium text-slate-500 dark:text-slate-400">Track your project evaluations and feedback below.</p>
+          <p className="mt-1.5 text-sm font-medium text-slate-500 dark:text-slate-400">Monitor your project evaluations and performance insights.</p>
         </div>
         <Link 
           to="/projects/new" 
-          className="group relative overflow-hidden inline-flex items-center px-6 py-3 rounded-2xl shadow-[0_10px_25px_-5px_rgba(79,70,229,0.4)] text-sm font-black uppercase tracking-widest text-white bg-gradient-to-r from-indigo-600 via-indigo-500 to-blue-600 hover:shadow-[0_15px_30px_-5px_rgba(79,70,229,0.5)] hover:-translate-y-0.5 transition-all duration-300"
+          className="group relative overflow-hidden inline-flex items-center px-8 py-3.5 rounded-2xl shadow-xl shadow-indigo-500/20 text-sm font-bold uppercase tracking-wider text-white bg-gradient-to-r from-indigo-600 to-indigo-500 hover:from-indigo-700 hover:to-indigo-600 hover:shadow-indigo-500/40 hover:-translate-y-0.5 transition-all duration-300 border border-indigo-400/20"
         >
-          <div className="absolute inset-0 bg-white/20 translate-y-full group-hover:translate-y-0 transition-transform duration-300"></div>
+          <div className="absolute inset-0 bg-white/10 translate-y-full group-hover:translate-y-0 transition-transform duration-500"></div>
           <span className="relative flex items-center">
-            <ArrowUpOnSquareIcon className="-ml-1 mr-2 h-5 w-5" />
+            <ArrowUpOnSquareIcon className="-ml-1 mr-2 h-5 w-5 stroke-[2.5px]" />
             New Project
           </span>
         </Link>
@@ -189,12 +189,19 @@ const StudentDashboard = () => {
         </div>
 
         {projects.length === 0 ? (
-          <div className="p-12 pl-12 pr-12 text-center text-slate-500 bg-slate-50/50">
-            <div className="mx-auto w-16 h-16 bg-white shadow-sm rounded-full flex items-center justify-center mb-4">
-               <FolderIcon className="h-8 w-8 text-slate-300" />
+          <div className="p-20 text-center bg-slate-50/20 dark:bg-slate-900/10 backdrop-blur-sm border-t border-slate-100 dark:border-slate-800/50">
+            <div className="inline-flex items-center justify-center w-24 h-24 rounded-[2rem] bg-white dark:bg-slate-800 shadow-2xl shadow-indigo-500/10 border border-slate-100 dark:border-slate-800 mb-8 transform hover:rotate-12 transition-all duration-500">
+               <FolderIcon className="h-12 w-12 text-indigo-500/50 dark:text-indigo-400/40" />
             </div>
-            <p className="text-base font-bold text-slate-700">No active projects.</p>
-            <p className="text-sm mt-1 text-slate-500">Upload your very first project to get going!</p>
+            <h4 className="text-2xl font-black text-slate-900 dark:text-white tracking-tight">No active projects yet</h4>
+            <p className="text-sm mt-3 text-slate-500 dark:text-slate-400 font-medium max-w-[280px] mx-auto leading-relaxed">
+              Your dashboard is ready and waiting. Upload your first project to begin the AI evaluation process.
+            </p>
+            <div className="mt-10">
+              <Link to="/projects/new" className="px-8 py-3.5 rounded-2xl bg-gradient-to-r from-indigo-600 to-indigo-500 hover:from-indigo-700 hover:to-indigo-600 text-white text-[13px] font-bold uppercase tracking-wider shadow-xl shadow-indigo-500/20 hover:shadow-indigo-500/40 hover:-translate-y-0.5 transition-all duration-300 inline-block border border-indigo-400/20">
+                Initialize Project
+              </Link>
+            </div>
           </div>
         ) : (
           <div className="overflow-x-auto">

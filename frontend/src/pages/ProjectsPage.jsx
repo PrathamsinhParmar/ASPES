@@ -175,11 +175,11 @@ const ProjectsPage = () => {
           !isFaculty && (
             <Link 
               to="/projects/new" 
-              className="group relative overflow-hidden inline-flex items-center px-6 py-3 rounded-2xl shadow-[0_10px_25px_-5px_rgba(79,70,229,0.4)] text-sm font-black uppercase tracking-widest text-white bg-gradient-to-r from-indigo-600 via-indigo-500 to-blue-600 hover:shadow-[0_15px_30px_-5px_rgba(79,70,229,0.5)] hover:-translate-y-0.5 transition-all duration-300 shadow-md"
+              className="group relative overflow-hidden inline-flex items-center px-8 py-3.5 rounded-2xl shadow-xl shadow-indigo-500/20 text-sm font-bold uppercase tracking-wider text-white bg-gradient-to-r from-indigo-600 to-indigo-500 hover:from-indigo-700 hover:to-indigo-600 hover:shadow-indigo-500/40 hover:-translate-y-0.5 transition-all duration-300 border border-indigo-400/20"
             >
-              <div className="absolute inset-0 bg-white/20 translate-y-full group-hover:translate-y-0 transition-transform duration-300"></div>
+              <div className="absolute inset-0 bg-white/10 translate-y-full group-hover:translate-y-0 transition-transform duration-500"></div>
               <span className="relative flex items-center">
-                <PlusIcon className="-ml-1 mr-2 h-5 w-5" />
+                <PlusIcon className="-ml-1 mr-2 h-5 w-5 stroke-[2.5px]" />
                 New Project
               </span>
             </Link>
@@ -213,7 +213,7 @@ const ProjectsPage = () => {
            <FolderIcon className="w-16 h-16 text-slate-200 dark:text-slate-800 mx-auto mb-4 group-hover:scale-110 group-hover:text-indigo-200 dark:group-hover:text-indigo-900 transition-all duration-500" />
            <p className="text-lg font-bold text-slate-700 dark:text-slate-300">No projects archived yet.</p>
            <p className="text-sm mt-1 text-slate-500 dark:text-slate-500">Launch your first academic project to begin AI evaluation.</p>
-           <Link to="/projects/new" className="mt-6 inline-flex items-center px-4 py-2 text-sm font-bold text-indigo-600 dark:text-indigo-400 bg-indigo-50 dark:bg-indigo-900/20 rounded-xl hover:bg-indigo-100 dark:hover:bg-indigo-900/40 transition-colors">
+           <Link to="/projects/new" className="mt-8 inline-flex items-center px-8 py-3.5 rounded-2xl bg-gradient-to-r from-indigo-600 to-indigo-500 hover:from-indigo-700 hover:to-indigo-600 text-white text-[13px] font-bold uppercase tracking-wider shadow-xl shadow-indigo-500/20 hover:shadow-indigo-500/40 hover:-translate-y-0.5 transition-all duration-300 border border-indigo-400/20">
              Create Project
            </Link>
         </div>

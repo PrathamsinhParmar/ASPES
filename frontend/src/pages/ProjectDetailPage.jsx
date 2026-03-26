@@ -259,8 +259,9 @@ const ProjectDetailPage = () => {
                  </div>
                  <h3 className="text-xl font-black text-slate-900 dark:text-red-400 mb-2 tracking-tight">Analysis Failed</h3>
                  <p className="text-sm text-slate-500 dark:text-red-300/60 mb-8 max-w-[200px]">The AI engine encountered an obstacle parsing this submission.</p>
-                 <Link to="/projects/new" className="w-full py-4 bg-red-600 text-white font-extrabold rounded-2xl hover:bg-red-700 transition-all shadow-lg shadow-red-500/20">
-                   Restart Analysis
+                 <Link to="/projects/new" className="group relative overflow-hidden flex items-center justify-center w-full py-4 rounded-2xl shadow-xl shadow-red-500/20 text-sm font-bold uppercase tracking-wider text-white bg-gradient-to-r from-red-600 to-rose-600 hover:from-red-700 hover:to-rose-700 hover:shadow-red-500/40 hover:-translate-y-0.5 transition-all duration-300 border border-red-400/20">
+                   <div className="absolute inset-0 bg-white/10 translate-y-full group-hover:translate-y-0 transition-transform duration-500"></div>
+                   <span className="relative">Restart Analysis</span>
                  </Link>
               </div>
            ) : (

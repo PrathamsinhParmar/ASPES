@@ -136,10 +136,13 @@ const GroupsPage = () => {
         {!selectedGroup && (
           <button 
             onClick={() => setShowCreateModal(true)}
-            className="group relative overflow-hidden inline-flex items-center px-6 py-3 rounded-2xl shadow-[0_5px_15px_-5px_rgba(79,70,229,0.4)] text-sm font-black uppercase tracking-widest text-white bg-indigo-600 hover:shadow-[0_10px_20px_-5px_rgba(79,70,229,0.5)] transition-all duration-300 shadow-md"
+            className="group relative overflow-hidden inline-flex items-center px-8 py-3.5 rounded-2xl shadow-xl shadow-indigo-500/20 text-sm font-bold uppercase tracking-wider text-white bg-gradient-to-r from-indigo-600 to-indigo-500 hover:from-indigo-700 hover:to-indigo-600 hover:shadow-indigo-500/40 hover:-translate-y-0.5 transition-all duration-300 border border-indigo-400/20"
           >
-            <PlusIcon className="-ml-1 mr-2 h-5 w-5" />
-            Create Group
+            <div className="absolute inset-0 bg-white/10 translate-y-full group-hover:translate-y-0 transition-transform duration-500"></div>
+            <span className="relative flex items-center">
+              <PlusIcon className="-ml-1 mr-2 h-5 w-5 stroke-[2.5px]" />
+              Create Group
+            </span>
           </button>
         )}
         {selectedGroup && (
@@ -274,8 +277,8 @@ const GroupsPage = () => {
                   <DocumentPlusIcon className="w-6 h-6" />
                 </div>
                 <div className="text-left">
-                  <p className="font-bold text-slate-900 dark:text-white">New Project</p>
-                  <p className="text-xs text-slate-500">Create and upload a brand new active project</p>
+                  <p className="font-bold text-slate-900 dark:text-white text-base">New Project</p>
+                  <p className="text-xs text-slate-500 dark:text-slate-400 font-medium">Create and upload a brand new active project</p>
                 </div>
               </button>
 

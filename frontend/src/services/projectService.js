@@ -6,8 +6,11 @@ export const projectService = {
     return response.data;
   },
 
-  getAssignedProjects: async (skip = 0, limit = 50) => {
-    const response = await api.get(`/projects/assigned?skip=${skip}&limit=${limit}`);
+  getAssignedProjects: async (skip = 0, limit = 50, facultyId = null) => {
+    const url = facultyId 
+      ? `/projects/assigned?skip=${skip}&limit=${limit}&faculty_id=${facultyId}`
+      : `/projects/assigned?skip=${skip}&limit=${limit}`;
+    const response = await api.get(url);
     return response.data;
   },
 

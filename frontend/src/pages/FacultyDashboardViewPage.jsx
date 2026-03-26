@@ -2,10 +2,11 @@ import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import api from '../services/api';
-import { evaluationService } from '../services/evaluationService';
+import { projectService } from '../services/projectService';
 import {
   ArrowLeftIcon,
   AcademicCapIcon,
+  FolderIcon,
   ClipboardDocumentCheckIcon,
   ClockIcon,
   CheckBadgeIcon,
@@ -13,6 +14,7 @@ import {
   UserIcon,
   EnvelopeIcon,
   EyeIcon,
+  ChartBarIcon,
 } from '@heroicons/react/24/outline';
 import { format } from 'date-fns';
 
@@ -24,7 +26,7 @@ const FacultyDashboardViewPage = () => {
   const { user } = useAuth();
 
   const [faculty, setFaculty] = useState(null);
-  const [pendingEvaluations, setPendingEvaluations] = useState([]);
+  const [assignedProjects, setAssignedProjects] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
 
@@ -40,12 +42,12 @@ const FacultyDashboardViewPage = () => {
       try {
         setLoading(true);
         setError('');
-        const [facultyRes, evalRes] = await Promise.all([
+        const [facultyRes, projectRes] = await Promise.all([
           api.get(`/users/${facultyId}`),
-          evaluationService.getPendingEvaluations(0, 50, facultyId),
+          projectService.getAssignedProjects(0, 100, facultyId),
         ]);
         setFaculty(facultyRes.data);
-        setPendingEvaluations(evalRes);
+        setAssignedProjects(projectRes);
       } catch (err) {
         setError('Failed to load faculty data. Make sure this is a valid faculty account.');
       } finally {
@@ -56,17 +58,12 @@ const FacultyDashboardViewPage = () => {
   }, [facultyId]);
 
   const stats = {
-    pending: pendingEvaluations.length,
-    highRisk: pendingEvaluations.filter(
-      (e) => e.plagiarism_detected || e.ai_code_detected
-    ).length,
-    avgScore:
-      pendingEvaluations.length > 0
-        ? Math.round(
-            pendingEvaluations.reduce((s, e) => s + (e.total_score || 0), 0) /
-              pendingEvaluations.length
-          )
-        : 0,
+    total: assignedProjects.length,
+    pending: assignedProjects.filter(p => (p.status || '').toLowerCase() !== 'evaluated' && (p.status || '').toLowerCase() !== 'published').length,
+    evaluated: assignedProjects.filter(p => (p.status || '').toLowerCase() === 'evaluated' || (p.status || '').toLowerCase() === 'published').length,
+    avgScore: assignedProjects.length > 0 
+      ? Math.round(assignedProjects.reduce((acc, curr) => acc + (curr.total_score || 0), 0) / assignedProjects.length) 
+      : 0
   };
 
   if (loading) {
@@ -160,65 +157,87 @@ const FacultyDashboardViewPage = () => {
         </div>
       </div>
 
-      {/* Stats */}
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-        {/* Pending Reviews */}
-        <div className="bg-white dark:bg-slate-900 border border-gray-100 dark:border-slate-800 rounded-2xl p-5 shadow-sm">
-          <div className="flex items-center gap-3 mb-3">
-            <div className="w-10 h-10 rounded-xl bg-indigo-50 dark:bg-indigo-900/20 flex items-center justify-center">
-              <ClipboardDocumentCheckIcon className="w-5 h-5 text-indigo-500" />
+      {/* Stats Cards - Modern Horizontal Layout */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        {/* Total Assigned */}
+        <div className="bg-white dark:bg-slate-900 rounded-3xl p-6 border border-slate-100 dark:border-slate-800 shadow-sm hover:shadow-xl hover:shadow-indigo-500/5 transition-all group relative overflow-hidden">
+          <div className="flex justify-between items-start">
+            <div>
+              <p className="text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider mb-1.5">Total Assigned</p>
+              <h3 className="text-3xl font-extrabold text-slate-900 dark:text-white leading-none">{stats.total}</h3>
             </div>
-            <p className="text-sm font-medium text-gray-500 dark:text-slate-400">Pending Reviews</p>
+            <div className="h-12 w-12 rounded-2xl bg-indigo-50 dark:bg-indigo-900/40 flex items-center justify-center text-indigo-600 dark:text-indigo-400 group-hover:scale-110 transition-transform">
+              <FolderIcon className="w-6 h-6" />
+            </div>
           </div>
-          <p className="text-3xl font-bold text-gray-900 dark:text-white">{stats.pending}</p>
         </div>
-        {/* High Risk */}
-        <div className="bg-white dark:bg-slate-900 border border-gray-100 dark:border-slate-800 rounded-2xl p-5 shadow-sm">
-          <div className="flex items-center gap-3 mb-3">
-            <div className="w-10 h-10 rounded-xl bg-red-50 dark:bg-red-900/20 flex items-center justify-center">
-              <ExclamationCircleIcon className="w-5 h-5 text-red-500" />
+
+        {/* Pending Review */}
+        <div className="bg-white dark:bg-slate-900 rounded-3xl p-6 border border-slate-100 dark:border-slate-800 shadow-sm hover:shadow-xl hover:shadow-amber-500/5 transition-all group relative overflow-hidden">
+          <div className="flex justify-between items-start">
+            <div>
+              <p className="text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider mb-1.5">Pending Review</p>
+              <h3 className="text-3xl font-extrabold text-slate-900 dark:text-white leading-none">{stats.pending}</h3>
             </div>
-            <p className="text-sm font-medium text-gray-500 dark:text-slate-400">High Risk Items</p>
+            <div className="h-12 w-12 rounded-2xl bg-amber-50 dark:bg-amber-900/40 flex items-center justify-center text-amber-600 dark:text-amber-400 group-hover:scale-110 transition-transform">
+              <ClockIcon className="w-6 h-6" />
+            </div>
           </div>
-          <p className="text-3xl font-bold text-gray-900 dark:text-white">{stats.highRisk}</p>
         </div>
-        {/* Avg Score */}
-        <div className="bg-white dark:bg-slate-900 border border-gray-100 dark:border-slate-800 rounded-2xl p-5 shadow-sm">
-          <div className="flex items-center gap-3 mb-3">
-            <div className="w-10 h-10 rounded-xl bg-emerald-50 dark:bg-emerald-900/20 flex items-center justify-center">
-              <CheckBadgeIcon className="w-5 h-5 text-emerald-500" />
+
+        {/* Evaluated */}
+        <div className="bg-white dark:bg-slate-900 rounded-3xl p-6 border border-slate-100 dark:border-slate-800 shadow-sm hover:shadow-xl hover:shadow-emerald-500/5 transition-all group relative overflow-hidden">
+          <div className="flex justify-between items-start">
+            <div>
+              <p className="text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider mb-1.5">Evaluated</p>
+              <h3 className="text-3xl font-extrabold text-slate-900 dark:text-white leading-none">{stats.evaluated}</h3>
             </div>
-            <p className="text-sm font-medium text-gray-500 dark:text-slate-400">Avg Projected Score</p>
+            <div className="h-12 w-12 rounded-2xl bg-emerald-50 dark:bg-emerald-900/40 flex items-center justify-center text-emerald-600 dark:text-emerald-400 group-hover:scale-110 transition-transform">
+              <CheckBadgeIcon className="w-6 h-6" />
+            </div>
           </div>
-          <p className="text-3xl font-bold text-gray-900 dark:text-white">{stats.avgScore}</p>
+        </div>
+
+        {/* Avg AI Score */}
+        <div className="bg-indigo-600 rounded-3xl p-6 shadow-xl shadow-indigo-500/20 group relative overflow-hidden">
+          <div className="absolute -top-6 -right-6 w-24 h-24 bg-white opacity-5 rounded-full group-hover:scale-150 transition-transform duration-700"></div>
+          <div className="flex justify-between items-start relative z-10">
+            <div>
+              <p className="text-[10px] font-bold text-indigo-100/70 uppercase tracking-wider mb-1.5">Avg AI Score</p>
+              <h3 className="text-3xl font-extrabold text-white leading-none">{stats.avgScore}<span className="text-sm font-bold opacity-50 ml-1">/100</span></h3>
+            </div>
+            <div className="h-12 w-12 rounded-2xl bg-white/10 backdrop-blur-md flex items-center justify-center text-white group-hover:rotate-12 transition-transform">
+              <ChartBarIcon className="w-6 h-6" />
+            </div>
+          </div>
         </div>
       </div>
 
-      {/* Pending Evaluations — Read-only Table */}
+      {/* Assigned Projects — Read-only Table */}
       <div className="bg-white dark:bg-slate-900 shadow-sm rounded-2xl overflow-hidden border border-gray-100 dark:border-slate-800">
         <div className="px-6 py-4 border-b border-gray-100 dark:border-slate-800 flex items-center gap-2">
-          <ClockIcon className="h-5 w-5 text-indigo-500" />
+          <ClipboardDocumentCheckIcon className="h-5 w-5 text-indigo-500" />
           <h3 className="text-base font-semibold text-gray-900 dark:text-gray-100">
-            System Pending Evaluations Queue
+            Assigned Student Projects
           </h3>
-          <span className="ml-auto text-xs text-gray-400 italic">Read-only</span>
+          <span className="ml-auto text-xs text-slate-400 font-bold bg-slate-100 dark:bg-slate-800 px-2 py-0.5 rounded-full italic">Read-only View</span>
         </div>
 
-        {pendingEvaluations.length === 0 ? (
+        {assignedProjects.length === 0 ? (
           <div className="p-12 text-center">
-            <CheckBadgeIcon className="mx-auto h-12 w-12 text-gray-300 dark:text-slate-700 mb-3" />
-            <p className="text-base font-medium text-gray-900 dark:text-white">No pending evaluations</p>
-            <p className="text-sm text-gray-400 mt-1">The queue is clear.</p>
+            <FolderIcon className="mx-auto h-12 w-12 text-gray-300 dark:text-slate-700 mb-3" />
+            <p className="text-base font-medium text-gray-900 dark:text-white">No projects assigned</p>
+            <p className="text-sm text-gray-400 mt-1">This faculty member has not been assigned any student projects yet.</p>
           </div>
         ) : (
           <div className="overflow-x-auto">
             <table className="min-w-full divide-y divide-gray-100 dark:divide-slate-800">
-              <thead className="bg-gray-50 dark:bg-slate-800/40">
+              <thead className="bg-gray-50/50 dark:bg-slate-800/50">
                 <tr>
-                  {['Project', 'Date Analyzed', 'AI Score', 'Flags'].map((h) => (
+                  {['Count', 'Project', 'Language', 'Team', 'Date', 'Status', 'AI Score'].map((h) => (
                     <th
                       key={h}
-                      className="px-6 py-3 text-left text-xs font-semibold text-gray-500 dark:text-slate-400 uppercase tracking-wider"
+                      className="px-4 py-4 text-left text-xs font-black text-slate-400 dark:text-slate-500 uppercase tracking-wider whitespace-nowrap"
                     >
                       {h}
                     </th>
@@ -226,50 +245,52 @@ const FacultyDashboardViewPage = () => {
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-100 dark:divide-slate-800">
-                {pendingEvaluations.map((evaluation) => (
-                  <tr key={evaluation.id} className="hover:bg-indigo-50/30 dark:hover:bg-indigo-900/5 transition-colors">
-                    <td className="px-6 py-4">
-                      <div className="text-sm font-medium text-gray-900 dark:text-gray-100">
-                        {evaluation.project?.title || 'Unknown Project'}
+                {assignedProjects.map((project, index) => (
+                  <tr key={project.id} className="hover:bg-indigo-50/30 dark:hover:bg-indigo-900/5 transition-colors group">
+                    <td className="px-4 py-4 text-base font-semibold text-slate-400 dark:text-slate-500">{index + 1}</td>
+                    <td className="px-4 py-4">
+                      <div className="text-base font-bold text-slate-900 dark:text-white truncate max-w-[200px]">
+                        {project.title}
                       </div>
-                      <div className="text-xs text-gray-400">
-                        ID: {evaluation.project?.id?.substring(0, 8)}...
+                      <div className="text-xs text-slate-400">
+                        ID: {project.id?.substring(0, 8)}...
                       </div>
                     </td>
-                    <td className="px-6 py-4 text-sm text-gray-500">
-                      {evaluation.completed_at
-                        ? format(new Date(evaluation.completed_at), 'MMM dd, h:mm a')
+                    <td className="px-4 py-4">
+                      <span className="text-sm font-semibold text-slate-500 dark:text-slate-400 capitalize">{project.course_name || '—'}</span>
+                    </td>
+                    <td className="px-4 py-4">
+                      <span className="text-sm font-semibold text-slate-500 dark:text-slate-400">{project.team_name || '—'}</span>
+                    </td>
+                    <td className="px-4 py-4 whitespace-nowrap text-sm text-slate-500">
+                      {project.created_at
+                        ? format(new Date(project.created_at), 'MMM dd, yyyy')
                         : 'N/A'}
                     </td>
-                    <td className="px-6 py-4">
+                    <td className="px-4 py-4 text-center">
                       <span
-                        className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${
-                          evaluation.total_score >= 90
-                            ? 'bg-green-100 text-green-800'
-                            : evaluation.total_score >= 75
-                            ? 'bg-yellow-100 text-yellow-800'
-                            : 'bg-red-100 text-red-800'
+                        className={`px-3 py-1.5 inline-flex text-xs leading-4 font-bold rounded-md ${
+                          project.status?.toLowerCase() === 'evaluated' || project.status?.toLowerCase() === 'published'
+                            ? 'bg-emerald-50 dark:bg-emerald-900/20 text-emerald-700 dark:text-emerald-400 border border-emerald-100 dark:border-emerald-900/30'
+                            : project.status?.toLowerCase() === 'submitted'
+                            ? 'bg-amber-50 dark:bg-amber-900/20 text-amber-700 dark:text-amber-400 border border-amber-200 dark:border-amber-900/30'
+                            : 'bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 border-slate-200 dark:border-slate-700'
                         }`}
                       >
-                        {evaluation.total_score}/100
+                        {(project.status || 'draft').replace('_', ' ').toUpperCase()}
                       </span>
                     </td>
-                    <td className="px-6 py-4">
-                      <div className="flex gap-2">
-                        {evaluation.ai_code_detected && (
-                          <span className="px-2 py-0.5 text-xs font-bold rounded bg-red-100 text-red-800 border border-red-200">
-                            AI FLAG
+                    <td className="px-4 py-4 whitespace-nowrap">
+                      {project.total_score != null ? (
+                        <div className="flex items-center gap-1">
+                          <span className={`text-base font-extrabold ${project.total_score >= 80 ? 'text-emerald-600 dark:text-emerald-400' : project.total_score >= 60 ? 'text-amber-600 dark:text-amber-400' : 'text-rose-600 dark:text-rose-400'}`}>
+                            {Number(project.total_score).toFixed(1)}
                           </span>
-                        )}
-                        {evaluation.plagiarism_detected && (
-                          <span className="px-2 py-0.5 text-xs font-bold rounded bg-orange-100 text-orange-800 border border-orange-200">
-                            PLAGIARISM
-                          </span>
-                        )}
-                        {!evaluation.ai_code_detected && !evaluation.plagiarism_detected && (
-                          <span className="text-sm text-gray-400">Clean</span>
-                        )}
-                      </div>
+                          <span className="text-xs text-slate-400 font-medium">/ 100</span>
+                        </div>
+                      ) : (
+                        <span className="text-base text-slate-300 dark:text-slate-600 font-bold">—</span>
+                      )}
                     </td>
                   </tr>
                 ))}

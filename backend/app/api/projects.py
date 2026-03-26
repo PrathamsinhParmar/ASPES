@@ -204,6 +204,7 @@ async def get_my_projects(
 
 @router.get("/assigned", response_model=List[ProjectListResponse])
 async def get_assigned_projects(
+    faculty_id: Optional[uuid.UUID] = Query(None),
     skip: int = Query(0, ge=0),
     limit: int = Query(50, ge=1, le=100),
     current_user: User = Depends(require_role(UserRole.PROFESSOR, UserRole.ADMIN)),
@@ -212,10 +213,14 @@ async def get_assigned_projects(
     """
     Get all projects assigned to this faculty member by students.
     """
+    target_faculty_id = current_user.id
+    if current_user.role == UserRole.ADMIN and faculty_id:
+        target_faculty_id = faculty_id
+
     stmt = (
         select(Project)
         .options(selectinload(Project.evaluation))
-        .where(Project.faculty_id == current_user.id)
+        .where(Project.faculty_id == target_faculty_id)
         .order_by(desc(Project.created_at))
         .offset(skip)
         .limit(limit)

@@ -4,7 +4,7 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
-import { AlertCircle, Loader2, Mail, User, Shield, Briefcase, Lock, UserPlus, FileSignature, CheckCircle2 } from 'lucide-react';
+import { AlertCircle, Loader2, Mail, User, Briefcase, Lock, UserPlus, FileSignature, CheckCircle2 } from 'lucide-react';
 import ThemeToggle from '../Common/ThemeToggle';
 
 const schema = yup.object().shape({
@@ -15,7 +15,6 @@ const schema = yup.object().shape({
   confirm_password: yup.string()
     .oneOf([yup.ref('password'), null], 'Passwords must match')
     .required('Confirm password is required'),
-  role: yup.string().oneOf(['student', 'professor']).required('Role is required'),
   department: yup.string().optional()
 });
 
@@ -27,9 +26,6 @@ const Register = () => {
 
   const { register, handleSubmit, formState: { errors, isSubmitting } } = useForm({
     resolver: yupResolver(schema),
-    defaultValues: {
-      role: 'student'
-    }
   });
 
   const onSubmit = async (data) => {
@@ -42,7 +38,7 @@ const Register = () => {
         username: data.username,
         full_name: data.full_name,
         password: data.password,
-        role: data.role,
+        role: 'student',  // Always STUDENT on public signup
         department: data.department
       };
 
@@ -155,35 +151,18 @@ const Register = () => {
             {/* Right Column */}
             <div className="space-y-5">
 
-              <div className="grid grid-cols-2 gap-3">
-                <div className="col-span-1">
-                  <label className="block text-sm font-semibold text-gray-700 dark:text-slate-300 mb-1.5 ml-1">Role</label>
-                  <div className="relative">
-                    <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                      <Shield className="h-4 w-4 text-gray-400 dark:text-slate-500" />
-                    </div>
-                    <select
-                      {...register('role')}
-                      className="text-gray-900 dark:text-white bg-white dark:bg-slate-800 block w-full pl-9 pr-6 py-2.5 border border-gray-200 dark:border-slate-700 rounded-xl shadow-sm focus:ring-4 focus:ring-indigo-50 dark:focus:ring-indigo-900/10 focus:border-indigo-500 transition-all sm:text-sm cursor-pointer"
-                    >
-                      <option value="student">Student</option>
-                      <option value="professor">Faculty</option>
-                    </select>
+              <div>
+                <label className="block text-sm font-semibold text-gray-700 dark:text-slate-300 mb-1.5 ml-1">Dept <span className="text-gray-400 font-normal">(Optional)</span></label>
+                <div className="relative">
+                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                    <Briefcase className="h-4 w-4 text-gray-400 dark:text-slate-500" />
                   </div>
-                </div>
-
-                <div className="col-span-1">
-                  <label className="block text-sm font-semibold text-gray-700 dark:text-slate-300 mb-1.5 ml-1 text-nowrap">Dept <span className="text-gray-400 font-normal">(Opt)</span></label>
-                  <div className="relative">
-                    <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                      <Briefcase className="h-4 w-4 text-gray-400 dark:text-slate-500" />
-                    </div>
-                    <input
-                      {...register('department')}
-                      type="text"
-                      className="text-gray-900 dark:text-white bg-white dark:bg-slate-800 block w-full pl-9 pr-2 py-2.5 border border-gray-200 dark:border-slate-700 rounded-xl shadow-sm focus:ring-4 focus:ring-indigo-50 dark:focus:ring-indigo-900/10 focus:border-indigo-500 transition-all sm:text-sm"
-                    />
-                  </div>
+                  <input
+                    {...register('department')}
+                    type="text"
+                    placeholder="e.g. Computer Science"
+                    className="text-gray-900 dark:text-white bg-white dark:bg-slate-800 block w-full pl-9 pr-2 py-2.5 border border-gray-200 dark:border-slate-700 rounded-xl shadow-sm focus:ring-4 focus:ring-indigo-50 dark:focus:ring-indigo-900/10 focus:border-indigo-500 transition-all sm:text-sm"
+                  />
                 </div>
               </div>
 

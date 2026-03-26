@@ -23,7 +23,7 @@ const getNavItems = (role) => {
   if (role === 'admin') {
     return [
       { path: '/dashboard', label: 'Admin Dashboard', icon: ServerIcon },
-      { path: '/projects', label: 'All Projects', icon: FolderIcon },
+      { path: '/faculty', label: 'Faculty Members', icon: AcademicCapIcon },
       ...common
     ];
   } else if (role === 'faculty') {

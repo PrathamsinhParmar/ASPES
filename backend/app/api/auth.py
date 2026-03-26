@@ -68,11 +68,14 @@ async def register(user_data: UserCreate, db: AsyncSession = Depends(get_db)):
             )
 
     # 3. Hash password and save
+    # Public registration always creates STUDENT accounts.
+    # Faculty accounts are created exclusively by Admin via the admin endpoint.
+    from app.models.user import UserRole
     new_user = User(
         email=user_data.email,
         username=user_data.username,
         full_name=user_data.full_name,
-        role=user_data.role,
+        role=UserRole.STUDENT,   # Force STUDENT role on public signup
         hashed_password=get_password_hash(user_data.password)
     )
     

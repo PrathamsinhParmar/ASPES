@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { evaluationService } from '../../services/evaluationService';
 import StatCard from './StatCard';
 import {
@@ -7,7 +8,9 @@ import {
   ExclamationTriangleIcon,
   AcademicCapIcon,
   ShieldCheckIcon,
-  DocumentDuplicateIcon
+  DocumentDuplicateIcon,
+  UserPlusIcon,
+  UsersIcon
 } from '@heroicons/react/24/outline';
 import { useAuth } from '../../context/AuthContext';
 import {
@@ -20,6 +23,7 @@ import { useTheme } from '../../context/ThemeContext';
 const AdminDashboard = () => {
   const { user } = useAuth();
   const { theme } = useTheme();
+  const navigate = useNavigate();
   const isDark = theme === 'dark';
   const [stats, setStats] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -72,10 +76,29 @@ const AdminDashboard = () => {
 
   return (
     <div className="p-6 space-y-6 animate-fade-in bg-gray-50 dark:bg-slate-950 min-h-screen">
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center">
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
           <h1 className="text-3xl font-bold text-gray-900 dark:text-white">Admin Command Center</h1>
           <p className="mt-1 text-gray-500 dark:text-gray-400">System-wide metrics and pipeline health.</p>
+        </div>
+        {/* Admin Quick Actions */}
+        <div className="flex items-center gap-3">
+          <button
+            id="admin-view-faculty-btn"
+            onClick={() => navigate('/faculty')}
+            className="flex items-center gap-2 px-4 py-2 text-sm font-semibold text-indigo-600 dark:text-indigo-400 bg-indigo-50 dark:bg-indigo-900/20 hover:bg-indigo-100 dark:hover:bg-indigo-900/30 border border-indigo-200 dark:border-indigo-700/50 rounded-xl transition-all"
+          >
+            <UsersIcon className="w-4 h-4" />
+            Faculty Members
+          </button>
+          <button
+            id="admin-add-faculty-btn"
+            onClick={() => navigate('/faculty', { state: { openModal: true } })}
+            className="flex items-center gap-2 px-4 py-2 text-sm font-bold text-white bg-indigo-600 hover:bg-indigo-700 rounded-xl shadow-sm shadow-indigo-500/20 transition-all hover:scale-105 active:scale-95"
+          >
+            <UserPlusIcon className="w-4 h-4" />
+            Add Faculty
+          </button>
         </div>
       </div>
 

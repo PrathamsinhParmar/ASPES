@@ -5,6 +5,9 @@ import {
   MapPinIcon, BriefcaseIcon, LinkIcon, PencilSquareIcon, 
   CheckIcon, XMarkIcon, GlobeAltIcon
 } from '@heroicons/react/24/outline';
+import api from '../services/api';
+
+const API_BASE_URL = api.defaults.baseURL?.replace('/api/v1', '') || 'http://localhost:8000';
 
 const ProfilePage = () => {
   const { user } = useAuth();
@@ -18,7 +21,7 @@ const ProfilePage = () => {
     role: user?.role || 'User',
     bio: 'Passionate about leveraging technology to solve complex problems and build scalable, user-centric solutions. Always learning and exploring new frameworks.',
     location: 'San Francisco, CA',
-    department: 'Computer Science',
+    department: user?.department || 'Computer Science',
     skills: 'React, Node.js, Python, System Design',
     website: 'https://portfolio.dev',
     github: 'github.com/developer'
@@ -144,9 +147,15 @@ const ProfilePage = () => {
            <div className="absolute inset-0 bg-white/10 pattern-grid-lg"></div>
            {/* Avatar */}
            <div className="absolute -bottom-10 left-6 sm:left-10 p-1 bg-white dark:bg-slate-800 rounded-full shadow-md">
-              <div className="bg-slate-50 dark:bg-slate-900 rounded-full h-20 w-20 flex items-center justify-center border border-indigo-50 dark:border-indigo-900/50">
-                <UserCircleIcon className="w-16 h-16 text-slate-300 dark:text-slate-700" />
-              </div>
+             {user?.profile_photo ? (
+               <div className="bg-slate-50 dark:bg-slate-900 rounded-full h-20 w-20 flex items-center justify-center overflow-hidden border border-indigo-50 dark:border-indigo-900/50">
+                 <img src={`${API_BASE_URL}${user.profile_photo}?v=${new Date(user.updated_at || Date.now()).getTime()}`} alt={user.full_name} className="w-full h-full object-cover" />
+               </div>
+             ) : (
+               <div className="bg-slate-50 dark:bg-slate-900 rounded-full h-20 w-20 flex items-center justify-center border border-indigo-50 dark:border-indigo-900/50">
+                 <UserCircleIcon className="w-16 h-16 text-slate-300 dark:text-slate-700" />
+               </div>
+             )}
            </div>
         </div>
 

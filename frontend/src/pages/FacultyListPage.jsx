@@ -5,6 +5,7 @@ import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
 import api from '../services/api';
+
 import {
   UserPlusIcon,
   MagnifyingGlassIcon,
@@ -14,8 +15,13 @@ import {
   UserIcon,
   ExclamationTriangleIcon,
   XMarkIcon,
+  TrashIcon,
+  PencilSquareIcon,
+  BriefcaseIcon,
 } from '@heroicons/react/24/outline';
 import { format } from 'date-fns';
+
+const API_BASE_URL = api.defaults.baseURL?.replace('/api/v1', '') || 'http://localhost:8000';
 
 // Validation schema for creating a new faculty account
 const facultySchema = yup.object().shape({
@@ -26,6 +32,7 @@ const facultySchema = yup.object().shape({
     .min(3, 'Username must be at least 3 characters')
     .matches(/^[a-zA-Z0-9_]+$/, 'Only letters, numbers and underscores'),
   full_name: yup.string().required('Full name is required').min(2),
+  department: yup.string().optional(),
   password: yup
     .string()
     .required('Password is required')
@@ -36,9 +43,29 @@ const facultySchema = yup.object().shape({
     .required('Confirm password is required'),
 });
 
+// Validation schema for editing a faculty account
+const editFacultySchema = yup.object().shape({
+  email: yup.string().email('Invalid email').required('Email is required'),
+  username: yup
+    .string()
+    .required('Username is required')
+    .min(3, 'Username must be at least 3 characters')
+    .matches(/^[a-zA-Z0-9_]+$/, 'Only letters, numbers and underscores'),
+  full_name: yup.string().required('Full name is required').min(2),
+  department: yup.string().optional(),
+  password: yup.string().test('is-long', 'At least 8 characters', val => !val || val.length >= 8),
+  confirm_password: yup.string().test('match', 'Passwords must match', function(val) {
+    return !this.parent.password || val === this.parent.password;
+  }),
+  is_active: yup.boolean()
+});
+
 // ─── Create Faculty Modal ────────────────────────────────────────────────────
 function CreateFacultyModal({ onClose, onCreated }) {
   const [apiError, setApiError] = useState('');
+  const [photoFile, setPhotoFile] = useState(null);
+  const [photoPreview, setPhotoPreview] = useState(null);
+
   const {
     register,
     handleSubmit,
@@ -46,16 +73,43 @@ function CreateFacultyModal({ onClose, onCreated }) {
     reset,
   } = useForm({ resolver: yupResolver(facultySchema) });
 
+  const handlePhotoChange = (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    if (file.size > 5 * 1024 * 1024) {
+      setApiError('Photo must be less than 5MB');
+      return;
+    }
+    if (!['image/jpeg', 'image/png', 'image/gif', 'image/jpg'].includes(file.type)) {
+      setApiError('Photo must be JPEG, PNG, or GIF');
+      return;
+    }
+    setApiError('');
+    setPhotoFile(file);
+    setPhotoPreview(URL.createObjectURL(file));
+  };
+
   const onSubmit = async (data) => {
     try {
       setApiError('');
-      await api.post('/users/faculty', {
+      const res = await api.post('/users/faculty', {
         email: data.email,
         username: data.username,
         full_name: data.full_name,
+        department: data.department || null,
         password: data.password,
         role: 'professor',
       });
+      
+      const newFaculty = res.data;
+      if (photoFile) {
+        const formData = new FormData();
+        formData.append('file', photoFile);
+        await api.post(`/users/faculty/${newFaculty.id}/photo`, formData, {
+          headers: { 'Content-Type': 'multipart/form-data' }
+        });
+      }
+
       reset();
       onCreated();
     } catch (err) {
@@ -88,13 +142,50 @@ function CreateFacultyModal({ onClose, onCreated }) {
         </div>
 
         {/* Body */}
-        <form onSubmit={handleSubmit(onSubmit)} className="p-6 space-y-4">
+        <form onSubmit={handleSubmit(onSubmit)} className="p-6 space-y-4 max-h-[75vh] overflow-y-auto">
           {apiError && (
             <div className="flex items-start gap-3 p-3 rounded-xl bg-red-50 dark:bg-red-900/10 border border-red-100 dark:border-red-900/20">
               <ExclamationTriangleIcon className="w-4 h-4 text-red-500 mt-0.5 flex-shrink-0" />
               <p className="text-sm text-red-700 dark:text-red-400">{apiError}</p>
             </div>
           )}
+
+          {/* Profile Photo */}
+          <div className="flex flex-col items-center gap-3 py-2 border-b border-gray-100 dark:border-slate-800">
+            <div className="relative">
+              {photoPreview ? (
+                <img src={photoPreview} alt="Preview" className="w-20 h-20 rounded-full object-cover border-2 border-indigo-100 dark:border-indigo-900/30 shadow-md" />
+              ) : (
+                <div className="w-20 h-20 rounded-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center border-2 border-dashed border-gray-300 dark:border-slate-700">
+                  <UserIcon className="w-8 h-8 text-gray-400 dark:text-slate-500" />
+                </div>
+              )}
+              {photoPreview && (
+                <button
+                  type="button"
+                  onClick={() => { setPhotoFile(null); setPhotoPreview(null); }}
+                  className="absolute -top-1 -right-1 bg-red-500 text-white rounded-full p-1 shadow-sm hover:bg-red-600 transition-colors"
+                >
+                  <XMarkIcon className="w-3 h-3" />
+                </button>
+              )}
+            </div>
+            <div>
+              <input
+                type="file"
+                id="photo-upload"
+                accept="image/jpeg, image/png, image/gif, image/jpg"
+                onChange={handlePhotoChange}
+                className="hidden"
+              />
+              <label
+                htmlFor="photo-upload"
+                className="cursor-pointer text-xs font-semibold text-indigo-600 dark:text-indigo-400 hover:text-indigo-700 dark:hover:text-indigo-300 transition-colors"
+              >
+                Upload Photo (Optional)
+              </label>
+            </div>
+          </div>
 
           {/* Full Name */}
           <div>
@@ -113,6 +204,26 @@ function CreateFacultyModal({ onClose, onCreated }) {
             />
             {errors.full_name && (
               <p className="mt-1 text-xs text-red-500">{errors.full_name.message}</p>
+            )}
+          </div>
+
+          {/* Department */}
+          <div>
+            <label className="block text-xs font-semibold text-gray-600 dark:text-slate-400 mb-1.5 uppercase tracking-wide">
+              Department
+            </label>
+            <input
+              {...register('department')}
+              type="text"
+              placeholder="e.g. Computer Science"
+              className={`w-full px-4 py-2.5 rounded-xl border text-sm text-gray-900 dark:text-white bg-white dark:bg-slate-800/50 placeholder-gray-400 dark:placeholder-slate-500 transition-all focus:outline-none focus:ring-2 ${
+                errors.department
+                  ? 'border-red-300 focus:ring-red-200 dark:focus:ring-red-900/20'
+                  : 'border-gray-200 dark:border-slate-700 focus:ring-indigo-100 dark:focus:ring-indigo-900/20 focus:border-indigo-400'
+              }`}
+            />
+            {errors.department && (
+              <p className="mt-1 text-xs text-red-500">{errors.department.message}</p>
             )}
           </div>
 
@@ -224,6 +335,306 @@ function CreateFacultyModal({ onClose, onCreated }) {
   );
 }
 
+// ─── Edit Faculty Modal ────────────────────────────────────────────────────
+function EditFacultyModal({ faculty, onClose, onUpdated }) {
+  const [apiError, setApiError] = useState('');
+  const [photoFile, setPhotoFile] = useState(null);
+  const [removeExistingPhoto, setRemoveExistingPhoto] = useState(false);
+  const existingPhotoUrl = faculty.profile_photo ? `${API_BASE_URL}${faculty.profile_photo}?v=${new Date(faculty.updated_at || Date.now()).getTime()}` : null;
+  const [photoPreview, setPhotoPreview] = useState(existingPhotoUrl);
+
+  const {
+    register,
+    handleSubmit,
+    formState: { errors, isSubmitting, isDirty },
+    reset,
+  } = useForm({ 
+    resolver: yupResolver(editFacultySchema),
+    defaultValues: {
+      email: faculty.email,
+      username: faculty.username,
+      full_name: faculty.full_name,
+      department: faculty.department || '',
+      password: '',
+      confirm_password: '',
+      is_active: faculty.is_active,
+    }
+  });
+
+  const handlePhotoChange = (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    if (file.size > 5 * 1024 * 1024) {
+      setApiError('Photo must be less than 5MB');
+      return;
+    }
+    if (!['image/jpeg', 'image/png', 'image/gif', 'image/jpg'].includes(file.type)) {
+      setApiError('Photo must be JPEG, PNG, or GIF');
+      return;
+    }
+    setApiError('');
+    setPhotoFile(file);
+    setPhotoPreview(URL.createObjectURL(file));
+    setRemoveExistingPhoto(false);
+  };
+
+  const clearPhoto = () => {
+    setPhotoFile(null);
+    setPhotoPreview(null);
+    if (faculty.profile_photo) setRemoveExistingPhoto(true);
+  };
+
+  const onSubmit = async (data) => {
+    try {
+      setApiError('');
+      const payload = {
+        email: data.email,
+        username: data.username,
+        full_name: data.full_name,
+        department: data.department || null,
+        is_active: data.is_active,
+      };
+      if (data.password) {
+        payload.password = data.password;
+      }
+      
+      await api.put(`/users/faculty/${faculty.id}`, payload);
+
+      if (removeExistingPhoto && !photoFile) {
+        await api.delete(`/users/faculty/${faculty.id}/photo`);
+      }
+      
+      if (photoFile) {
+        const formData = new FormData();
+        formData.append('file', photoFile);
+        await api.post(`/users/faculty/${faculty.id}/photo`, formData, {
+          headers: { 'Content-Type': 'multipart/form-data' }
+        });
+      }
+
+      onUpdated();
+    } catch (err) {
+      setApiError(
+        err.response?.data?.detail || 'Failed to update faculty account.'
+      );
+    }
+  };
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/60 backdrop-blur-sm animate-in fade-in duration-200">
+      <div className="w-full max-w-md bg-white dark:bg-slate-900 rounded-2xl shadow-2xl border border-gray-100 dark:border-slate-800 overflow-hidden animate-in zoom-in-95 duration-200">
+        {/* Header */}
+        <div className="flex items-center justify-between px-6 py-5 border-b border-gray-100 dark:border-slate-800 bg-gradient-to-r from-indigo-600 to-blue-600">
+          <div className="flex items-center gap-3">
+            <div className="w-9 h-9 rounded-xl bg-white/20 flex items-center justify-center">
+              <PencilSquareIcon className="w-5 h-5 text-white" />
+            </div>
+            <div>
+              <h2 className="text-lg font-bold text-white">Edit Faculty Member</h2>
+              <p className="text-xs text-indigo-200">Modify existing details</p>
+            </div>
+          </div>
+          <button onClick={onClose} className="p-1.5 rounded-lg hover:bg-white/20 text-white/70 hover:text-white transition-colors">
+            <XMarkIcon className="w-5 h-5" />
+          </button>
+        </div>
+
+        {/* Body */}
+        <form onSubmit={handleSubmit(onSubmit)} className="p-6 space-y-4 max-h-[75vh] overflow-y-auto">
+          {apiError && (
+            <div className="flex items-start gap-3 p-3 rounded-xl bg-red-50 dark:bg-red-900/10 border border-red-100 dark:border-red-900/20">
+              <ExclamationTriangleIcon className="w-4 h-4 text-red-500 mt-0.5 flex-shrink-0" />
+              <p className="text-sm text-red-700 dark:text-red-400">{apiError}</p>
+            </div>
+          )}
+
+          {/* Profile Photo */}
+          <div className="flex flex-col items-center gap-3 py-2 border-b border-gray-100 dark:border-slate-800">
+            <div className="relative">
+              {photoPreview ? (
+                <img src={photoPreview} alt="Preview" className="w-20 h-20 rounded-full object-cover border-2 border-indigo-100 dark:border-indigo-900/30 shadow-md" />
+              ) : (
+                <div className="w-20 h-20 rounded-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center border-2 border-dashed border-gray-300 dark:border-slate-700">
+                  <UserIcon className="w-8 h-8 text-gray-400 dark:text-slate-500" />
+                </div>
+              )}
+              {photoPreview && (
+                <button
+                  type="button"
+                  onClick={clearPhoto}
+                  className="absolute -top-1 -right-1 bg-red-500 text-white rounded-full p-1 shadow-sm hover:bg-red-600 transition-colors"
+                >
+                  <XMarkIcon className="w-3 h-3" />
+                </button>
+              )}
+            </div>
+            <div>
+              <input
+                type="file"
+                id="edit-photo-upload"
+                accept="image/jpeg, image/png, image/gif, image/jpg"
+                onChange={handlePhotoChange}
+                className="hidden"
+              />
+              <label
+                htmlFor="edit-photo-upload"
+                className="cursor-pointer text-xs font-semibold text-indigo-600 dark:text-indigo-400 hover:text-indigo-700 dark:hover:text-indigo-300 transition-colors"
+              >
+                Change Photo
+              </label>
+            </div>
+          </div>
+
+          {/* Full Name */}
+          <div>
+            <label className="block text-xs font-semibold text-gray-600 dark:text-slate-400 mb-1.5 uppercase tracking-wide">Full Name</label>
+            <input
+              {...register('full_name')}
+              type="text"
+              className={`w-full px-4 py-2.5 rounded-xl border text-sm text-gray-900 dark:text-white bg-white dark:bg-slate-800/50 placeholder-gray-400 dark:placeholder-slate-500 transition-all focus:outline-none focus:ring-2 ${errors.full_name ? 'border-red-300 focus:ring-red-200' : 'border-gray-200 dark:border-slate-700 focus:ring-indigo-100 focus:border-indigo-400'}`}
+            />
+            {errors.full_name && <p className="mt-1 text-xs text-red-500">{errors.full_name.message}</p>}
+          </div>
+
+          {/* Department */}
+          <div>
+            <label className="block text-xs font-semibold text-gray-600 dark:text-slate-400 mb-1.5 uppercase tracking-wide">Department</label>
+            <input
+              {...register('department')}
+              type="text"
+              placeholder="e.g. Computer Science"
+              className={`w-full px-4 py-2.5 rounded-xl border text-sm text-gray-900 dark:text-white bg-white dark:bg-slate-800/50 placeholder-gray-400 dark:placeholder-slate-500 transition-all focus:outline-none focus:ring-2 ${errors.department ? 'border-red-300 focus:ring-red-200' : 'border-gray-200 dark:border-slate-700 focus:ring-indigo-100 focus:border-indigo-400'}`}
+            />
+            {errors.department && <p className="mt-1 text-xs text-red-500">{errors.department.message}</p>}
+          </div>
+
+          {/* Email */}
+          <div>
+            <label className="block text-xs font-semibold text-gray-600 dark:text-slate-400 mb-1.5 uppercase tracking-wide">Email Address</label>
+            <input
+              {...register('email')}
+              type="email"
+              className={`w-full px-4 py-2.5 rounded-xl border text-sm text-gray-900 dark:text-white bg-white dark:bg-slate-800/50 placeholder-gray-400 dark:placeholder-slate-500 transition-all focus:outline-none focus:ring-2 ${errors.email ? 'border-red-300 focus:ring-red-200' : 'border-gray-200 dark:border-slate-700 focus:ring-indigo-100 focus:border-indigo-400'}`}
+            />
+            {errors.email && <p className="mt-1 text-xs text-red-500">{errors.email.message}</p>}
+          </div>
+
+          {/* Username */}
+          <div>
+            <label className="block text-xs font-semibold text-gray-600 dark:text-slate-400 mb-1.5 uppercase tracking-wide">Username</label>
+            <input
+              {...register('username')}
+              type="text"
+              className={`w-full px-4 py-2.5 rounded-xl border text-sm text-gray-900 dark:text-white bg-white dark:bg-slate-800/50 placeholder-gray-400 dark:placeholder-slate-500 transition-all focus:outline-none focus:ring-2 ${errors.username ? 'border-red-300 focus:ring-red-200' : 'border-gray-200 dark:border-slate-700 focus:ring-indigo-100 focus:border-indigo-400'}`}
+            />
+            {errors.username && <p className="mt-1 text-xs text-red-500">{errors.username.message}</p>}
+          </div>
+
+          {/* Status */}
+          <div className="flex items-center gap-2">
+            <input
+              {...register('is_active')}
+              type="checkbox"
+              id="is_active"
+              className="w-4 h-4 text-indigo-600 rounded border-gray-300 focus:ring-indigo-500"
+            />
+            <label htmlFor="is_active" className="text-sm font-medium text-gray-700 dark:text-slate-300">Account Active</label>
+          </div>
+
+          <div className="border-t border-gray-100 dark:border-slate-800 my-4" />
+          <p className="text-xs text-gray-500 dark:text-slate-400 italic">Leave password fields blank if you do not wish to change the password.</p>
+
+          {/* Password row */}
+          <div className="grid grid-cols-2 gap-3">
+            <div>
+              <label className="block text-xs font-semibold text-gray-600 dark:text-slate-400 mb-1.5 uppercase tracking-wide">New Password</label>
+              <input
+                {...register('password')}
+                type="password"
+                placeholder="Leave blank to keep"
+                className={`w-full px-4 py-2.5 rounded-xl border text-sm text-gray-900 dark:text-white bg-white dark:bg-slate-800/50 placeholder-gray-400 transition-all focus:outline-none focus:ring-2 ${errors.password ? 'border-red-300 focus:ring-red-200' : 'border-gray-200 dark:border-slate-700 focus:ring-indigo-100 focus:border-indigo-400'}`}
+              />
+              {errors.password && <p className="mt-1 text-xs text-red-500">{errors.password.message}</p>}
+            </div>
+            <div>
+              <label className="block text-xs font-semibold text-gray-600 dark:text-slate-400 mb-1.5 uppercase tracking-wide">Confirm New</label>
+              <input
+                {...register('confirm_password')}
+                type="password"
+                placeholder="Leave blank to keep"
+                className={`w-full px-4 py-2.5 rounded-xl border text-sm text-gray-900 dark:text-white bg-white dark:bg-slate-800/50 placeholder-gray-400 transition-all focus:outline-none focus:ring-2 ${errors.confirm_password ? 'border-red-300 focus:ring-red-200' : 'border-gray-200 dark:border-slate-700 focus:ring-indigo-100 focus:border-indigo-400'}`}
+              />
+              {errors.confirm_password && <p className="mt-1 text-xs text-red-500">{errors.confirm_password.message}</p>}
+            </div>
+          </div>
+
+          {/* Actions */}
+          <div className="flex justify-end gap-3 pt-4 border-t border-gray-100 dark:border-slate-800">
+            <button
+              type="button"
+              onClick={onClose}
+              className="px-4 py-2 text-sm font-medium text-gray-600 dark:text-slate-300 bg-gray-100 dark:bg-slate-800 hover:bg-gray-200 dark:hover:bg-slate-700 rounded-xl transition-colors"
+            >
+              Cancel
+            </button>
+            <button
+              type="submit"
+              disabled={isSubmitting || (!isDirty && !photoFile && !removeExistingPhoto)}
+              className="px-6 py-2 text-sm font-bold text-white bg-indigo-600 hover:bg-indigo-700 disabled:opacity-60 rounded-xl shadow-sm transition-all flex items-center gap-2"
+            >
+              {isSubmitting ? (
+                <div className="w-4 h-4 border-2 border-white/50 border-t-white rounded-full animate-spin" />
+              ) : (
+                <PencilSquareIcon className="w-4 h-4" />
+              )}
+              {isSubmitting ? 'Saving...' : 'Save Changes'}
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  );
+}
+
+// ─── Delete Confirmation Modal ────────────────────────────────────────────────
+function DeleteConfirmationModal({ onClose, onConfirm, isDeleting, facultyName }) {
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/60 backdrop-blur-sm animate-in fade-in duration-200">
+      <div className="w-full max-w-sm bg-white dark:bg-slate-900 rounded-2xl shadow-2xl border border-gray-100 dark:border-slate-800 overflow-hidden animate-in zoom-in-95 duration-200">
+        <div className="p-6 text-center">
+          <div className="w-12 h-12 rounded-full bg-red-100 dark:bg-red-900/20 flex items-center justify-center mx-auto mb-4">
+            <ExclamationTriangleIcon className="w-6 h-6 text-red-600 dark:text-red-400" />
+          </div>
+          <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-2">Delete Faculty Member</h3>
+          <p className="text-sm text-gray-500 dark:text-slate-400 mb-6">
+            Are you sure you want to delete <strong>{facultyName}</strong>? This action cannot be undone.
+          </p>
+          <div className="flex gap-3">
+            <button
+              onClick={onClose}
+              disabled={isDeleting}
+              className="flex-1 px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 hover:bg-gray-200 dark:text-slate-300 dark:bg-slate-800 dark:hover:bg-slate-700 rounded-xl transition-colors disabled:opacity-50"
+            >
+              Cancel
+            </button>
+            <button
+              onClick={onConfirm}
+              disabled={isDeleting}
+              className="flex-1 px-4 py-2 text-sm font-bold text-white bg-red-600 hover:bg-red-700 rounded-xl transition-colors disabled:opacity-50 flex justify-center items-center"
+            >
+              {isDeleting ? (
+                <div className="w-4 h-4 border-2 border-white/50 border-t-white rounded-full animate-spin" />
+              ) : (
+                'Delete'
+              )}
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 // ─── Faculty List Page ────────────────────────────────────────────────────────
 const FacultyListPage = () => {
   const { user } = useAuth();
@@ -237,6 +648,9 @@ const FacultyListPage = () => {
     location.state?.openModal === true   // auto-open if Admin clicked "Add Faculty"
   );
   const [successMsg, setSuccessMsg] = useState('');
+  const [facultyToDelete, setFacultyToDelete] = useState(null);
+  const [isDeleting, setIsDeleting] = useState(false);
+  const [facultyToEdit, setFacultyToEdit] = useState(null);
 
   // Redirect non-admins
   useEffect(() => {
@@ -267,6 +681,40 @@ const FacultyListPage = () => {
     setSuccessMsg('Faculty account created successfully!');
     fetchFaculty();
     setTimeout(() => setSuccessMsg(''), 4000);
+  };
+
+  const handleEditClick = (e, faculty) => {
+    e.stopPropagation();
+    setFacultyToEdit(faculty);
+  };
+
+  const handleFacultyUpdated = () => {
+    setFacultyToEdit(null);
+    setSuccessMsg('Faculty account updated successfully!');
+    fetchFaculty();
+    setTimeout(() => setSuccessMsg(''), 4000);
+  };
+
+  const handleDeleteClick = (e, faculty) => {
+    e.stopPropagation();
+    setFacultyToDelete(faculty);
+  };
+
+  const handleConfirmDelete = async () => {
+    if (!facultyToDelete) return;
+    setIsDeleting(true);
+    try {
+      await api.delete(`/users/faculty/${facultyToDelete.id}`);
+      setSuccessMsg(`Faculty member ${facultyToDelete.full_name} deleted successfully!`);
+      setFacultyToDelete(null);
+      fetchFaculty();
+      setTimeout(() => setSuccessMsg(''), 4000);
+    } catch (err) {
+      setError(err.response?.data?.detail || 'Failed to delete faculty member.');
+      setFacultyToDelete(null);
+    } finally {
+      setIsDeleting(false);
+    }
   };
 
   const filtered = facultyList.filter(
@@ -372,9 +820,17 @@ const FacultyListPage = () => {
               >
                 <div className="flex items-start gap-4">
                   {/* Avatar */}
-                  <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-indigo-400 to-blue-500 flex items-center justify-center text-white text-xl font-bold shadow-md shadow-indigo-500/20 flex-shrink-0 group-hover:scale-105 transition-transform">
-                    {faculty.full_name?.[0]?.toUpperCase() || 'F'}
-                  </div>
+                  {faculty.profile_photo ? (
+                    <img
+                      src={`${API_BASE_URL}${faculty.profile_photo}?v=${new Date(faculty.updated_at || Date.now()).getTime()}`}
+                      alt={faculty.full_name}
+                      className="w-12 h-12 rounded-xl object-cover shadow-md flex-shrink-0 group-hover:scale-105 transition-transform"
+                    />
+                  ) : (
+                    <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-indigo-400 to-blue-500 flex items-center justify-center text-white text-xl font-bold shadow-md shadow-indigo-500/20 flex-shrink-0 group-hover:scale-105 transition-transform">
+                      {faculty.full_name?.[0]?.toUpperCase() || 'F'}
+                    </div>
+                  )}
 
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center justify-between">
@@ -393,6 +849,12 @@ const FacultyListPage = () => {
                         <EnvelopeIcon className="w-3.5 h-3.5 flex-shrink-0" />
                         <span className="truncate">{faculty.email}</span>
                       </div>
+                      {faculty.department && (
+                        <div className="flex items-center gap-1.5 text-xs text-gray-500 dark:text-slate-400 truncate">
+                          <BriefcaseIcon className="w-3.5 h-3.5 flex-shrink-0" />
+                          <span className="truncate">{faculty.department}</span>
+                        </div>
+                      )}
                     </div>
                   </div>
                 </div>
@@ -412,9 +874,25 @@ const FacultyListPage = () => {
                     />
                     {faculty.is_active ? 'Active' : 'Inactive'}
                   </span>
-                  <span className="text-xs text-gray-400 dark:text-slate-500">
-                    Joined {faculty.created_at ? format(new Date(faculty.created_at), 'MMM yyyy') : '—'}
-                  </span>
+                  <div className="flex items-center gap-3">
+                    <span className="text-xs text-gray-400 dark:text-slate-500">
+                      Joined {faculty.created_at ? format(new Date(faculty.created_at), 'MMM yyyy') : '—'}
+                    </span>
+                    <button
+                      onClick={(e) => handleEditClick(e, faculty)}
+                      className="p-1.5 text-gray-400 hover:text-indigo-600 hover:bg-indigo-50 dark:hover:bg-indigo-900/20 rounded-lg transition-colors"
+                      title="Edit Faculty"
+                    >
+                      <PencilSquareIcon className="w-4 h-4" />
+                    </button>
+                    <button
+                      onClick={(e) => handleDeleteClick(e, faculty)}
+                      className="p-1.5 text-gray-400 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-colors"
+                      title="Delete Faculty"
+                    >
+                      <TrashIcon className="w-4 h-4" />
+                    </button>
+                  </div>
                 </div>
               </div>
             ))}
@@ -427,6 +905,25 @@ const FacultyListPage = () => {
         <CreateFacultyModal
           onClose={() => setShowModal(false)}
           onCreated={handleFacultyCreated}
+        />
+      )}
+
+      {/* Edit Faculty Modal */}
+      {facultyToEdit && (
+        <EditFacultyModal
+          faculty={facultyToEdit}
+          onClose={() => setFacultyToEdit(null)}
+          onUpdated={handleFacultyUpdated}
+        />
+      )}
+
+      {/* Delete Confirmation Modal */}
+      {facultyToDelete && (
+        <DeleteConfirmationModal
+          onClose={() => setFacultyToDelete(null)}
+          onConfirm={handleConfirmDelete}
+          isDeleting={isDeleting}
+          facultyName={facultyToDelete.full_name}
         />
       )}
     </div>

@@ -16,6 +16,8 @@ import {
 } from '@heroicons/react/24/outline';
 import { format } from 'date-fns';
 
+const API_BASE_URL = api.defaults.baseURL?.replace('/api/v1', '') || 'http://localhost:8000';
+
 const FacultyDashboardViewPage = () => {
   const { facultyId } = useParams();
   const navigate = useNavigate();
@@ -114,12 +116,22 @@ const FacultyDashboardViewPage = () => {
       {/* Faculty Profile Card */}
       <div className="bg-white dark:bg-slate-900 border border-gray-100 dark:border-slate-800 rounded-2xl p-6 shadow-sm">
         <div className="flex items-start gap-5">
-          <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-indigo-400 to-blue-500 flex items-center justify-center text-white text-2xl font-bold shadow-lg shadow-indigo-500/20 flex-shrink-0">
-            {faculty.full_name?.[0]?.toUpperCase() || 'F'}
-          </div>
+          {faculty.profile_photo ? (
+            <img 
+              src={`${API_BASE_URL}${faculty.profile_photo}?v=${new Date(faculty.updated_at || Date.now()).getTime()}`} 
+              alt={faculty.full_name} 
+              className="w-16 h-16 rounded-2xl object-cover shadow-lg shadow-indigo-500/10 flex-shrink-0"
+            />
+          ) : (
+            <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-indigo-400 to-blue-500 flex items-center justify-center text-white text-2xl font-bold shadow-lg shadow-indigo-500/20 flex-shrink-0">
+              {faculty.full_name?.[0]?.toUpperCase() || 'F'}
+            </div>
+          )}
           <div className="flex-1 min-w-0">
             <h1 className="text-2xl font-bold text-gray-900 dark:text-white">{faculty.full_name}</h1>
-            <p className="text-sm text-indigo-600 dark:text-indigo-400 font-semibold mt-0.5">Faculty Member</p>
+            <p className="text-sm text-indigo-600 dark:text-indigo-400 font-semibold mt-0.5">
+              {faculty.department || 'Faculty Member'}
+            </p>
             <div className="mt-3 flex flex-wrap gap-4">
               <div className="flex items-center gap-1.5 text-sm text-gray-500 dark:text-slate-400">
                 <UserIcon className="w-4 h-4" />

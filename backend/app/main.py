@@ -10,6 +10,7 @@ from pathlib import Path
 from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
+from fastapi.staticfiles import StaticFiles
 
 from app.config import settings
 from app.api import auth, projects, evaluations, users
@@ -68,6 +69,11 @@ app = FastAPI(
     docs_url="/api/docs",
     redoc_url="/api/redoc",
 )
+
+# ---------------------------------------------------------------------------
+# Static Files
+# ---------------------------------------------------------------------------
+app.mount("/uploads", StaticFiles(directory=settings.UPLOAD_DIR), name="uploads")
 
 # ---------------------------------------------------------------------------
 # Middleware & CORS

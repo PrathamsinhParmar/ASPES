@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Outlet, Link, useLocation } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
+import api from '../../services/api';
 import ThemeToggle from './ThemeToggle';
 import {
   HomeIcon,
@@ -14,6 +15,8 @@ import {
   ClipboardDocumentCheckIcon,
   ServerIcon
 } from '@heroicons/react/24/outline';
+
+const API_BASE_URL = api.defaults.baseURL?.replace('/api/v1', '') || 'http://localhost:8000';
 
 const getNavItems = (role) => {
   const common = [
@@ -116,9 +119,17 @@ function DashboardLayout() {
           </div>
 
           <div className="flex items-center gap-3 px-3 py-2 bg-gray-50 dark:bg-slate-800/50 rounded-xl">
-            <div className="w-8 h-8 rounded-full bg-blue-100 dark:bg-blue-900 flex items-center justify-center text-blue-700 dark:text-blue-300 text-sm font-semibold">
-              {user?.full_name?.[0]?.toUpperCase() || 'U'}
-            </div>
+            {user?.profile_photo ? (
+              <img 
+                src={`${API_BASE_URL}${user.profile_photo}?v=${new Date(user.updated_at || Date.now()).getTime()}`} 
+                alt={user.full_name} 
+                className="w-8 h-8 rounded-full object-cover shadow-sm bg-white dark:bg-slate-800 flex-shrink-0"
+              />
+            ) : (
+              <div className="w-8 h-8 rounded-full bg-blue-100 dark:bg-blue-900 flex items-center justify-center text-blue-700 dark:text-blue-300 text-sm font-semibold flex-shrink-0">
+                {user?.full_name?.[0]?.toUpperCase() || 'U'}
+              </div>
+            )}
             <div className="flex-1 min-w-0">
               <p className="text-sm font-semibold text-gray-900 dark:text-gray-100 truncate">{user?.full_name}</p>
               <p className="text-[10px] font-bold text-gray-500 dark:text-slate-400 uppercase tracking-tight truncate capitalize">{user?.role}</p>

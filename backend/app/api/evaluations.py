@@ -84,6 +84,7 @@ async def get_evaluation_statistics(
 
 @router.get("/pending", response_model=List[EvaluationResponse])
 async def get_pending_evaluations(
+    faculty_id: Optional[uuid.UUID] = Query(None, description="Filter by assigned faculty"),
     skip: int = Query(0, ge=0),
     limit: int = Query(50, ge=1, le=100),
     current_user: User = Depends(require_role(UserRole.PROFESSOR, UserRole.ADMIN)),
@@ -96,12 +97,18 @@ async def get_pending_evaluations(
     stmt = (
         select(Evaluation)
         .options(selectinload(Evaluation.project))
+        .join(Project, Project.id == Evaluation.project_id)
         .where(Evaluation.is_finalized == False)
         .where(Evaluation.status == EvaluationStatus.COMPLETED)
-        .order_by(desc(Evaluation.completed_at))
-        .offset(skip)
-        .limit(limit)
     )
+
+    if current_user.role == UserRole.PROFESSOR:
+        stmt = stmt.where(Project.faculty_id == current_user.id)
+    elif current_user.role == UserRole.ADMIN and faculty_id is not None:
+        stmt = stmt.where(Project.faculty_id == faculty_id)
+
+    stmt = stmt.order_by(desc(Evaluation.completed_at)).offset(skip).limit(limit)
+    
     result = await db.execute(stmt)
     evaluations = result.scalars().all()
     validated_evals = []

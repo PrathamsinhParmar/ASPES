@@ -42,7 +42,7 @@ const FacultyDashboardViewPage = () => {
         setError('');
         const [facultyRes, evalRes] = await Promise.all([
           api.get(`/users/${facultyId}`),
-          evaluationService.getPendingEvaluations(),
+          evaluationService.getPendingEvaluations(0, 50, facultyId),
         ]);
         setFaculty(facultyRes.data);
         setPendingEvaluations(evalRes);

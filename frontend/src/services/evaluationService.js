@@ -1,8 +1,12 @@
 import api from './api';
 
 export const evaluationService = {
-  getPendingEvaluations: async (skip = 0, limit = 50) => {
-    const response = await api.get(`/evaluations/pending?skip=${skip}&limit=${limit}`);
+  getPendingEvaluations: async (skip = 0, limit = 50, facultyId = null) => {
+    const params = new URLSearchParams({ skip, limit });
+    if (facultyId) {
+      params.append('faculty_id', facultyId);
+    }
+    const response = await api.get(`/evaluations/pending?${params.toString()}`);
     return response.data;
   },
 

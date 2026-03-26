@@ -1,7 +1,9 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import { projectService } from '../services/projectService';
-import { ChartBarIcon, DocumentIcon, CodeBracketIcon, ArrowPathIcon, CheckCircleIcon, UserGroupIcon, IdentificationIcon } from '@heroicons/react/24/outline';
+import { useAuth } from '../context/AuthContext';
+import { ChartBarIcon, DocumentIcon, CodeBracketIcon, ArrowPathIcon, CheckCircleIcon, UserGroupIcon, IdentificationIcon, ClipboardDocumentCheckIcon } from '@heroicons/react/24/outline';
+import { toast } from 'react-toastify';
 
 const POLL_INTERVAL_MS = 3000; // Poll every 3 seconds
 
@@ -11,6 +13,28 @@ const ProjectDetailPage = () => {
   const [project, setProject] = useState(null);
   const [loading, setLoading] = useState(true);
   const pollingRef = useRef(null);
+  const { user } = useAuth();
+
+  const [evalNotes, setEvalNotes] = useState('');
+  const [evaluating, setEvaluating] = useState(false);
+
+  const handleEvaluate = async () => {
+    if (!window.confirm("Are you sure you want to confirm your evaluation? This will mark the project as 'Evaluated'.")) return;
+    try {
+      setEvaluating(true);
+      const formData = new FormData();
+      if (evalNotes) formData.append('faculty_comments', evalNotes);
+      
+      await projectService.evaluateProject(id, formData);
+      toast.success("Project marked as Evaluated successfully!");
+      fetchProject();
+    } catch (err) {
+      console.error(err);
+      toast.error("Failed to evaluate project. Please try again.");
+    } finally {
+      setEvaluating(false);
+    }
+  };
 
   const fetchProject = async () => {
     try {
@@ -143,6 +167,68 @@ const ProjectDetailPage = () => {
                 </div>
              </div>
            )}
+
+           {/* Read-Only Faculty Feedback Section for Students/Others */}
+           {(project.status === 'evaluated' || project.status === 'published') && project.evaluation?.professor_feedback && user?.role !== 'faculty' && user?.role !== 'professor' && (
+             <div className="bg-white dark:bg-[#161B22] p-8 rounded-2xl shadow-sm border border-emerald-100 dark:border-emerald-900/30 transition-all">
+                <div className="flex items-center gap-3 mb-6">
+                   <div className="p-2 bg-emerald-50 dark:bg-emerald-900/20 rounded-lg text-emerald-600 dark:text-emerald-400">
+                      <ClipboardDocumentCheckIcon className="w-5 h-5" />
+                   </div>
+                   <h3 className="text-xl font-black dark:text-slate-200 tracking-tight">Faculty Evaluation</h3>
+                </div>
+                
+
+                <div className="bg-slate-50 dark:bg-slate-800/40 p-6 rounded-2xl border border-slate-100 dark:border-slate-800">
+                  <p className="text-sm font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest mb-3">Evaluator Notes</p>
+                  <p className="text-slate-700 dark:text-slate-300 text-base leading-relaxed whitespace-pre-wrap">
+                    {project.evaluation.professor_feedback}
+                  </p>
+                </div>
+             </div>
+           )}
+
+           {/* Faculty Evaluation Section */}
+           {(user?.role === 'faculty' || user?.role === 'professor') && project.status !== 'published' && (
+             <div className="bg-white dark:bg-[#161B22] p-8 rounded-2xl shadow-sm border border-indigo-100 dark:border-indigo-900/30">
+                <div className="flex items-center gap-3 mb-6">
+                   <div className="p-2 bg-emerald-50 dark:bg-emerald-900/20 rounded-lg text-emerald-600 dark:text-emerald-400">
+                      <ClipboardDocumentCheckIcon className="w-5 h-5" />
+                   </div>
+                   <h3 className="text-xl font-black dark:text-slate-200 tracking-tight">Faculty Evaluation</h3>
+                </div>
+                
+                {project.status === 'evaluated' ? (
+                  <div className="p-4 bg-emerald-50 dark:bg-emerald-900/10 rounded-xl border border-emerald-100 dark:border-emerald-800">
+                    <p className="text-emerald-700 dark:text-emerald-400 font-bold mb-2">Project Already Evaluated</p>
+                    <p className="text-sm text-emerald-600 dark:text-emerald-500 mb-4">You have successfully evaluated this project. You can edit your notes and score below if needed.</p>
+                  </div>
+                ) : null}
+
+                <div className="space-y-4 mt-4">
+                  <div>
+                    <label className="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-2">Evaluation Notes & Comments</label>
+                    <textarea 
+                      className="w-full bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 rounded-xl px-4 py-3 text-sm focus:ring-2 focus:ring-indigo-500 outline-none text-slate-900 dark:text-white min-h-[120px]"
+                      placeholder="Add your feedback, notes, or remarks here..."
+                      value={project.status === 'evaluated' && !evalNotes && project.evaluation?.professor_feedback ? project.evaluation.professor_feedback : evalNotes}
+                      onChange={(e) => setEvalNotes(e.target.value)}
+                    ></textarea>
+                  </div>
+
+                  <div className="pt-4 flex items-center gap-4">
+                    <button 
+                      onClick={handleEvaluate}
+                      disabled={evaluating}
+                      className="px-6 py-3 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-xl shadow-lg shadow-emerald-500/20 transition-all active:scale-95 disabled:opacity-50 flex items-center gap-2"
+                    >
+                      <CheckCircleIcon className="w-5 h-5" />
+                      {evaluating ? 'Processing...' : project.status === 'evaluated' ? 'Update Evaluation' : 'Mark as Evaluated'}
+                    </button>
+                  </div>
+                </div>
+             </div>
+           )}
         </div>
 
         {/* Right Column (Sidebar) */}
@@ -196,6 +282,9 @@ const ProjectDetailPage = () => {
                  </div>
               </div>
            )}
+
+
+
 
            {/* Repositioned Resources Section */}
            <div className="bg-white dark:bg-[#161B22] p-6 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-800">

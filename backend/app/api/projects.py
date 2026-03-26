@@ -276,6 +276,60 @@ async def get_project_details(
     return ProjectWithEvaluation.model_validate(project)
 
 
+@router.put("/{project_id}/evaluate", response_model=ProjectWithEvaluation)
+async def evaluate_project_by_faculty(
+    project_id: uuid.UUID,
+    faculty_comments: str = Form(None),
+    faculty_score: float = Form(None),
+    current_user: User = Depends(require_role(UserRole.PROFESSOR, UserRole.ADMIN)),
+    db: AsyncSession = Depends(get_db)
+):
+    """
+    Faculty marks a project as Evaluated.
+    """
+    stmt = select(Project).options(selectinload(Project.evaluation)).where(Project.id == project_id)
+    result = await db.execute(stmt)
+    project = result.scalar_one_or_none()
+    
+    if not project:
+        raise HTTPException(status_code=404, detail="Project not found")
+        
+    if project.faculty_id != current_user.id and current_user.role != UserRole.ADMIN:
+        raise HTTPException(status_code=403, detail="Not authorized to evaluate this project")
+        
+    # Update project status
+    project.status = ProjectStatus.EVALUATED
+    
+    # Update or create evaluation record
+    if not project.evaluation:
+        new_eval = Evaluation(
+            project_id=project.id,
+            status=EvaluationStatus.COMPLETED
+        )
+        db.add(new_eval)
+        await db.flush()
+        project.evaluation = new_eval
+        
+    # Store data
+    project.evaluation.evaluator_id = current_user.id
+    project.evaluation.professor_feedback = faculty_comments
+    if faculty_score is not None:
+        project.evaluation.professor_score_override = faculty_score
+        project.evaluation.total_score = faculty_score
+        
+    # We can use the existing `completed_at` to mark evaluation time
+    project.evaluation.completed_at = datetime.now(timezone.utc)
+    
+    await db.commit()
+    await db.refresh(project)
+    
+    from app.schemas.project import ProjectWithEvaluation
+    
+    validated = ProjectWithEvaluation.model_validate(project)
+    if validated.evaluation:
+        validated.evaluation.project = None
+    return validated
+
 @router.put("/{project_id}", response_model=ProjectResponse)
 async def update_project_metadata(
     project_id: uuid.UUID,

@@ -100,6 +100,7 @@ async def get_pending_evaluations(
         .join(Project, Project.id == Evaluation.project_id)
         .where(Evaluation.is_finalized == False)
         .where(Evaluation.status == EvaluationStatus.COMPLETED)
+        .where(Project.status != ProjectStatus.EVALUATED)
     )
 
     if current_user.role == UserRole.PROFESSOR:

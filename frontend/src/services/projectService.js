@@ -35,5 +35,14 @@ export const projectService = {
   updateProjectMetadata: async (id, data) => {
     const response = await api.put(`/projects/${id}`, data);
     return response.data;
+  },
+
+  evaluateProject: async (id, formData) => {
+    const response = await api.put(`/projects/${id}/evaluate`, formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data'
+      }
+    });
+    return response.data;
   }
 };

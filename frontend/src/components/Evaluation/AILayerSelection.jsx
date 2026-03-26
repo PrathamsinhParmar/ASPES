@@ -51,64 +51,79 @@ const AILayerSelection = () => {
   }
 
   return (
-    <div className="max-w-6xl mx-auto p-4 sm:p-6 lg:p-10 space-y-10 animate-fade-in pb-20">
+    <div className="max-w-7xl mx-auto p-4 sm:p-6 lg:p-8 space-y-2 animate-fade-in pb-20">
       
       {/* Decorative Glow */}
       <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full max-w-4xl h-96 bg-indigo-500/10 rounded-full blur-[120px] pointer-events-none -z-10"></div>
 
-      {/* Header */}
-      <div className="text-center max-w-3xl mx-auto space-y-6">
+      {/* Top Navigation Row */}
+      <div className="flex justify-between items-center mb-0 px-2 group">
         <button
-          onClick={() => navigate('/dashboard')}
-          className="inline-flex items-center text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] hover:text-indigo-600 transition-colors"
+          onClick={() => navigate(-1)}
+          className="flex items-center gap-2 text-sm font-medium text-slate-500 hover:text-slate-900 dark:hover:text-white transition-all transition-colors"
         >
-          <ArrowLeftIcon className="w-3 h-3 mr-2" />
-          Back to Dashboard
+          <ArrowLeftIcon className="w-4 h-4 transition-transform group-hover:-translate-x-1" />
+          <span>Back to Overview</span>
         </button>
-        <h1 className="text-4xl sm:text-5xl font-black text-gray-900 dark:text-white tracking-tight">
-          Select AI <span className="text-indigo-600 dark:text-indigo-400">Analysis Layer</span>
-        </h1>
-        <p className="text-sm font-medium text-gray-500 dark:text-slate-400 leading-relaxed px-4">
-          Your project <strong className="text-gray-700 dark:text-slate-300">&quot;{evaluation.project?.title || 'Unknown Project'}&quot;</strong> has been successfully processed. 
-          Choose a specific AI sub-engine below to visualize the results of the evaluation.
-        </p>
+
+        <div className="hidden sm:flex items-center gap-2">
+           <span className="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest">Target Project:</span>
+           <div className="px-4 py-1.5 bg-indigo-500/10 border border-indigo-500/20 rounded-xl">
+              <span className="text-xs font-black text-indigo-600 dark:text-indigo-400 tracking-tight">
+                {evaluation.project?.title || 'Unknown Project'}
+              </span>
+           </div>
+        </div>
       </div>
 
-      {/* Grid of Layers */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 pt-6">
-        {LAYERS.map(layer => {
-          const Icon = layer.icon;
-          return (
-            <Link
-              key={layer.segment}
-              to={`/evaluations/${id}/${layer.segment}`}
-              className="group bg-white dark:bg-slate-900 border border-gray-100 dark:border-slate-800 rounded-3xl p-6 shadow-sm hover:shadow-xl hover:shadow-indigo-500/10 transition-all hover:-translate-y-1 flex flex-col justify-between min-h-[220px] overflow-hidden relative"
-            >
-              <div className="absolute inset-0 bg-gradient-to-br from-transparent to-black/5 dark:to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
-              <div>
-                <div className={`w-14 h-14 rounded-2xl flex items-center justify-center border transition-colors duration-300 drop-shadow-sm mb-6 ${colorStyles[layer.color]}`}>
-                  <Icon className="w-7 h-7" />
+      {/* Main Container */}
+      <div className="pt-2"> {/* Minimal padding to reduce margin as requested */}
+        {/* Header content centered below the navigation row */}
+        <div className="text-center max-w-3xl mx-auto space-y-4 mb-10">
+          <h1 className="text-4xl lg:text-5xl font-black text-slate-900 dark:text-white tracking-tight">
+            Select AI <span className="text-indigo-600 dark:text-indigo-400">Analysis Layer</span>
+          </h1>
+          <p className="text-sm font-medium text-slate-500 dark:text-slate-400 leading-relaxed max-w-2xl mx-auto">
+            Choose a specific AI sub-engine below to visualize the results of the evaluation for 
+            <strong className="text-slate-900 dark:text-slate-200"> &quot;{evaluation.project?.title || 'this project'}&quot;</strong>.
+          </p>
+        </div>
+
+        {/* Grid of Layers */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 pt-4">
+          {LAYERS.map(layer => {
+            const Icon = layer.icon;
+            return (
+              <Link
+                key={layer.segment}
+                to={`/evaluations/${id}/${layer.segment}`}
+                className="group bg-white dark:bg-slate-900 border border-gray-100 dark:border-slate-800 rounded-3xl p-6 shadow-sm hover:shadow-xl hover:shadow-indigo-500/10 transition-all hover:-translate-y-1 flex flex-col justify-between min-h-[220px] overflow-hidden relative"
+              >
+                <div className="absolute inset-0 bg-gradient-to-br from-transparent to-black/5 dark:to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                <div>
+                  <div className={`w-14 h-14 rounded-2xl flex items-center justify-center border transition-colors duration-300 drop-shadow-sm mb-6 ${colorStyles[layer.color]}`}>
+                    <Icon className="w-7 h-7" />
+                  </div>
+                  <h3 className="text-lg font-black text-gray-900 dark:text-white group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors tracking-tight">
+                    {layer.label}
+                  </h3>
+                  <p className="mt-3 text-xs font-medium text-gray-500 dark:text-slate-400 leading-relaxed line-clamp-3">
+                    {layerDescriptions[layer.segment]}
+                  </p>
                 </div>
-                <h3 className="text-lg font-black text-gray-900 dark:text-white group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors tracking-tight">
-                  {layer.label}
-                </h3>
-                <p className="mt-3 text-xs font-medium text-gray-500 dark:text-slate-400 leading-relaxed line-clamp-3">
-                  {layerDescriptions[layer.segment]}
-                </p>
-              </div>
-              <div className="mt-6 flex items-center justify-between border-t border-gray-50 dark:border-slate-800/50 pt-4">
-                <span className="text-[10px] font-black uppercase tracking-widest text-slate-400">View Data</span>
-                <div className="w-6 h-6 rounded-full bg-gray-50 dark:bg-slate-800 group-hover:bg-indigo-100 dark:group-hover:bg-indigo-900 flex items-center justify-center transition-colors">
-                  <svg className="w-3 h-3 text-gray-400 group-hover:text-indigo-600 dark:group-hover:text-indigo-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M9 5l7 7-7 7" />
-                  </svg>
+                <div className="mt-6 flex items-center justify-between border-t border-gray-50 dark:border-slate-800/50 pt-4">
+                  <span className="text-[10px] font-black uppercase tracking-widest text-slate-400">View Data</span>
+                  <div className="w-6 h-6 rounded-full bg-gray-50 dark:bg-slate-800 group-hover:bg-indigo-100 dark:group-hover:bg-indigo-900 flex items-center justify-center transition-colors">
+                    <svg className="w-3 h-3 text-gray-400 group-hover:text-indigo-600 dark:group-hover:text-indigo-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M9 5l7 7-7 7" />
+                    </svg>
+                  </div>
                 </div>
-              </div>
-            </Link>
-          );
-        })}
+              </Link>
+            );
+          })}
+        </div>
       </div>
-      
     </div>
   );
 };

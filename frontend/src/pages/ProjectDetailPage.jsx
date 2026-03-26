@@ -64,140 +64,164 @@ const ProjectDetailPage = () => {
     project.evaluation.status === 'processing';
 
   return (
-    <div className="p-6 max-w-5xl mx-auto dark:text-white text-slate-900">
-      <div className="flex justify-between items-start mb-8">
+    <div className="p-4 lg:p-8 max-w-7xl mx-auto dark:text-white text-slate-900">
+      <div className="flex flex-col md:flex-row justify-between items-start gap-4 mb-10">
         <div>
-          <h1 className="text-4xl font-bold dark:text-white text-slate-900 flex items-center gap-3">
-            {project.title}
-            {project.team_name && (
-              <span className="px-3 py-1 rounded-full text-xs font-bold bg-indigo-100 dark:bg-indigo-900/30 text-indigo-700 dark:text-indigo-400 border border-indigo-200 dark:border-indigo-800 mt-1">
-                Team: {project.team_name}
-              </span>
-            )}
-          </h1>
-          <p className="text-gray-500 dark:text-gray-400 mt-2">{project.course_name}</p>
+          <div className="flex flex-wrap items-center gap-3">
+             <h1 className="text-3xl lg:text-4xl font-black dark:text-white text-slate-900 tracking-tight">
+               {project.title}
+             </h1>
+             <div className={`px-3 py-1 rounded-full font-bold uppercase text-[10px] tracking-widest ${
+               project.status === 'published' || project.status === 'evaluated'
+                 ? 'bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400' 
+                 : project.status === 'under_evaluation'
+                 ? 'bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-400'
+                 : 'bg-yellow-100 dark:bg-yellow-900/30 text-yellow-700 dark:text-yellow-400'
+             }`}>
+               {project.status.replace(/_/g, ' ')}
+             </div>
+          </div>
+          <p className="text-gray-500 dark:text-gray-400 mt-2 font-medium flex items-center gap-2">
+            <span className="w-2 h-2 rounded-full bg-blue-500"></span>
+            {project.course_name}
+          </p>
         </div>
-        <div className={`px-4 py-1 rounded-full font-bold uppercase text-sm ${
-          project.status === 'published' || project.status === 'evaluated'
-            ? 'bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400' 
-            : project.status === 'under_evaluation'
-            ? 'bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-400'
-            : 'bg-yellow-100 dark:bg-yellow-900/30 text-yellow-700 dark:text-yellow-400'
-        }`}>
-          {project.status.replace(/_/g, ' ')}
-        </div>
+        
+        {project.team_name && (
+          <div className="bg-indigo-50 dark:bg-indigo-900/20 border border-indigo-100 dark:border-indigo-800/50 px-4 py-2 rounded-2xl flex items-center gap-3">
+             <div className="p-2 bg-indigo-500 rounded-lg text-white">
+                <UserGroupIcon className="w-4 h-4" />
+             </div>
+             <div>
+                <p className="text-[10px] font-bold text-indigo-500 dark:text-indigo-400 uppercase tracking-widest leading-none mb-1">Team</p>
+                <p className="font-bold text-sm dark:text-indigo-200">{project.team_name}</p>
+             </div>
+          </div>
+        )}
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-        <div className="md:col-span-2 space-y-8">
-          <div className="bg-white dark:bg-[#161B22] p-8 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-800">
-             <h3 className="text-xl font-bold mb-4 dark:text-slate-200">Description</h3>
-             <p className="text-gray-600 dark:text-gray-400 leading-relaxed">{project.description || "No description provided."}</p>
-          </div>
-
-          <div className="bg-white dark:bg-[#161B22] p-8 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-800">
-             <h3 className="text-xl font-bold mb-4 dark:text-slate-200">Assets</h3>
-             <div className="space-y-4">
-                <div className="flex items-center justify-between p-4 bg-slate-50 dark:bg-slate-800/50 rounded-xl">
-                   <div className="flex items-center gap-3">
-                      <CodeBracketIcon className="w-6 h-6 text-gray-400 dark:text-gray-500" />
-                      <span className="font-medium dark:text-slate-300">Source Code Bundle</span>
-                   </div>
-                   <span className="text-sm text-gray-500 dark:text-gray-500">Stored Securely</span>
-                </div>
-                <div className="flex items-center justify-between p-4 bg-slate-50 dark:bg-slate-800/50 rounded-xl">
-                   <div className="flex items-center gap-3">
-                      <DocumentIcon className="w-6 h-6 text-gray-400 dark:text-gray-500" />
-                      <span className="font-medium dark:text-slate-300">Academic Report</span>
-                   </div>
-                   <span className="text-sm text-gray-500 dark:text-gray-500">Stored Securely</span>
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
+        {/* Left Column (Main Content) */}
+        <div className="lg:col-span-8 space-y-8">
+           {/* Expandable Description Section */}
+           <div className="bg-white dark:bg-[#161B22] p-8 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-800 flex flex-col transition-all">
+              <div className="flex items-center gap-3 mb-6">
+                 <div className="p-2 bg-blue-50 dark:bg-blue-900/20 rounded-lg text-blue-600 dark:text-blue-400 font-bold">
+                    <ChartBarIcon className="w-5 h-5" />
                  </div>
+                 <h3 className="text-xl font-black dark:text-slate-200 tracking-tight">Project Description</h3>
               </div>
-          </div>
+              <p className="text-slate-600 dark:text-gray-400 text-base leading-relaxed whitespace-pre-wrap">{project.description || "No description provided."}</p>
+           </div>
 
-          {project.team_members && (
-            <div className="bg-white dark:bg-[#161B22] p-8 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-800">
-               <h3 className="text-xl font-bold mb-6 flex items-center gap-2 dark:text-slate-200">
-                 <UserGroupIcon className="w-6 h-6 text-indigo-500" />
-                 Team Members
-               </h3>
-               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                 {(() => {
-                   try {
-                     const members = typeof project.team_members === 'string' ? JSON.parse(project.team_members) : project.team_members;
-                     return members?.map((member, idx) => (
-                       <div key={idx} className="flex items-center gap-4 p-4 bg-slate-50 dark:bg-slate-800 rounded-xl border border-slate-100 dark:border-slate-700">
-                         <div className="h-10 w-10 flex items-center justify-center rounded-full bg-indigo-100 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-400">
-                           <IdentificationIcon className="w-5 h-5" />
-                         </div>
-                         <div>
-                           <p className="text-sm font-bold text-slate-900 dark:text-white leading-tight">{member.name}</p>
-                           <p className="text-[11px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-widest">{member.enrollment}</p>
-                         </div>
-                       </div>
-                     ));
-                   } catch(e) { return <p className="text-xs text-gray-400 dark:text-gray-500">Unable to display team members</p>; }
-                 })()}
-               </div>
-            </div>
-          )}
+           {/* Collaborators Section */}
+           {project.team_members && (
+             <div className="bg-white dark:bg-[#161B22] p-8 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-800">
+                <div className="flex items-center gap-3 mb-6">
+                   <div className="p-2 bg-indigo-50 dark:bg-indigo-900/20 rounded-lg text-indigo-600 dark:text-indigo-400">
+                      <UserGroupIcon className="w-5 h-5" />
+                   </div>
+                   <h3 className="text-lg font-bold dark:text-slate-200">Collaborators</h3>
+                </div>
+                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-5">
+                  {(() => {
+                    try {
+                      const members = typeof project.team_members === 'string' ? JSON.parse(project.team_members) : project.team_members;
+                      return members?.map((member, idx) => (
+                        <div key={idx} className="flex items-center gap-3 p-4 bg-slate-50 dark:bg-slate-800/40 rounded-xl border border-slate-100 dark:border-slate-800 hover:border-indigo-200 dark:hover:border-indigo-900/50 transition-all group">
+                          <div className="h-10 w-10 flex items-center justify-center rounded-full bg-white dark:bg-slate-800 border-2 border-slate-200 dark:border-slate-700 text-indigo-600 dark:text-indigo-400 shadow-sm group-hover:scale-110 transition-transform">
+                            <IdentificationIcon className="w-5 h-5" />
+                          </div>
+                          <div className="min-w-0">
+                            <p className="text-sm font-bold text-slate-900 dark:text-white truncate leading-tight">{member.name}</p>
+                            <p className="text-[10px] font-bold text-slate-500 dark:text-slate-500 uppercase tracking-wider">{member.enrollment}</p>
+                          </div>
+                        </div>
+                      ));
+                    } catch(e) { return <p className="text-xs text-gray-400 dark:text-gray-500 italic">Unable to retrieve team metadata</p>; }
+                  })()}
+                </div>
+             </div>
+           )}
         </div>
 
-        <div className="space-y-6">
+        {/* Right Column (Sidebar) */}
+        <div className="lg:col-span-4 space-y-6">
+           {/* Evaluation Result / Action Area */}
            {project.evaluation && project.evaluation.status === 'completed' ? (
-              <div className="bg-blue-600 p-8 rounded-2xl shadow-lg text-white">
-                 <h3 className="text-lg font-bold mb-2">Evaluation Summary</h3>
-                 <div className="text-5xl font-black mb-4">
-                   {project.evaluation.total_score != null
-                     ? Math.round(project.evaluation.total_score)
-                     : '—'}
-                   <span className="text-xl opacity-60">/100</span>
+              <div className="bg-gradient-to-br from-blue-600 to-indigo-700 p-8 rounded-3xl shadow-xl shadow-blue-500/10 text-white relative overflow-hidden">
+                 <div className="absolute -top-10 -right-10 w-32 h-32 bg-white opacity-5 rounded-full"></div>
+                 <h3 className="text-sm font-extrabold mb-6 uppercase tracking-[0.2em] opacity-80">Final Score</h3>
+                 <div className="flex items-baseline gap-2 mb-8">
+                   <span className="text-7xl font-black tracking-tighter">
+                     {project.evaluation.total_score != null ? Math.round(project.evaluation.total_score) : '—'}
+                   </span>
+                   <span className="text-2xl font-bold opacity-40">/100</span>
                  </div>
                  <Link 
                    to={`/evaluations/${project.evaluation.id}`}
-                   className="block w-full text-center py-3 bg-white text-blue-600 font-bold rounded-xl hover:bg-blue-50 transition-colors"
+                   className="flex items-center justify-center gap-2 w-full py-4 bg-white text-blue-700 font-extrabold rounded-2xl hover:bg-blue-50 transition-all shadow-lg hover:shadow-xl active:scale-95 group"
                  >
-                   View Analysis
+                   <span>View Analysis</span>
+                   <ArrowPathIcon className="w-4 h-4 transition-transform group-hover:rotate-180 duration-500" />
                  </Link>
               </div>
            ) : project.evaluation && project.evaluation.status === 'failed' ? (
-              <div className="bg-red-50 dark:bg-red-900/10 p-8 rounded-2xl border border-red-200 dark:border-red-900/30">
-                 <h3 className="text-lg font-bold text-red-900 dark:text-red-400 mb-2">Evaluation Failed</h3>
-                 <p className="text-sm text-red-600 dark:text-red-300 mb-4">The AI evaluation encountered an error. Please try resubmitting your project.</p>
-                 <Link to="/projects/new" className="block w-full text-center py-3 bg-red-600 text-white font-bold rounded-xl hover:bg-red-700 transition-colors">
-                   Resubmit
+              <div className="bg-white dark:bg-[#161B22] p-8 rounded-3xl border border-red-100 dark:border-red-900/30 flex flex-col items-center text-center">
+                 <div className="w-16 h-16 bg-red-50 dark:bg-red-900/20 rounded-full flex items-center justify-center mb-4 text-red-500">
+                    <CheckCircleIcon className="w-8 h-8" />
+                 </div>
+                 <h3 className="text-xl font-black text-slate-900 dark:text-red-400 mb-2 tracking-tight">Analysis Failed</h3>
+                 <p className="text-sm text-slate-500 dark:text-red-300/60 mb-8 max-w-[200px]">The AI engine encountered an obstacle parsing this submission.</p>
+                 <Link to="/projects/new" className="w-full py-4 bg-red-600 text-white font-extrabold rounded-2xl hover:bg-red-700 transition-all shadow-lg shadow-red-500/20">
+                   Restart Analysis
                  </Link>
               </div>
            ) : (
-              /* Pending / Processing — with live polling indicator */
-              <div className="bg-gradient-to-br from-gray-900 to-gray-800 p-8 rounded-2xl border border-gray-700 text-white">
-                 <div className="flex items-center gap-3 mb-4">
-                   <div className="w-10 h-10 border-3 border-blue-500 border-t-transparent rounded-full animate-spin flex-shrink-0"></div>
-                   <h3 className="text-lg font-bold">AI Engine Running</h3>
+              <div className="bg-slate-900 p-8 rounded-3xl border border-slate-800 text-white shadow-2xl">
+                 <div className="flex items-center gap-3 mb-6">
+                    <div className="w-10 h-10 border-3 border-blue-500 border-t-transparent rounded-full animate-spin flex-shrink-0"></div>
+                    <h3 className="text-lg font-bold">AI Running</h3>
                  </div>
-                 <p className="text-sm text-gray-400 mb-6 leading-relaxed">
-                   The automated evaluation system is analysing your project. This page refreshes automatically every few seconds.
+                 <p className="text-xs text-gray-400 mb-8 leading-relaxed opacity-70">
+                   System is currently evaluating project files. Results update automatically.
                  </p>
-
-                 {/* Animated processing indicator */}
-                 <div className="space-y-3">
-                   {['Code Quality Analysis', 'AI Detection Scan', 'Plagiarism Check', 'Report Alignment'].map((step, i) => (
+                 <div className="space-y-4">
+                   {['Core Analysis', 'Security Scan', 'Doc Review'].map((step, i) => (
                      <div key={i} className="flex items-center gap-3">
-                       <div className={`w-5 h-5 rounded-full flex-shrink-0 flex items-center justify-center ${
-                         i === 0 ? 'bg-blue-500 animate-pulse' : 'bg-gray-700'
-                       }`}>
-                         {i === 0 && <ArrowPathIcon className="w-3 h-3 text-white animate-spin" />}
-                       </div>
-                       <span className={`text-xs font-bold ${i === 0 ? 'text-blue-300' : 'text-gray-600'}`}>{step}</span>
+                       <div className={`w-3 h-3 rounded-full ${i === 0 ? 'bg-blue-500 animate-pulse' : 'bg-slate-700'}`}></div>
+                       <span className={`text-[10px] font-bold ${i === 0 ? 'text-blue-300' : 'text-slate-600'}`}>{step}</span>
                      </div>
                    ))}
                  </div>
-
-                 <p className="mt-6 text-[10px] font-bold text-gray-600 dark:text-gray-500 uppercase tracking-widest">
-                   Auto-refreshing... analysis results will appear here when ready.
-                 </p>
               </div>
            )}
+
+           {/* Repositioned Resources Section */}
+           <div className="bg-white dark:bg-[#161B22] p-6 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-800">
+              <div className="flex items-center gap-3 mb-6">
+                 <div className="p-2 bg-purple-50 dark:bg-purple-900/20 rounded-lg text-purple-600 dark:text-purple-400">
+                    <DocumentIcon className="w-5 h-5" />
+                 </div>
+                 <h3 className="text-lg font-bold dark:text-slate-200">Resources</h3>
+              </div>
+              <div className="space-y-3">
+                 <div className="flex items-center justify-between p-3 bg-slate-50 dark:bg-slate-800/50 rounded-xl border border-slate-100 dark:border-slate-800 transition-colors hover:bg-slate-100 dark:hover:bg-slate-800 cursor-pointer">
+                    <div className="flex items-center gap-3">
+                       <CodeBracketIcon className="w-5 h-5 text-gray-400 dark:text-gray-500" />
+                       <span className="text-sm font-semibold dark:text-slate-300">Source Bundle</span>
+                    </div>
+                    <span className="text-[10px] font-black text-blue-500 dark:text-blue-400 uppercase tracking-tighter">Secured</span>
+                 </div>
+                 <div className="flex items-center justify-between p-3 bg-slate-50 dark:bg-slate-800/50 rounded-xl border border-slate-100 dark:border-slate-800 transition-colors hover:bg-slate-100 dark:hover:bg-slate-800 cursor-pointer">
+                    <div className="flex items-center gap-3">
+                       <DocumentIcon className="w-5 h-5 text-gray-400 dark:text-gray-500" />
+                       <span className="text-sm font-semibold dark:text-slate-300">Technical Report</span>
+                    </div>
+                    <span className="text-[10px] font-black text-blue-500 dark:text-blue-400 uppercase tracking-tighter">Secured</span>
+                 </div>
+              </div>
+           </div>
         </div>
       </div>
     </div>

@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import { projectService } from '../services/projectService';
 import { useAuth } from '../context/AuthContext';
-import { ChartBarIcon, DocumentIcon, CodeBracketIcon, ArrowPathIcon, CheckCircleIcon, UserGroupIcon, IdentificationIcon, ClipboardDocumentCheckIcon } from '@heroicons/react/24/outline';
+import { ChartBarIcon, DocumentIcon, CodeBracketIcon, ArrowPathIcon, CheckCircleIcon, UserGroupIcon, IdentificationIcon, ClipboardDocumentCheckIcon, ArrowDownTrayIcon, EyeIcon, XMarkIcon } from '@heroicons/react/24/outline';
 import { toast } from 'react-toastify';
 
 const POLL_INTERVAL_MS = 3000; // Poll every 3 seconds
@@ -12,11 +12,62 @@ const ProjectDetailPage = () => {
   const navigate = useNavigate();
   const [project, setProject] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [downloadingSource, setDownloadingSource] = useState(false);
+  const [viewerOpen, setViewerOpen] = useState(false);
   const pollingRef = useRef(null);
   const { user } = useAuth();
 
   const [evalNotes, setEvalNotes] = useState('');
   const [evaluating, setEvaluating] = useState(false);
+
+  // File URL Helper
+  const getUploadUrl = (path) => {
+    if (!path) return '';
+    const normalizedPath = path.replace(/\\/g, '/');
+    const baseUrl = process.env.REACT_APP_API_URL 
+      ? process.env.REACT_APP_API_URL.replace('/api/v1', '') 
+      : 'http://localhost:8000';
+    const finalPath = normalizedPath.startsWith('uploads/') ? normalizedPath : `uploads/${normalizedPath}`;
+    return `${baseUrl}/${finalPath}`;
+  };
+
+  const handleDownloadSource = async () => {
+    const path = project?.code_file_path;
+    if (!path) {
+      toast.error('Source bundle not available.');
+      return;
+    }
+    setDownloadingSource(true);
+    toast.info('Starting download...', { autoClose: 2000 });
+    try {
+      const url = getUploadUrl(path);
+      const response = await fetch(url);
+      if (!response.ok) throw new Error('File not found');
+      const blob = await response.blob();
+      const downloadUrl = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = downloadUrl;
+      const fileName = path.split(/[/\\]/).pop() || 'source_bundle.zip';
+      a.download = fileName;
+      document.body.appendChild(a);
+      a.click();
+      window.URL.revokeObjectURL(downloadUrl);
+      document.body.removeChild(a);
+    } catch (error) {
+      console.error("Download error:", error);
+      toast.error('Failed to download source file. It might be missing or corrupted.');
+    } finally {
+      setDownloadingSource(false);
+    }
+  };
+
+  const handleViewReport = () => {
+    if (!project?.report_file_path) {
+      toast.error('Technical report not available.');
+      return;
+    }
+    setViewerOpen(true);
+  };
 
   const handleEvaluate = async () => {
     if (!window.confirm("Are you sure you want to confirm your evaluation? This will mark the project as 'Evaluated'.")) return;
@@ -295,25 +346,86 @@ const ProjectDetailPage = () => {
                  </div>
                  <h3 className="text-lg font-bold dark:text-slate-200">Resources</h3>
               </div>
-              <div className="space-y-3">
-                 <div className="flex items-center justify-between p-3 bg-slate-50 dark:bg-slate-800/50 rounded-xl border border-slate-100 dark:border-slate-800 transition-colors hover:bg-slate-100 dark:hover:bg-slate-800 cursor-pointer">
+               <div className="space-y-3">
+                 <button 
+                    onClick={handleDownloadSource}
+                    disabled={downloadingSource}
+                    className="w-full flex items-center justify-between p-3 bg-slate-50 dark:bg-slate-800/50 rounded-xl border border-slate-100 dark:border-slate-800 transition-colors hover:bg-slate-100 dark:hover:bg-slate-800 cursor-pointer group disabled:opacity-50 disabled:cursor-not-allowed"
+                 >
                     <div className="flex items-center gap-3">
-                       <CodeBracketIcon className="w-5 h-5 text-gray-400 dark:text-gray-500" />
-                       <span className="text-sm font-semibold dark:text-slate-300">Source Bundle</span>
+                       <CodeBracketIcon className="w-5 h-5 text-gray-400 dark:text-gray-500 group-hover:text-blue-500 transition-colors" />
+                       <span className="text-sm font-semibold dark:text-slate-300">Download Source</span>
                     </div>
-                    <span className="text-[10px] font-black text-blue-500 dark:text-blue-400 uppercase tracking-tighter">Secured</span>
-                 </div>
-                 <div className="flex items-center justify-between p-3 bg-slate-50 dark:bg-slate-800/50 rounded-xl border border-slate-100 dark:border-slate-800 transition-colors hover:bg-slate-100 dark:hover:bg-slate-800 cursor-pointer">
+                    {downloadingSource ? (
+                       <div className="w-4 h-4 border-2 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
+                    ) : (
+                       <ArrowDownTrayIcon className="w-4 h-4 text-blue-500 dark:text-blue-400 group-hover:scale-110 transition-transform" />
+                    )}
+                 </button>
+                 <button 
+                    onClick={handleViewReport}
+                    className="w-full flex items-center justify-between p-3 bg-slate-50 dark:bg-slate-800/50 rounded-xl border border-slate-100 dark:border-slate-800 transition-colors hover:bg-slate-100 dark:hover:bg-slate-800 cursor-pointer group"
+                 >
                     <div className="flex items-center gap-3">
-                       <DocumentIcon className="w-5 h-5 text-gray-400 dark:text-gray-500" />
-                       <span className="text-sm font-semibold dark:text-slate-300">Technical Report</span>
+                       <DocumentIcon className="w-5 h-5 text-gray-400 dark:text-gray-500 group-hover:text-purple-500 transition-colors" />
+                       <span className="text-sm font-semibold dark:text-slate-300">View Technical Report</span>
                     </div>
-                    <span className="text-[10px] font-black text-blue-500 dark:text-blue-400 uppercase tracking-tighter">Secured</span>
-                 </div>
+                    <EyeIcon className="w-4 h-4 text-purple-500 dark:text-purple-400 group-hover:scale-110 transition-transform" />
+                 </button>
               </div>
            </div>
-        </div>
+         </div>
       </div>
+
+      {viewerOpen && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-slate-900/80 backdrop-blur-sm p-4 lg:p-10">
+          <div className="bg-white dark:bg-slate-900 rounded-3xl shadow-2xl w-full max-w-5xl h-full pb-0 sm:h-[90vh] flex flex-col overflow-hidden border border-slate-200 dark:border-slate-800 animate-in zoom-in-95 duration-200">
+            <div className="flex flex-wrap items-center justify-between p-4 sm:p-6 border-b border-slate-100 dark:border-slate-800 bg-slate-50 dark:bg-slate-900/50">
+              <div className="flex items-center gap-3 w-full sm:w-auto mb-4 sm:mb-0">
+                <div className="p-2 bg-purple-100 dark:bg-purple-900/30 text-purple-600 dark:text-purple-400 rounded-xl">
+                  <DocumentIcon className="w-6 h-6" />
+                </div>
+                <div>
+                  <h3 className="text-lg font-black text-slate-900 dark:text-white leading-tight">Technical Report Viewer</h3>
+                  <p className="text-xs font-bold text-slate-500 uppercase tracking-widest truncate max-w-[200px] sm:max-w-md">
+                    {project?.report_file_path?.split(/[/\\]/).pop() || "Document"}
+                  </p>
+                </div>
+              </div>
+              <div className="flex items-center gap-3 w-full sm:w-auto justify-end">
+                <button 
+                  onClick={() => {
+                    const url = getUploadUrl(project?.report_file_path);
+                    const a = document.createElement('a');
+                    a.href = url;
+                    a.download = project?.report_file_path?.split(/[/\\]/).pop() || 'technical_report.pdf';
+                    document.body.appendChild(a);
+                    a.click();
+                    document.body.removeChild(a);
+                  }}
+                  className="flex-1 sm:flex-none flex justify-center items-center gap-2 px-5 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-bold rounded-xl transition-all shadow-md hover:shadow-xl active:scale-95"
+                >
+                  <ArrowDownTrayIcon className="w-4 h-4" />
+                  <span>Download File</span>
+                </button>
+                <button 
+                  onClick={() => setViewerOpen(false)}
+                  className="p-2.5 bg-white dark:bg-slate-800 hover:bg-red-50 dark:hover:bg-red-900/20 text-slate-400 hover:text-red-500 rounded-xl transition-colors border border-slate-200 dark:border-slate-700 shadow-sm"
+                >
+                  <XMarkIcon className="w-5 h-5" />
+                </button>
+              </div>
+            </div>
+            <div className="flex-1 bg-slate-100/50 dark:bg-[#0d1117] p-2 sm:p-4 overflow-hidden relative rounded-b-3xl">
+              <iframe 
+                src={getUploadUrl(project?.report_file_path)} 
+                title="Document Viewer" 
+                className="w-full h-full rounded-2xl border border-slate-200 dark:border-slate-800 shadow-inner bg-white dark:bg-slate-900"
+              />
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

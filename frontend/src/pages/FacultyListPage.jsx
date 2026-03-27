@@ -21,7 +21,7 @@ import {
 } from '@heroicons/react/24/outline';
 import { format } from 'date-fns';
 
-const API_BASE_URL = api.defaults.baseURL?.replace('/api/v1', '') || 'http://localhost:8000';
+const API_BASE_URL = api.defaults.baseURL?.replace('/api/v1', '') ?? '';
 
 // Validation schema for creating a new faculty account
 const facultySchema = yup.object().shape({

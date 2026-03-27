@@ -16,6 +16,9 @@ const ProjectDetailPage = () => {
   const [viewerOpen, setViewerOpen] = useState(false);
   const pollingRef = useRef(null);
   const { user } = useAuth();
+  
+  const [reportBlobUrl, setReportBlobUrl] = useState(null);
+  const [reportLoading, setReportLoading] = useState(false);
 
   const [evalNotes, setEvalNotes] = useState('');
   const [evaluating, setEvaluating] = useState(false);
@@ -26,7 +29,7 @@ const ProjectDetailPage = () => {
     const normalizedPath = path.replace(/\\/g, '/');
     const baseUrl = process.env.REACT_APP_API_URL 
       ? process.env.REACT_APP_API_URL.replace('/api/v1', '') 
-      : 'http://localhost:8000';
+      : '';
     const finalPath = normalizedPath.startsWith('uploads/') ? normalizedPath : `uploads/${normalizedPath}`;
     return `${baseUrl}/${finalPath}`;
   };
@@ -61,12 +64,27 @@ const ProjectDetailPage = () => {
     }
   };
 
-  const handleViewReport = () => {
+  const handleViewReport = async () => {
     if (!project?.report_file_path) {
       toast.error('Technical report not available.');
       return;
     }
     setViewerOpen(true);
+    if (!reportBlobUrl) {
+      try {
+        setReportLoading(true);
+        const url = getUploadUrl(project.report_file_path);
+        const response = await fetch(url);
+        if (!response.ok) throw new Error('File not found');
+        const blob = await response.blob();
+        setReportBlobUrl(window.URL.createObjectURL(blob));
+      } catch (err) {
+        toast.error('Failed to load report document.');
+        setViewerOpen(false);
+      } finally {
+        setReportLoading(false);
+      }
+    }
   };
 
   const handleEvaluate = async () => {
@@ -395,9 +413,8 @@ const ProjectDetailPage = () => {
               <div className="flex items-center gap-3 w-full sm:w-auto justify-end">
                 <button 
                   onClick={() => {
-                    const url = getUploadUrl(project?.report_file_path);
                     const a = document.createElement('a');
-                    a.href = url;
+                    a.href = reportBlobUrl || getUploadUrl(project?.report_file_path);
                     a.download = project?.report_file_path?.split(/[/\\]/).pop() || 'technical_report.pdf';
                     document.body.appendChild(a);
                     a.click();
@@ -416,12 +433,19 @@ const ProjectDetailPage = () => {
                 </button>
               </div>
             </div>
-            <div className="flex-1 bg-slate-100/50 dark:bg-[#0d1117] p-2 sm:p-4 overflow-hidden relative rounded-b-3xl">
-              <iframe 
-                src={getUploadUrl(project?.report_file_path)} 
-                title="Document Viewer" 
-                className="w-full h-full rounded-2xl border border-slate-200 dark:border-slate-800 shadow-inner bg-white dark:bg-slate-900"
-              />
+            <div className="flex-1 bg-slate-100/50 dark:bg-[#0d1117] p-2 sm:p-4 overflow-hidden relative rounded-b-3xl flex flex-col justify-center items-center">
+              {reportLoading ? (
+                <div className="flex flex-col items-center justify-center space-y-4">
+                  <div className="w-12 h-12 border-4 border-indigo-500 border-t-transparent rounded-full animate-spin"></div>
+                  <p className="text-sm text-slate-500 font-semibold uppercase tracking-widest">Loading Report...</p>
+                </div>
+              ) : (
+                <iframe 
+                  src={reportBlobUrl || ''} 
+                  title="Document Viewer" 
+                  className="w-full h-full rounded-2xl border border-slate-200 dark:border-slate-800 shadow-inner bg-white dark:bg-slate-900"
+                />
+              )}
             </div>
           </div>
         </div>

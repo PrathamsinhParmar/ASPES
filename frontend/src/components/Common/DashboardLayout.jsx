@@ -18,7 +18,7 @@ import {
   InboxArrowDownIcon
 } from '@heroicons/react/24/outline';
 
-const API_BASE_URL = api.defaults.baseURL?.replace('/api/v1', '') || 'http://localhost:8000';
+const API_BASE_URL = api.defaults.baseURL?.replace('/api/v1', '') ?? '';
 
 const getNavItems = (role) => {
   const normRole = (role || '').toString().trim().toUpperCase();

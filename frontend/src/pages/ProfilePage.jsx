@@ -7,7 +7,7 @@ import {
 } from '@heroicons/react/24/outline';
 import api from '../services/api';
 
-const API_BASE_URL = api.defaults.baseURL?.replace('/api/v1', '') || 'http://localhost:8000';
+const API_BASE_URL = api.defaults.baseURL?.replace('/api/v1', '') ?? '';
 
 const ProfilePage = () => {
   const { user } = useAuth();

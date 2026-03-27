@@ -1,9 +1,10 @@
-import React, { useState, useEffect, useRef } from 'react';
+﻿import React, { useState, useEffect, useRef } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import { projectService } from '../services/projectService';
 import { useAuth } from '../context/AuthContext';
-import { ChartBarIcon, DocumentIcon, CodeBracketIcon, ArrowPathIcon, CheckCircleIcon, UserGroupIcon, IdentificationIcon, ClipboardDocumentCheckIcon, ArrowDownTrayIcon, EyeIcon, XMarkIcon } from '@heroicons/react/24/outline';
+import { ChartBarIcon, DocumentIcon, CodeBracketIcon, ArrowPathIcon, CheckCircleIcon, UserGroupIcon, IdentificationIcon, ClipboardDocumentCheckIcon, ArrowDownTrayIcon, EyeIcon, XMarkIcon, DocumentChartBarIcon } from '@heroicons/react/24/outline';
 import { toast } from 'react-toastify';
+import ReportModal from '../components/Report/ReportModal';
 
 const POLL_INTERVAL_MS = 3000; // Poll every 3 seconds
 
@@ -22,6 +23,7 @@ const ProjectDetailPage = () => {
 
   const [evalNotes, setEvalNotes] = useState('');
   const [evaluating, setEvaluating] = useState(false);
+  const [reportModalOpen, setReportModalOpen] = useState(false);
 
   // File URL Helper
   const getUploadUrl = (path) => {
@@ -313,13 +315,23 @@ const ProjectDetailPage = () => {
                    </span>
                    <span className="text-2xl font-bold opacity-40">/100</span>
                  </div>
-                 <Link 
-                   to={`/evaluations/${project.evaluation.id}`}
-                   className="flex items-center justify-center gap-2 w-full py-4 bg-white text-blue-700 font-extrabold rounded-2xl hover:bg-blue-50 transition-all shadow-lg hover:shadow-xl active:scale-95 group"
-                 >
-                   <span>View Analysis</span>
-                   <ArrowPathIcon className="w-4 h-4 transition-transform group-hover:rotate-180 duration-500" />
-                 </Link>
+                 <div className="space-y-3">
+                   <Link 
+                     to={`/evaluations/${project.evaluation.id}`}
+                     className="flex items-center justify-center gap-2 w-full py-3.5 bg-white text-blue-700 font-extrabold rounded-2xl hover:bg-blue-50 transition-all shadow-lg hover:shadow-xl active:scale-95 group"
+                   >
+                     <span>View Analysis</span>
+                     <ArrowPathIcon className="w-4 h-4 transition-transform group-hover:rotate-180 duration-500" />
+                   </Link>
+                   <button
+                     id="generate-report-btn"
+                     onClick={() => setReportModalOpen(true)}
+                     className="flex items-center justify-center gap-2 w-full py-3.5 bg-white/15 hover:bg-white/25 border border-white/30 text-white font-bold rounded-2xl transition-all active:scale-95"
+                   >
+                     <DocumentChartBarIcon className="w-4 h-4" />
+                     Generate Report
+                   </button>
+                 </div>
               </div>
            ) : project.evaluation && project.evaluation.status === 'failed' ? (
               <div className="bg-white dark:bg-[#161B22] p-8 rounded-3xl border border-red-100 dark:border-red-900/30 flex flex-col items-center text-center">
@@ -450,8 +462,17 @@ const ProjectDetailPage = () => {
           </div>
         </div>
       )}
+
+      {/* AI Analysis Report Modal */}
+      <ReportModal
+        projectId={id}
+        projectTitle={project?.title}
+        isOpen={reportModalOpen}
+        onClose={() => setReportModalOpen(false)}
+      />
     </div>
   );
 };
 
 export default ProjectDetailPage;
+

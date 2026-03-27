@@ -87,6 +87,7 @@ pdfplumber==0.11.1               # Advanced PDF text/table extraction
 docx2txt==0.8                    # Simple docx text extraction
 Pillow==10.4.0                   # Image processing (for PDF images)
 chardet==5.2.0                   # Character encoding detection
+reportlab==4.2.5                 # PDF generation for report downloads
 
 # ------------------------------------------------------------------------------
 # File Handling & Archiving

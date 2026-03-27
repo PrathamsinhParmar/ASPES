@@ -82,11 +82,11 @@ const ScoreBar = ({ label, score, weight, inverse }) => {
   return (
     <div className="space-y-1">
       <div className="flex justify-between items-center">
-        <span className={`text-sm font-medium ${labelColor}`}>{label}{weight && <span className={`font-normal ml-1 ${weightColor}`}>({weight})</span>}</span>
-        <span className={`text-base font-semibold ${scoreTextColor}`}>{Math.round(s)}/100</span>
+        <span className={`text-xs sm:text-sm font-medium ${labelColor}`}>{label}{weight && <span className={`font-normal ml-1 ${weightColor}`}>({weight})</span>}</span>
+        <span className={`text-sm sm:text-base font-semibold ${scoreTextColor}`}>{Math.round(s)}/100</span>
       </div>
-      <div className={`w-full rounded-full h-2.5 overflow-hidden ${trackColor}`}>
-        <div className={`h-2.5 rounded-full ${color} transition-all duration-1000`} style={{ width: `${s}%` }} />
+      <div className={`w-full rounded-full h-2 sm:h-2.5 overflow-hidden ${trackColor}`}>
+        <div className={`h-2 sm:h-2.5 rounded-full ${color} transition-all duration-1000`} style={{ width: `${s}%` }} />
       </div>
     </div>
   );
@@ -96,29 +96,29 @@ const ScoreBar = ({ label, score, weight, inverse }) => {
 
 const SectionCard = ({ icon: Icon, iconColor, title, score, grade, riskLevel, summary, children }) => (
   <div className="bg-white dark:bg-[#161B22] rounded-2xl border border-gray-100 dark:border-gray-800 overflow-hidden">
-    <div className="flex items-center justify-between p-5 border-b border-gray-100 dark:border-gray-800">
-      <div className="flex items-center gap-3">
-        <div className={`p-2 rounded-xl ${iconColor}`}>
-          <Icon className="w-5 h-5" />
+    <div className="flex items-center justify-between p-4 sm:p-5 border-b border-gray-100 dark:border-gray-800">
+      <div className="flex items-center gap-2 sm:gap-3">
+        <div className={`p-1.5 sm:p-2 rounded-xl ${iconColor}`}>
+          <Icon className="w-4 h-4 sm:w-5 sm:h-5" />
         </div>
-        <h3 className="text-lg font-semibold text-slate-900 dark:text-white">{title}</h3>
+        <h3 className="text-base sm:text-lg font-semibold text-slate-900 dark:text-white leading-tight">{title}</h3>
       </div>
-      <div className="flex items-center gap-2">
+      <div className="flex items-center gap-1.5 sm:gap-2">
         {riskLevel && (
-          <span className={`px-2.5 py-1 rounded-full text-sm font-medium uppercase tracking-wider ${getRiskBadge(riskLevel)}`}>
+          <span className={`px-2 py-0.5 sm:px-2.5 sm:py-1 rounded-full text-[10px] sm:text-sm font-medium uppercase tracking-wider ${getRiskBadge(riskLevel)}`}>
             {riskLevel}
           </span>
         )}
         {score != null && (
-          <span className={`text-2xl font-semibold ${getScoreColor(score)}`}>{Math.round(score)}<span className="text-base font-medium text-gray-400">/100</span></span>
+          <span className={`text-xl sm:text-2xl font-semibold ${getScoreColor(score)}`}>{Math.round(score)}<span className="text-xs sm:text-base font-medium text-gray-400">/100</span></span>
         )}
         {grade && (
-          <span className={`text-xl font-semibold ${getGradeColor(grade)}`}>{grade}</span>
+          <span className={`text-lg sm:text-xl font-semibold ${getGradeColor(grade)}`}>{grade}</span>
         )}
       </div>
     </div>
-    <div className="p-5">
-      {summary && <p className="text-base text-slate-600 dark:text-slate-400 leading-relaxed mb-4">{summary}</p>}
+    <div className="p-4 sm:p-5">
+      {summary && <p className="text-sm sm:text-base text-slate-600 dark:text-slate-400 leading-relaxed mb-4">{summary}</p>}
       {children}
     </div>
   </div>
@@ -127,13 +127,13 @@ const SectionCard = ({ icon: Icon, iconColor, title, score, grade, riskLevel, su
 // ─── Flag Badge ──────────────────────────────────────────────────────────────
 
 const FlagBadge = ({ detected, trueLabel, falseLabel }) => (
-  <div className={`flex items-center gap-2 px-4 py-3 rounded-xl border font-semibold text-base ${
+  <div className={`flex items-center gap-2 px-3 py-2.5 sm:px-4 sm:py-3 rounded-xl border font-semibold text-xs sm:text-base ${
     detected
       ? 'bg-red-50 dark:bg-red-900/20 border-red-200 dark:border-red-800 text-red-700 dark:text-red-400'
       : 'bg-emerald-50 dark:bg-emerald-900/20 border-emerald-200 dark:border-emerald-800 text-emerald-700 dark:text-emerald-400'
   }`}>
-    {detected ? <ExclamationTriangleIcon className="w-5 h-5 flex-shrink-0" /> : <CheckBadgeIcon className="w-5 h-5 flex-shrink-0" />}
-    <span className="font-medium text-lg leading-tight">{detected ? trueLabel : falseLabel}</span>
+    {detected ? <ExclamationTriangleIcon className="w-4 h-4 sm:w-5 sm:h-5 flex-shrink-0" /> : <CheckBadgeIcon className="w-4 h-4 sm:w-5 sm:h-5 flex-shrink-0" />}
+    <span className="font-medium text-sm sm:text-lg leading-tight">{detected ? trueLabel : falseLabel}</span>
   </div>
 );
 
@@ -198,7 +198,7 @@ const ReportModal = ({ projectId, projectTitle, isOpen, onClose }) => {
   ];
 
   return (
-    <div className="fixed inset-0 z-[200] flex items-center justify-center bg-slate-900/80 backdrop-blur-sm p-4">
+    <div className="fixed inset-0 z-[200] flex items-center justify-center bg-slate-900/80 backdrop-blur-sm p-2 sm:p-4">
       <div className="bg-slate-50 dark:bg-[#0d1117] w-full max-w-5xl max-h-[95vh] rounded-3xl shadow-2xl flex flex-col overflow-hidden border border-slate-200 dark:border-slate-800 animate-in zoom-in-95 duration-200">
         
         {/* ── Modal Header ── */}
@@ -208,23 +208,26 @@ const ReportModal = ({ projectId, projectTitle, isOpen, onClose }) => {
               <DocumentChartBarIcon className="w-5 h-5" />
             </div>
             <div>
-              <h2 className="text-lg font-bold text-slate-900 dark:text-white leading-tight">AI Analysis Report</h2>
-              <p className="text-sm font-medium text-slate-500 dark:text-slate-400 truncate max-w-[300px]">{projectTitle}</p>
+              <h2 className="text-base sm:text-lg font-bold text-slate-900 dark:text-white leading-tight">AI Analysis Report</h2>
+              <p className="text-xs sm:text-sm font-medium text-slate-500 dark:text-slate-400 truncate max-w-[150px] sm:max-w-[300px]">{projectTitle}</p>
             </div>
           </div>
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-3 sm:gap-2">
             <button
               id="report-download-pdf-btn"
               onClick={handleDownload}
               disabled={downloading || loading || !!error || !report}
-              className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-indigo-600 to-violet-600 hover:from-indigo-700 hover:to-violet-700 text-white text-sm font-bold rounded-xl shadow-md hover:shadow-indigo-500/30 transition-all active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed"
+              className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-indigo-600 to-violet-600 hover:from-indigo-700 hover:to-violet-700 text-white text-[11px] sm:text-sm font-bold rounded-full shadow-md hover:shadow-indigo-500/30 transition-all active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {downloading ? (
                 <ArrowPathIcon className="w-4 h-4 animate-spin" />
               ) : (
                 <ArrowDownTrayIcon className="w-4 h-4" />
               )}
-              {downloading ? 'Generating...' : 'Download PDF'}
+              <span className={downloading ? '' : 'hidden sm:inline-block'}>
+                {downloading ? 'Generating...' : 'Download PDF'}
+              </span>
+              {!downloading && <span className="sm:hidden">PDF</span>}
             </button>
             <button
               id="report-modal-close-btn"
@@ -237,19 +240,19 @@ const ReportModal = ({ projectId, projectTitle, isOpen, onClose }) => {
         </div>
 
         {/* ── Tabs ── */}
-        <div className="flex items-center gap-1 px-6 pt-4 pb-0 bg-white dark:bg-[#161B22] border-b border-slate-100 dark:border-slate-800 flex-shrink-0 overflow-x-auto">
+        <div className="flex items-center gap-1 px-4 sm:px-6 pt-2 sm:pt-4 pb-0 bg-white dark:bg-[#161B22] border-b border-slate-100 dark:border-slate-800 flex-shrink-0 overflow-x-auto scrolling-touch">
           {tabs.map((tab) => (
             <button
               key={tab.id}
               id={`report-tab-${tab.id}`}
               onClick={() => setActiveTab(tab.id)}
-              className={`flex items-center gap-2 px-5 py-3 text-base font-medium rounded-t-xl transition-all whitespace-nowrap border-b-2 ${
+              className={`flex items-center gap-1.5 sm:gap-2 px-3 sm:px-5 py-2 sm:py-3 text-sm sm:text-base font-medium rounded-t-xl transition-all whitespace-nowrap border-b-2 ${
                 activeTab === tab.id
                   ? 'text-indigo-600 dark:text-indigo-400 border-indigo-600 dark:border-indigo-500 bg-indigo-50 dark:bg-indigo-900/20'
                   : 'text-slate-500 dark:text-slate-400 border-transparent hover:text-slate-700 dark:hover:text-slate-200'
               }`}
             >
-              <tab.icon className="w-3.5 h-3.5" />
+              <tab.icon className="w-4 h-4 sm:w-3.5 sm:h-3.5" />
               {tab.label}
             </button>
           ))}
@@ -290,7 +293,7 @@ const ReportModal = ({ projectId, projectTitle, isOpen, onClose }) => {
                   {/* Project meta */}
                   <div className="bg-white dark:bg-[#161B22] rounded-2xl border border-gray-100 dark:border-gray-800 p-6">
                     <h3 className="text-base font-semibold text-indigo-600 dark:text-indigo-400 uppercase tracking-wider mb-4">Project Information</h3>
-                    <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
+                    <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 sm:gap-4">
                       {[
                         ['Project', report.project.title],
                         ['Course', report.project.course_name || '—'],
@@ -301,9 +304,9 @@ const ReportModal = ({ projectId, projectTitle, isOpen, onClose }) => {
                         ['Status', report.project.status?.replace(/_/g, ' ').toUpperCase()],
                         ['Generated', report.meta.generated_at.slice(0, 10)],
                       ].map(([k, v]) => (
-                        <div key={k} className="bg-slate-50 dark:bg-slate-800/50 rounded-xl p-3">
-                          <p className="text-xs font-semibold text-slate-400 uppercase tracking-widest mb-1">{k}</p>
-                          <p className="text-base font-medium text-slate-900 dark:text-white truncate">{v}</p>
+                        <div key={k} className="bg-slate-50 dark:bg-slate-800/50 rounded-xl p-2.5 sm:p-3 overflow-hidden">
+                          <p className="text-[10px] sm:text-xs font-semibold text-slate-400 uppercase tracking-widest mb-0.5 sm:mb-1">{k}</p>
+                          <p className="text-sm sm:text-base font-medium text-slate-900 dark:text-white truncate">{v}</p>
                         </div>
                       ))}
                     </div>
@@ -323,14 +326,14 @@ const ReportModal = ({ projectId, projectTitle, isOpen, onClose }) => {
                   </div>
 
                   {/* Score rings */}
-                  <div className="bg-gradient-to-br from-indigo-600 to-violet-700 rounded-2xl p-6 text-white">
-                    <div className="flex items-center justify-between mb-6">
+                  <div className="bg-gradient-to-br from-indigo-600 to-violet-700 rounded-2xl p-4 sm:p-6 text-white">
+                    <div className="flex items-center justify-between mb-4 sm:mb-6">
                       <div>
-                        <p className="text-sm font-semibold uppercase tracking-wider opacity-80 mb-1">Overall Result</p>
-                        <div className="flex items-baseline gap-2">
-                          <span className="text-7xl font-bold">{Math.round(report.scores.total ?? 0)}</span>
-                          <span className="text-2xl font-medium opacity-50">/100</span>
-                          <span className="text-4xl font-bold opacity-90 ml-2">{report.scores.grade}</span>
+                        <p className="text-xs sm:text-sm font-semibold uppercase tracking-wider opacity-80 mb-1">Overall Result</p>
+                        <div className="flex items-baseline gap-1 sm:gap-2">
+                          <span className="text-5xl sm:text-7xl font-bold">{Math.round(report.scores.total ?? 0)}</span>
+                          <span className="text-xl sm:text-2xl font-medium opacity-50">/100</span>
+                          <span className="text-2xl sm:text-4xl font-bold opacity-90 ml-1 sm:ml-2">{report.scores.grade}</span>
                         </div>
                       </div>
                       <div className="hidden sm:block opacity-10 text-[120px] font-bold leading-none select-none">{report.scores.grade}</div>
@@ -367,14 +370,14 @@ const ReportModal = ({ projectId, projectTitle, isOpen, onClose }) => {
                     </div>
                     <div className="divide-y divide-gray-100 dark:divide-gray-800">
                       {Object.entries(report.comprehensive_scorer.breakdown).map(([cat, pts]) => (
-                        <div key={cat} className="flex items-center justify-between px-5 py-4 hover:bg-slate-50 dark:hover:bg-slate-800/30 transition-colors">
-                          <span className="text-base text-slate-700 dark:text-slate-300">{cat}</span>
-                          <span className={`text-base font-bold ${getScoreColor(pts * 3)}`}>{pts} pts</span>
+                        <div key={cat} className="flex items-center justify-between px-4 sm:px-5 py-3 sm:py-4 hover:bg-slate-50 dark:hover:bg-slate-800/30 transition-colors">
+                          <span className="text-sm sm:text-base text-slate-700 dark:text-slate-300">{cat}</span>
+                          <span className={`text-sm sm:text-base font-bold ${getScoreColor(pts * 3)}`}>{pts} pts</span>
                         </div>
                       ))}
-                      <div className="flex items-center justify-between px-5 py-4 bg-indigo-50 dark:bg-indigo-900/20">
-                        <span className="text-base font-semibold text-indigo-700 dark:text-indigo-300">Total Score</span>
-                        <span className="text-base font-bold text-indigo-700 dark:text-indigo-300">{Math.round(report.scores.total ?? 0)} / 100 &nbsp;({report.scores.grade})</span>
+                      <div className="flex items-center justify-between px-4 sm:px-5 py-3 sm:py-4 bg-indigo-50 dark:bg-indigo-900/20">
+                        <span className="text-sm sm:text-base font-semibold text-indigo-700 dark:text-indigo-300">Total Score</span>
+                        <span className="text-sm sm:text-base font-bold text-indigo-700 dark:text-indigo-300">{Math.round(report.scores.total ?? 0)} / 100 &nbsp;({report.scores.grade})</span>
                       </div>
                     </div>
                   </div>
@@ -493,8 +496,8 @@ const ReportModal = ({ projectId, projectTitle, isOpen, onClose }) => {
                       </div>
                       <h3 className="text-base font-semibold text-slate-900 dark:text-white">AI-Generated Feedback</h3>
                     </div>
-                    <div className="p-5">
-                      <p className="text-base text-slate-700 dark:text-slate-300 leading-relaxed whitespace-pre-wrap">
+                    <div className="p-4 sm:p-5">
+                      <p className="text-sm sm:text-base text-slate-700 dark:text-slate-300 leading-relaxed whitespace-pre-wrap">
                         {report.feedback_generator.ai_feedback}
                       </p>
                     </div>
@@ -514,8 +517,8 @@ const ReportModal = ({ projectId, projectTitle, isOpen, onClose }) => {
                           </span>
                         )}
                       </div>
-                      <div className="p-5">
-                        <p className="text-base text-slate-700 dark:text-slate-300 leading-relaxed whitespace-pre-wrap">
+                      <div className="p-4 sm:p-5">
+                        <p className="text-sm sm:text-base text-slate-700 dark:text-slate-300 leading-relaxed whitespace-pre-wrap">
                           {report.feedback_generator.professor_feedback}
                         </p>
                       </div>
@@ -564,8 +567,8 @@ const DetailTable = ({ data }) => {
         <tbody className="divide-y divide-gray-100 dark:divide-gray-800">
           {entries.map(([k, v]) => (
             <tr key={k} className="hover:bg-slate-50 dark:hover:bg-slate-800/30">
-              <td className="px-5 py-4 text-sm font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wide w-2/5 break-all">{k.replace(/_/g, ' ')}</td>
-              <td className="px-5 py-4 text-base text-slate-700 dark:text-slate-300">{fmt(v)}</td>
+              <td className="px-4 py-3 sm:px-5 sm:py-4 text-[10px] sm:text-sm font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wide w-2/5 break-all">{k.replace(/_/g, ' ')}</td>
+              <td className="px-4 py-3 sm:px-5 sm:py-4 text-xs sm:text-base text-slate-700 dark:text-slate-300">{fmt(v)}</td>
             </tr>
           ))}
         </tbody>

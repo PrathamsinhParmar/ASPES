@@ -1,4 +1,4 @@
-﻿import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import { projectService } from '../services/projectService';
 import { useAuth } from '../context/AuthContext';
@@ -209,27 +209,70 @@ const ProjectDetailPage = () => {
               <p className="text-slate-600 dark:text-gray-400 text-base leading-relaxed whitespace-pre-wrap">{project.description || "No description provided."}</p>
            </div>
 
+           {/* Project Links Section */}
+           {(project.live_link || project.github_repo_link) && (
+             <div className="bg-white dark:bg-[#161B22] p-8 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-800 transition-all">
+                <div className="flex items-center gap-3 mb-6">
+                   <div className="p-2 bg-pink-50 dark:bg-pink-900/20 rounded-lg text-pink-600 dark:text-pink-400">
+                      <svg className="w-5 h-5 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" /></svg>
+                   </div>
+                   <h3 className="text-xl font-black dark:text-slate-200 tracking-tight truncate">Project Links</h3>
+                </div>
+                
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  {project.live_link && (
+                    <a href={project.live_link} target="_blank" rel="noopener noreferrer" className="flex items-center justify-between p-4 bg-slate-50 dark:bg-slate-800/40 rounded-xl border border-slate-100 dark:border-slate-800 hover:border-pink-200 dark:hover:border-pink-900/50 transition-all group overflow-hidden">
+                      <div className="flex items-center gap-3 min-w-0 pr-4">
+                        <div className="h-10 w-10 flex-shrink-0 flex items-center justify-center rounded-full bg-white dark:bg-slate-800 border-2 border-slate-200 dark:border-slate-700 text-pink-600 dark:text-pink-400 shadow-sm group-hover:scale-110 transition-transform">
+                          <svg className="w-5 h-5 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9" /></svg>
+                        </div>
+                        <div className="min-w-0">
+                          <p className="text-sm font-bold text-slate-900 dark:text-white truncate leading-tight">Live Project</p>
+                          <p className="text-[10px] font-bold text-slate-500 dark:text-slate-500 uppercase tracking-wider truncate">{project.live_link.replace(/^https?:\/\//, '')}</p>
+                        </div>
+                      </div>
+                      <svg className="w-5 h-5 flex-shrink-0 text-gray-400 dark:text-gray-500 group-hover:text-pink-500 transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" /></svg>
+                    </a>
+                  )}
+                  {project.github_repo_link && (
+                    <a href={project.github_repo_link} target="_blank" rel="noopener noreferrer" className="flex items-center justify-between p-4 bg-slate-50 dark:bg-slate-800/40 rounded-xl border border-slate-100 dark:border-slate-800 hover:border-violet-200 dark:hover:border-violet-900/50 transition-all group overflow-hidden">
+                      <div className="flex items-center gap-3 min-w-0 pr-4">
+                        <div className="h-10 w-10 flex-shrink-0 flex items-center justify-center rounded-full bg-white dark:bg-slate-800 border-2 border-slate-200 dark:border-slate-700 text-violet-600 dark:text-violet-400 shadow-sm group-hover:scale-110 transition-transform">
+                          <svg className="w-5 h-5 flex-shrink-0" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path fillRule="evenodd" d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z" clipRule="evenodd" /></svg>
+                        </div>
+                        <div className="min-w-0">
+                          <p className="text-sm font-bold text-slate-900 dark:text-white truncate leading-tight">GitHub Repo</p>
+                          <p className="text-[10px] font-bold text-slate-500 dark:text-slate-500 uppercase tracking-wider truncate">{project.github_repo_link.replace(/^https?:\/\//, '')}</p>
+                        </div>
+                      </div>
+                      <svg className="w-5 h-5 flex-shrink-0 text-gray-400 dark:text-gray-500 group-hover:text-violet-500 transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" /></svg>
+                    </a>
+                  )}
+                </div>
+             </div>
+           )}
+
            {/* Collaborators Section */}
            {project.team_members && (
              <div className="bg-white dark:bg-[#161B22] p-8 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-800">
                 <div className="flex items-center gap-3 mb-6">
                    <div className="p-2 bg-indigo-50 dark:bg-indigo-900/20 rounded-lg text-indigo-600 dark:text-indigo-400">
-                      <UserGroupIcon className="w-5 h-5" />
+                      <UserGroupIcon className="w-5 h-5 flex-shrink-0" />
                    </div>
-                   <h3 className="text-lg font-bold dark:text-slate-200">Collaborators</h3>
+                   <h3 className="text-lg font-bold dark:text-slate-200 truncate">Collaborators</h3>
                 </div>
                 <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-5">
                   {(() => {
                     try {
                       const members = typeof project.team_members === 'string' ? JSON.parse(project.team_members) : project.team_members;
                       return members?.map((member, idx) => (
-                        <div key={idx} className="flex items-center gap-3 p-4 bg-slate-50 dark:bg-slate-800/40 rounded-xl border border-slate-100 dark:border-slate-800 hover:border-indigo-200 dark:hover:border-indigo-900/50 transition-all group">
-                          <div className="h-10 w-10 flex items-center justify-center rounded-full bg-white dark:bg-slate-800 border-2 border-slate-200 dark:border-slate-700 text-indigo-600 dark:text-indigo-400 shadow-sm group-hover:scale-110 transition-transform">
-                            <IdentificationIcon className="w-5 h-5" />
+                        <div key={idx} className="flex items-center gap-3 p-4 bg-slate-50 dark:bg-slate-800/40 rounded-xl border border-slate-100 dark:border-slate-800 hover:border-indigo-200 dark:hover:border-indigo-900/50 transition-all group overflow-hidden">
+                          <div className="h-10 w-10 flex-shrink-0 flex items-center justify-center rounded-full bg-white dark:bg-slate-800 border-2 border-slate-200 dark:border-slate-700 text-indigo-600 dark:text-indigo-400 shadow-sm group-hover:scale-110 transition-transform">
+                            <IdentificationIcon className="w-5 h-5 flex-shrink-0" />
                           </div>
                           <div className="min-w-0">
                             <p className="text-sm font-bold text-slate-900 dark:text-white truncate leading-tight">{member.name}</p>
-                            <p className="text-[10px] font-bold text-slate-500 dark:text-slate-500 uppercase tracking-wider">{member.enrollment}</p>
+                            <p className="text-[10px] font-bold text-slate-500 dark:text-slate-500 uppercase tracking-wider truncate">{member.enrollment}</p>
                           </div>
                         </div>
                       ));

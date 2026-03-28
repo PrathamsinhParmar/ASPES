@@ -31,6 +31,8 @@ async def upload_project(
     team_members: Optional[str] = Form(None),  # JSON string: [{name, enrollment}]
     group_id: Optional[str] = Form(None),       # UUID string
     faculty_id: Optional[str] = Form(None),     # UUID string — chosen by student
+    live_link: Optional[str] = Form(None),
+    github_repo_link: Optional[str] = Form(None),
     code_file: UploadFile = File(...),
     doc_file: UploadFile = File(...),
     current_user: User = Depends(get_current_user),
@@ -67,6 +69,8 @@ async def upload_project(
         team_members=team_members or None,
         group_id=uuid.UUID(group_id) if group_id else None,
         faculty_id=uuid.UUID(faculty_id) if faculty_id else None,
+        live_link=live_link,
+        github_repo_link=github_repo_link,
     )
     
     db.add(new_project)
@@ -195,6 +199,8 @@ async def get_my_projects(
             "course_name": p.course_name,
             "batch_year": p.batch_year,
             "team_name": p.team_name,
+            "live_link": p.live_link,
+            "github_repo_link": p.github_repo_link,
             "created_at": p.created_at,
             "has_evaluation": p.evaluation is not None,
             "total_score": p.evaluation.total_score if p.evaluation else None
@@ -236,6 +242,8 @@ async def get_assigned_projects(
             "course_name": p.course_name,
             "batch_year": p.batch_year,
             "team_name": p.team_name,
+            "live_link": p.live_link,
+            "github_repo_link": p.github_repo_link,
             "created_at": p.created_at,
             "has_evaluation": p.evaluation is not None,
             "total_score": p.evaluation.total_score if p.evaluation else None
@@ -448,6 +456,8 @@ async def list_all_projects_admin(
             "course_name": p.course_name,
             "batch_year": p.batch_year,
             "team_name": p.team_name,
+            "live_link": p.live_link,
+            "github_repo_link": p.github_repo_link,
             "created_at": p.created_at,
             "has_evaluation": p.evaluation is not None,
             "total_score": p.evaluation.total_score if p.evaluation else None

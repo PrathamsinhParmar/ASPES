@@ -36,7 +36,11 @@ const schema = yup.object().shape({
     .max(100, 'Title cannot exceed 100 characters'),
   description: yup.string(),
   programming_language: yup.string()
-    .required('Please select a programming language')
+    .required('Please select a programming language'),
+  live_link: yup.string()
+    .test('is-url', 'Must be a valid URL (https://...)', value => !value || /^https?:\/\//.test(value)),
+  github_repo_link: yup.string()
+    .test('is-url', 'Must be a valid URL (https://...)', value => !value || /^https?:\/\//.test(value))
 });
 
 // AI processing steps shown on the animated processing screen
@@ -220,6 +224,9 @@ const ProjectUpload = () => {
     formData.append('title', data.title);
     formData.append('description', data.description || '');
     formData.append('programming_language', data.programming_language);
+    
+    if (data.live_link) formData.append('live_link', data.live_link);
+    if (data.github_repo_link) formData.append('github_repo_link', data.github_repo_link);
     
     if (isFaculty) {
       if (data.team_name) formData.append('team_name', data.team_name);
@@ -422,6 +429,44 @@ const ProjectUpload = () => {
                       </div>
                     )}
                   </div>
+
+                  {/* Project Links Section */}
+                  <>
+                    <div className="my-8 border-t border-slate-200 dark:border-slate-700/50 pt-8" />
+                    
+                    <div className="space-y-6">
+                      <div className="flex items-center gap-3 mb-6">
+                        <div className="h-10 w-10 flex items-center justify-center rounded-xl bg-indigo-50 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-400">
+                          <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" /></svg>
+                        </div>
+                        <div>
+                          <h3 className="text-sm font-black text-slate-800 dark:text-white leading-tight uppercase tracking-widest">Project Links</h3>
+                          <p className="text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest">Optional URLs</p>
+                        </div>
+                      </div>
+
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div className="space-y-2">
+                          <label className="text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest ml-1">Live Link</label>
+                          <input
+                            {...register('live_link')}
+                            className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-800 border border-slate-100 dark:border-slate-700 focus:bg-white dark:focus:bg-slate-700/50 focus:border-indigo-500 rounded-xl transition-all outline-none text-sm font-semibold text-slate-800 dark:text-white"
+                            placeholder="https://your-project-live-url.com"
+                          />
+                          {errors.live_link && <p className="text-red-500 text-[10px] font-bold mt-1 uppercase ml-1">{errors.live_link.message}</p>}
+                        </div>
+                        <div className="space-y-2">
+                          <label className="text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest ml-1">GitHub Repository Link</label>
+                          <input
+                            {...register('github_repo_link')}
+                            className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-800 border border-slate-100 dark:border-slate-700 focus:bg-white dark:focus:bg-slate-700/50 focus:border-indigo-500 rounded-xl transition-all outline-none text-sm font-semibold text-slate-800 dark:text-white"
+                            placeholder="https://github.com/username/repo"
+                          />
+                          {errors.github_repo_link && <p className="text-red-500 text-[10px] font-bold mt-1 uppercase ml-1">{errors.github_repo_link.message}</p>}
+                        </div>
+                      </div>
+                    </div>
+                  </>
 
                   {/* Team & Faculty Section - Visible to ALL users */}
                   <>

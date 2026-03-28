@@ -15,13 +15,16 @@ class ProjectCreate(BaseModel):
     description: Optional[str] = Field(None, max_length=2000)
     course_name: Optional[str] = Field(None, max_length=255)
     batch_year: Optional[str] = Field(None, max_length=10)
-
+    live_link: Optional[str] = Field(None, max_length=512)
+    github_repo_link: Optional[str] = Field(None, max_length=512)
 
 class ProjectUpdate(BaseModel):
     title: Optional[str] = Field(None, min_length=3, max_length=500)
     description: Optional[str] = None
     course_name: Optional[str] = None
     batch_year: Optional[str] = None
+    live_link: Optional[str] = Field(None, max_length=512)
+    github_repo_link: Optional[str] = Field(None, max_length=512)
 
 
 class ProjectResponse(BaseModel):
@@ -38,6 +41,8 @@ class ProjectResponse(BaseModel):
     batch_year: Optional[str]
     team_name: Optional[str] = None
     team_members: Optional[str] = None
+    live_link: Optional[str] = None
+    github_repo_link: Optional[str] = None
     created_at: datetime
     updated_at: datetime
     submitted_at: Optional[datetime]
@@ -54,6 +59,8 @@ class ProjectListResponse(BaseModel):
     batch_year: Optional[str]
     team_name: Optional[str] = None
     team_members: Optional[str] = None
+    live_link: Optional[str] = None
+    github_repo_link: Optional[str] = None
     created_at: datetime
     has_evaluation: bool = False
     total_score: Optional[float] = None

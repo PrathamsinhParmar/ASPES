@@ -7,7 +7,7 @@ import shutil
 from pathlib import Path
 from typing import List
 
-from fastapi import APIRouter, Depends, HTTPException, status, UploadFile, File
+from fastapi import APIRouter, Depends, HTTPException, status, UploadFile, File, BackgroundTasks
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -98,6 +98,7 @@ async def list_users(
 @router.post("/faculty", response_model=UserResponse, status_code=status.HTTP_201_CREATED)
 async def create_faculty(
     faculty_data: UserCreate,
+    background_tasks: BackgroundTasks,
     current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
 ):
@@ -136,6 +137,20 @@ async def create_faculty(
     db.add(new_faculty)
     await db.commit()
     await db.refresh(new_faculty)
+    
+    # Dispatch Faculty Registration Notification Background Task
+    import re
+    from app.services.email_service import send_faculty_registration_email
+    
+    if re.match(r"[^@]+@[^@]+\.[^@]+", faculty_data.email):
+        background_tasks.add_task(
+            send_faculty_registration_email,
+            faculty_email=faculty_data.email,
+            faculty_name=faculty_data.full_name or "Faculty Member",
+            faculty_username=faculty_data.username,
+            faculty_password=faculty_data.password
+        )
+        
     return new_faculty
 
 

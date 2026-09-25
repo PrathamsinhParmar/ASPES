@@ -9,6 +9,7 @@ const api = axios.create({
   },
 });
 
+// ─── Request Interceptor: attach Bearer token ──────────────────────────────
 api.interceptors.request.use(
   (config) => {
     const token = localStorage.getItem('token');
@@ -20,13 +21,25 @@ api.interceptors.request.use(
   (error) => Promise.reject(error)
 );
 
+// ─── Response Interceptor: handle 401 ─────────────────────────────────────
+// IMPORTANT: Only auto-redirect to /login if we are NOT on the login or
+// register flow (i.e. the URL path is not an auth endpoint). This prevents
+// swallowing errors during the login itself.
 api.interceptors.response.use(
   (response) => response,
   (error) => {
     if (error.response?.status === 401) {
-      localStorage.removeItem('token');
-      // Redirect to login to notify the user and refresh context
-      window.location.href = '/login';
+      const requestUrl = error.config?.url || '';
+      // Don't auto-redirect during the login/register flow
+      const isAuthFlow =
+        requestUrl.includes('/auth/login') ||
+        requestUrl.includes('/auth/register') ||
+        requestUrl.includes('/auth/me');
+
+      if (!isAuthFlow) {
+        localStorage.removeItem('token');
+        window.location.href = '/login';
+      }
     }
     return Promise.reject(error);
   }

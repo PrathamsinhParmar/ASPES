@@ -17,7 +17,7 @@ const Login = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const [apiError, setApiError] = useState('');
-  
+
   const from = location.state?.from?.pathname || '/dashboard';
 
   const { register, handleSubmit, formState: { errors, isSubmitting } } = useForm({
@@ -50,7 +50,7 @@ const Login = () => {
           <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-indigo-50 dark:bg-indigo-900/20 mb-4 border border-indigo-100 dark:border-indigo-500/20 shadow-sm">
             <Sparkles className="w-8 h-8 text-indigo-600 dark:text-indigo-400" />
           </div>
-          <h2 className="text-3xl font-extrabold text-gray-900 dark:text-white tracking-tight">
+          <h2 className="text-3xl font-bold text-gray-900 dark:text-white tracking-tight">
             Welcome Back
           </h2>
           <p className="mt-2 text-sm text-gray-500 dark:text-slate-400">

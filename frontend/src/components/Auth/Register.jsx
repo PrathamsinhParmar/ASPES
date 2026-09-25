@@ -4,7 +4,7 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
-import { AlertCircle, Loader2, Mail, User, Shield, Briefcase, Lock, UserPlus, FileSignature, CheckCircle2 } from 'lucide-react';
+import { AlertCircle, Loader2, Mail, User, Briefcase, Lock, UserPlus, FileSignature, CheckCircle2 } from 'lucide-react';
 import ThemeToggle from '../Common/ThemeToggle';
 
 const schema = yup.object().shape({
@@ -15,7 +15,6 @@ const schema = yup.object().shape({
   confirm_password: yup.string()
     .oneOf([yup.ref('password'), null], 'Passwords must match')
     .required('Confirm password is required'),
-  role: yup.string().oneOf(['student', 'professor']).required('Role is required'),
   department: yup.string().optional()
 });
 
@@ -27,22 +26,19 @@ const Register = () => {
 
   const { register, handleSubmit, formState: { errors, isSubmitting } } = useForm({
     resolver: yupResolver(schema),
-    defaultValues: {
-      role: 'student'
-    }
   });
 
   const onSubmit = async (data) => {
     try {
       setApiError('');
       setSuccessMsg('');
-      
+
       const userData = {
         email: data.email,
         username: data.username,
         full_name: data.full_name,
         password: data.password,
-        role: data.role,
+        role: 'student',  // Always STUDENT on public signup
         department: data.department
       };
 
@@ -66,12 +62,12 @@ const Register = () => {
       <div className="absolute -top-32 -right-32 w-96 h-96 bg-indigo-400 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob animation-delay-4000"></div>
 
       <div className="w-full max-w-2xl px-8 py-10 bg-white dark:bg-slate-900 shadow-[0_8px_30px_rgb(0,0,0,0.06)] dark:shadow-[0_8px_30px_rgb(0,0,0,0.3)] sm:rounded-2xl border border-gray-100 dark:border-slate-800 backdrop-blur-sm relative z-10 my-8 transition-colors">
-        
+
         <div className="text-center mb-8">
           <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-cyan-50 dark:bg-cyan-900/20 mb-4 shadow-sm border border-cyan-100 dark:border-cyan-500/20">
             <UserPlus className="w-8 h-8 text-cyan-600 dark:text-cyan-400" />
           </div>
-          <h2 className="text-3xl font-extrabold text-gray-900 dark:text-white tracking-tight">
+          <h2 className="text-3xl font-bold text-gray-900 dark:text-white tracking-tight">
             Create an Account
           </h2>
           <p className="mt-2 text-sm text-gray-500 dark:text-slate-400">
@@ -98,9 +94,9 @@ const Register = () => {
         )}
 
         <form className="space-y-6" onSubmit={handleSubmit(onSubmit)}>
-          
+
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            
+
             {/* Left Column */}
             <div className="space-y-5">
               <div>
@@ -154,36 +150,19 @@ const Register = () => {
 
             {/* Right Column */}
             <div className="space-y-5">
-              
-              <div className="grid grid-cols-2 gap-3">
-                <div className="col-span-1">
-                  <label className="block text-sm font-semibold text-gray-700 dark:text-slate-300 mb-1.5 ml-1">Role</label>
-                  <div className="relative">
-                    <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                      <Shield className="h-4 w-4 text-gray-400 dark:text-slate-500" />
-                    </div>
-                    <select
-                      {...register('role')}
-                      className="text-gray-900 dark:text-white bg-white dark:bg-slate-800 block w-full pl-9 pr-6 py-2.5 border border-gray-200 dark:border-slate-700 rounded-xl shadow-sm focus:ring-4 focus:ring-indigo-50 dark:focus:ring-indigo-900/10 focus:border-indigo-500 transition-all sm:text-sm cursor-pointer"
-                    >
-                      <option value="student">Student</option>
-                      <option value="professor">Faculty</option>
-                    </select>
-                  </div>
-                </div>
 
-                <div className="col-span-1">
-                  <label className="block text-sm font-semibold text-gray-700 dark:text-slate-300 mb-1.5 ml-1 text-nowrap">Dept <span className="text-gray-400 font-normal">(Opt)</span></label>
-                  <div className="relative">
-                    <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                      <Briefcase className="h-4 w-4 text-gray-400 dark:text-slate-500" />
-                    </div>
-                    <input
-                      {...register('department')}
-                      type="text"
-                      className="text-gray-900 dark:text-white bg-white dark:bg-slate-800 block w-full pl-9 pr-2 py-2.5 border border-gray-200 dark:border-slate-700 rounded-xl shadow-sm focus:ring-4 focus:ring-indigo-50 dark:focus:ring-indigo-900/10 focus:border-indigo-500 transition-all sm:text-sm"
-                    />
+              <div>
+                <label className="block text-sm font-semibold text-gray-700 dark:text-slate-300 mb-1.5 ml-1">Dept <span className="text-gray-400 font-normal">(Optional)</span></label>
+                <div className="relative">
+                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                    <Briefcase className="h-4 w-4 text-gray-400 dark:text-slate-500" />
                   </div>
+                  <input
+                    {...register('department')}
+                    type="text"
+                    placeholder="e.g. Computer Science"
+                    className="text-gray-900 dark:text-white bg-white dark:bg-slate-800 block w-full pl-9 pr-2 py-2.5 border border-gray-200 dark:border-slate-700 rounded-xl shadow-sm focus:ring-4 focus:ring-indigo-50 dark:focus:ring-indigo-900/10 focus:border-indigo-500 transition-all sm:text-sm"
+                  />
                 </div>
               </div>
 
@@ -229,14 +208,14 @@ const Register = () => {
                 Sign in instead
               </Link>
             </p>
-            
+
             <button
               type="submit"
               disabled={isSubmitting}
               className="group flex justify-center items-center py-3 px-8 border border-transparent rounded-xl shadow-md text-sm font-bold text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:opacity-70 transition-all duration-200 md:w-auto w-full"
             >
               {isSubmitting ? (
-                 <Loader2 className="animate-spin h-5 w-5" />
+                <Loader2 className="animate-spin h-5 w-5" />
               ) : (
                 <>
                   Register

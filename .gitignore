@@ -16,7 +16,10 @@ desktop.ini
 # Environment files
 .env
 .env.*
-!.env.example
+*.env
+*-DESKTOP*.env
+!*.env.example
+!*.env-DESKTOP*.example
 
 # Node / Frontend
 node_modules/

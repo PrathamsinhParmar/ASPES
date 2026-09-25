@@ -10,9 +10,10 @@ from pathlib import Path
 from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
+from fastapi.staticfiles import StaticFiles
 
 from app.config import settings
-from app.api import auth, projects, evaluations, users
+from app.api import auth, projects, evaluations, users, groups, faculty, reports
 from app.database.connection import engine, Base
 
 # Configure Logging
@@ -70,11 +71,16 @@ app = FastAPI(
 )
 
 # ---------------------------------------------------------------------------
+# Static Files
+# ---------------------------------------------------------------------------
+app.mount("/uploads", StaticFiles(directory=settings.UPLOAD_DIR), name="uploads")
+
+# ---------------------------------------------------------------------------
 # Middleware & CORS
 # ---------------------------------------------------------------------------
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=["http://localhost:3000", "http://localhost:3001", "http://localhost:5173", "http://127.0.0.1:3000", "http://127.0.0.1:3001"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -119,6 +125,9 @@ app.include_router(auth.router,        prefix=f"{API_V1_STR}/auth",        tags=
 app.include_router(users.router,       prefix=f"{API_V1_STR}/users",       tags=["Users"])
 app.include_router(projects.router,    prefix=f"{API_V1_STR}/projects",    tags=["Projects"])
 app.include_router(evaluations.router, prefix=f"{API_V1_STR}/evaluations", tags=["Evaluations"])
+app.include_router(groups.router,      prefix=f"{API_V1_STR}/groups",      tags=["Groups"])
+app.include_router(faculty.router,     prefix=f"{API_V1_STR}/faculty-list", tags=["Faculty"])
+app.include_router(reports.router,     prefix=f"{API_V1_STR}/projects",      tags=["Reports"])
 
 # ---------------------------------------------------------------------------
 # Health Check

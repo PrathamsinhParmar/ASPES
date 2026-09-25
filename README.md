@@ -1,4 +1,6 @@
+# ==============================================================================
 # AI Smart Academic Project Evaluation System (ASPES)
+# ==============================================================================
 
 <div align="center">
   <h1>🎓 ASPES</h1>
@@ -326,22 +328,14 @@ docker-compose -f docker-compose.yml -f docker-compose.prod.yml up -d
 
 ---
 
-## 🛠️ Troubleshooting Guide
-
-### Backend Issues
-- **Database Connection Error**: Ensure the PostgreSQL container is healthy (`docker-compose ps`). Check if the `DATABASE_URL` in `.env` matches the container service name (`db`).
-- **Celery Worker Failures**: If the worker isn't picking up tasks, check Redis connectivity. Running `celery -A app.tasks.evaluation_tasks.celery_app inspect ping` can verify connectivity.
-- **NLP Model Loading**: The first run of the worker downloads SBERT models. This may take a few minutes. Ensure you have internet access or pre-mount the volumes.
-
-### Frontend Issues
-- **API Unreachable**: Ensure `REACT_APP_API_URL` in `frontend/.env` is set correctly. If running in Docker, it should usually be `http://localhost:8000/api/v1`.
-- **Blank Screen**: Check the browser console for JavaScript errors. Common causes include failed React Query fetches or 401 Unauthorized loops.
-
 ## 📄 License
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
 ---
 
-**ASPES Project Status**: ✅ v1.0.0 Stable Release
-*Developed with ❤️ and AI for Academic Excellence.*
+## 🙏 Acknowledgements
+
+- [HuggingFace](https://huggingface.co/) for Transformers & Sentence-BERT
+- [FastAPI](https://fastapi.tiangolo.com/) for the excellent async Python framework
+- [OpenAI](https://openai.com/) for GPT-4 API

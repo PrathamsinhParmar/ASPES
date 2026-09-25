@@ -6,18 +6,24 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
 import { projectService } from '../../services/projectService';
 import { evaluationService } from '../../services/evaluationService';
-import toast from 'react-hot-toast';
-import { 
-  CloudArrowUpIcon, 
+import api from '../../services/api';
+import { toast } from 'react-toastify';
+import { useAuth } from '../../context/AuthContext';
+import { groupService } from '../../services/groupService';
+import {
+  CloudArrowUpIcon,
   DocumentIcon,
-  DocumentTextIcon, 
+  DocumentTextIcon,
   CheckCircleIcon,
   ArrowRightIcon,
   ArrowLeftIcon,
   InformationCircleIcon,
   CpuChipIcon,
   SparklesIcon,
-  ShieldCheckIcon
+  ShieldCheckIcon,
+  UserGroupIcon,
+  UserPlusIcon,
+  MinusCircleIcon
 } from '@heroicons/react/24/outline';
 
 /**
@@ -30,26 +36,47 @@ const schema = yup.object().shape({
     .max(100, 'Title cannot exceed 100 characters'),
   description: yup.string(),
   programming_language: yup.string()
-    .required('Please select a programming language')
+    .required('Please select a programming language'),
+  live_link: yup.string()
+    .test('is-url', 'Must be a valid URL (https://...)', value => !value || /^https?:\/\//.test(value)),
+  github_repo_link: yup.string()
+    .test('is-url', 'Must be a valid URL (https://...)', value => !value || /^https?:\/\//.test(value))
 });
 
 // AI processing steps shown on the animated processing screen
 const AI_STEPS = [
-  { id: 1, label: 'Uploading project files to secure storage',     icon: CloudArrowUpIcon,  duration: 15 },
-  { id: 2, label: 'Running static code quality analysis',          icon: CpuChipIcon,        duration: 30 },
-  { id: 3, label: 'Detecting AI-generated code signatures',        icon: SparklesIcon,       duration: 25 },
-  { id: 4, label: 'Evaluating documentation coherence',            icon: DocumentTextIcon,   duration: 20 },
-  { id: 5, label: 'Cross-checking plagiarism database',            icon: ShieldCheckIcon,    duration: 25 },
-  { id: 6, label: 'Generating comprehensive AI feedback',          icon: SparklesIcon,       duration: 20 },
-  { id: 7, label: 'Aggregating scores & finalising report',        icon: CheckCircleIcon,    duration: 15 },
+  { id: 1, label: 'Uploading project files to secure storage', icon: CloudArrowUpIcon, duration: 15 },
+  { id: 2, label: 'Running static code quality analysis', icon: CpuChipIcon, duration: 30 },
+  { id: 3, label: 'Detecting AI-generated code signatures', icon: SparklesIcon, duration: 25 },
+  { id: 4, label: 'Evaluating documentation coherence', icon: DocumentTextIcon, duration: 20 },
+  { id: 5, label: 'Cross-checking plagiarism database', icon: ShieldCheckIcon, duration: 25 },
+  { id: 6, label: 'Generating comprehensive AI feedback', icon: SparklesIcon, duration: 20 },
+  { id: 7, label: 'Aggregating scores & finalising report', icon: CheckCircleIcon, duration: 15 },
 ];
 
 const ProjectUpload = () => {
+  const { user } = useAuth();
+  const normRole = (user?.role || '').toString().trim().toUpperCase();
+  const isFaculty = normRole === 'PROFESSOR' || normRole === 'FACULTY' || normRole === 'ADMIN';
+  const urlParams = new URLSearchParams(window.location.search);
+  const initialGroupId = urlParams.get('groupId') || '';
+
   const [step, setStep] = useState(1);
   const [codeFile, setCodeFile] = useState(null);
   const [docFile, setDocFile] = useState(null);
   const [uploading, setUploading] = useState(false);
   const [uploadProgress, setUploadProgress] = useState(0);
+
+  // Faculty Specific State
+  const [groups, setGroups] = useState([]);
+  const [selectedGroupId, setSelectedGroupId] = useState(initialGroupId);
+  const [teamMembers, setTeamMembers] = useState([{ name: '', enrollment: '' }]);
+  const [teamName, setTeamName] = useState('');
+
+  // Faculty list (for student selection)
+  const [facultyList, setFacultyList] = useState([]);
+  const [selectedFacultyId, setSelectedFacultyId] = useState('');
+  const [facultyListLoading, setFacultyListLoading] = useState(false);
 
   // Custom Dropdown State
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
@@ -61,15 +88,16 @@ const ProjectUpload = () => {
   const [evaluationId, setEvaluationId] = useState(null);
   const [currentStep, setCurrentStep] = useState(0);
   const [stepProgress, setStepProgress] = useState(0);
-  const [aiStatus, setAiStatus] = useState('PENDING'); 
-  
+  const [aiStatus, setAiStatus] = useState('PENDING');
+
   const pollingRef = useRef(null);
   const stepTimerRef = useRef(null);
 
   const navigate = useNavigate();
   const { register, handleSubmit, watch, setValue, formState: { errors } } = useForm({
     resolver: yupResolver(schema),
-    defaultValues: { programming_language: 'python' }
+    defaultValues: { programming_language: 'python' },
+    shouldUnregister: false
   });
 
   const formValues = watch();
@@ -81,12 +109,41 @@ const ProjectUpload = () => {
       }
     };
     document.addEventListener('mousedown', handleClickOutside);
+
+    if (isFaculty) {
+      groupService.getGroups().then(data => setGroups(data)).catch(err => console.error(err));
+    }
+
+    // Fetch faculty list for all users (students need it for selection)
+    // Using dedicated /faculty-list/ endpoint to avoid routing conflicts in /users/*
+    setFacultyListLoading(true);
+    api.get('/faculty-list')
+      .then(res => {
+        setFacultyList(res.data);
+        if (res.data.length === 0) {
+          toast.warn('No faculty members found. Please contact your administrator.');
+        }
+      })
+      .catch(err => {
+        console.error('Failed to load faculty list:', err);
+        toast.error(`Could not load faculty list: ${err.message || 'Unknown error'}`);
+      })
+      .finally(() => setFacultyListLoading(false));
+
     return () => {
       document.removeEventListener('mousedown', handleClickOutside);
       if (pollingRef.current) clearInterval(pollingRef.current);
       if (stepTimerRef.current) clearInterval(stepTimerRef.current);
     };
-  }, []);
+  }, [isFaculty]);
+
+  const addTeamMember = () => setTeamMembers([...teamMembers, { name: '', enrollment: '' }]);
+  const removeTeamMember = (index) => setTeamMembers(teamMembers.filter((_, i) => i !== index));
+  const updateTeamMember = (index, field, value) => {
+    const newMembers = [...teamMembers];
+    newMembers[index][field] = value;
+    setTeamMembers(newMembers);
+  };
 
   const languages = [
     { id: 'python', name: 'Python 3.x', icon: '🐍' },
@@ -100,7 +157,7 @@ const ProjectUpload = () => {
   const startStepAnimation = () => {
     let stepIdx = 0;
     let progress = 0;
-    const TICK_MS = 200; 
+    const TICK_MS = 200;
 
     stepTimerRef.current = setInterval(() => {
       if (stepIdx >= AI_STEPS.length) {
@@ -110,8 +167,12 @@ const ProjectUpload = () => {
       const stepDurationTicks = (AI_STEPS[stepIdx].duration * 1000) / TICK_MS;
       progress += (100 / stepDurationTicks);
       if (progress >= 100) {
-        progress = 0;
-        stepIdx = Math.min(stepIdx + 1, AI_STEPS.length - 1);
+        if (stepIdx < AI_STEPS.length - 1) {
+          progress = 0;
+          stepIdx++;
+        } else {
+          progress = 100;
+        }
       }
       setCurrentStep(stepIdx);
       setStepProgress(Math.min(Math.round(progress), 99));
@@ -131,7 +192,7 @@ const ProjectUpload = () => {
           setAiStatus('COMPLETED');
           setCurrentStep(AI_STEPS.length - 1);
           setStepProgress(100);
-          await new Promise(res => setTimeout(res, 1500)); 
+          await new Promise(res => setTimeout(res, 1500));
           navigate(`/evaluations/${evaluation.id}`);
         } else if (evaluation.status === 'failed') {
           clearInterval(pollingRef.current);
@@ -168,6 +229,33 @@ const ProjectUpload = () => {
     formData.append('title', data.title);
     formData.append('description', data.description || '');
     formData.append('programming_language', data.programming_language);
+    
+    if (data.live_link) formData.append('live_link', data.live_link);
+    if (data.github_repo_link) formData.append('github_repo_link', data.github_repo_link);
+    
+    if (isFaculty) {
+      if (data.team_name) formData.append('team_name', data.team_name);
+      if (selectedGroupId) formData.append('group_id', selectedGroupId);
+      
+      const validMembers = teamMembers.filter(m => m.name.trim() || m.enrollment.trim());
+      if (validMembers.length > 0) {
+        formData.append('team_members', JSON.stringify(validMembers));
+      }
+    } else {
+      // Student submission
+      if (!selectedFacultyId) {
+        toast.error('Please select a faculty member to assign this project to.');
+        setUploading(false);
+        return;
+      }
+      formData.append('faculty_id', selectedFacultyId);
+      if (teamName) formData.append('team_name', teamName);
+      const validMembers = teamMembers.filter(m => m.name.trim() || m.enrollment.trim());
+      if (validMembers.length > 0) {
+        formData.append('team_members', JSON.stringify(validMembers));
+      }
+    }
+
     formData.append('code_file', codeFile);
     formData.append('doc_file', docFile);
 
@@ -202,40 +290,43 @@ const ProjectUpload = () => {
   const prevStep = () => setStep(prev => prev - 1);
 
   if (processing) {
-    const overallPct = aiStatus === 'COMPLETED' ? 100 : Math.round(((currentStep / AI_STEPS.length) * 100) + (stepProgress / AI_STEPS.length));
+    const stepWeight = 100 / AI_STEPS.length;
+    const overallPct = aiStatus === 'COMPLETED'
+      ? 100
+      : Math.min(99, Math.round((currentStep * stepWeight) + (stepProgress / 100) * stepWeight));
     return (
       <div className="min-h-screen bg-slate-950 flex items-center justify-center p-6 relative overflow-hidden">
         <div className="absolute top-0 left-0 w-full h-full bg-[radial-gradient(circle_at_50%_50%,rgba(79,70,229,0.1),transparent_50%)]"></div>
         <div className="w-full max-w-xl relative z-10">
           <div className="text-center mb-10">
             <div className="w-20 h-20 bg-indigo-500/10 rounded-3xl flex items-center justify-center mx-auto mb-6 border border-indigo-500/20 animate-pulse">
-               <CpuChipIcon className="w-10 h-10 text-indigo-400" />
+              <CpuChipIcon className="w-10 h-10 text-indigo-400" />
             </div>
-            <h2 className="text-3xl font-black text-white tracking-tight">AI Evaluation Engine</h2>
+            <h2 className="text-3xl font-bold text-white tracking-tight">AI Evaluation Engine</h2>
             <p className="text-slate-400 mt-2 text-sm font-medium">Deep analysis initiated. Do not close this session.</p>
           </div>
-          
+
           <div className="bg-slate-900/50 backdrop-blur-xl border border-slate-800 rounded-3xl p-8 shadow-2xl">
-             <div className="flex justify-between items-end mb-4">
-                <span className="text-[10px] font-black text-slate-500 uppercase tracking-[0.2em]">Overall Analysis</span>
-                <span className="text-3xl font-black text-indigo-400 tracking-tighter">{overallPct}%</span>
-             </div>
-             <div className="h-2 w-full bg-slate-800 rounded-full overflow-hidden">
-                <div className="h-full bg-indigo-500 transition-all duration-500 ease-out shadow-[0_0_15px_rgba(99,102,241,0.5)]" style={{ width: `${overallPct}%` }}></div>
-             </div>
-             <div className="mt-8 space-y-4">
-                {AI_STEPS.map((s, idx) => {
-                  const isDone = idx < currentStep || aiStatus === 'COMPLETED';
-                  const isActive = idx === currentStep && aiStatus !== 'COMPLETED';
-                  return (
-                    <div key={s.id} className={`flex items-center gap-4 transition-all ${isActive ? 'translate-x-2' : 'opacity-60'}`}>
-                       <div className={`h-2 w-2 rounded-full ${isDone ? 'bg-emerald-400' : isActive ? 'bg-indigo-400 animate-ping' : 'bg-slate-700'}`}></div>
-                       <p className={`text-xs font-bold leading-none ${isDone ? 'text-emerald-400' : isActive ? 'text-white' : 'text-slate-500'}`}>{s.label}</p>
-                       {isActive && <div className="flex-1 h-px bg-slate-800 ml-4"></div>}
-                    </div>
-                  );
-                })}
-             </div>
+            <div className="flex justify-between items-end mb-4">
+              <span className="text-xs font-semibold text-slate-600 dark:text-slate-400">Overall Analysis</span>
+              <span className="text-3xl font-bold text-indigo-400 tracking-tighter">{overallPct}%</span>
+            </div>
+            <div className="h-2 w-full bg-slate-800 rounded-full overflow-hidden">
+              <div className="h-full bg-indigo-500 transition-all duration-500 ease-out shadow-[0_0_15px_rgba(99,102,241,0.5)]" style={{ width: `${overallPct}%` }}></div>
+            </div>
+            <div className="mt-8 space-y-4">
+              {AI_STEPS.map((s, idx) => {
+                const isDone = idx < currentStep || aiStatus === 'COMPLETED';
+                const isActive = idx === currentStep && aiStatus !== 'COMPLETED';
+                return (
+                  <div key={s.id} className={`flex items-center gap-4 transition-all ${isActive ? 'translate-x-2' : 'opacity-60'}`}>
+                    <div className={`h-2 w-2 rounded-full ${isDone ? 'bg-emerald-400' : isActive ? 'bg-indigo-400 animate-ping' : 'bg-slate-700'}`}></div>
+                    <p className={`text-xs font-bold leading-none ${isDone ? 'text-emerald-400' : isActive ? 'text-white' : 'text-slate-500'}`}>{s.label}</p>
+                    {isActive && <div className="flex-1 h-px bg-slate-800 ml-4"></div>}
+                  </div>
+                );
+              })}
+            </div>
           </div>
         </div>
       </div>
@@ -249,14 +340,14 @@ const ProjectUpload = () => {
       <div className="absolute bottom-20 left-20 w-80 h-80 bg-blue-500/5 rounded-full blur-[120px] -z-10"></div>
 
       <div className="space-y-12">
-        
+
         {/* Top Section: Centered Header & Description */}
         <div className="text-center max-w-2xl mx-auto space-y-4">
-          <h1 className="text-4xl font-black text-slate-900 dark:text-white tracking-tight leading-none">
+          <h1 className="text-4xl font-bold text-slate-900 dark:text-white tracking-tight leading-none">
             Project <span className="text-indigo-600 dark:text-indigo-400">Submission</span>
           </h1>
           <p className="text-slate-500 dark:text-slate-400 text-sm font-medium leading-relaxed">
-            Submit your source code and documentation for a multi-layered AI analysis, 
+            Submit your source code and documentation for a multi-layered AI analysis,
             cross-plagiarism check, and modular evaluation.
           </p>
         </div>
@@ -265,18 +356,18 @@ const ProjectUpload = () => {
         <div className="flex items-center justify-center gap-6 sm:gap-10">
           {[1, 2, 3].map((s) => (
             <div key={s} className="flex items-center gap-4">
-              <div className={`h-11 w-11 rounded-2xl flex items-center justify-center font-black text-sm transition-all shadow-sm
-                ${step > s ? 'bg-emerald-100 dark:bg-emerald-900/30 text-emerald-600 dark:text-emerald-400' : 
-                  step === s ? 'bg-indigo-600 dark:bg-indigo-600 text-white shadow-lg shadow-indigo-200 dark:shadow-none ring-4 ring-indigo-50 dark:ring-indigo-500/10' : 
-                  'bg-white dark:bg-slate-900 text-slate-300 dark:text-slate-700 border border-slate-100 dark:border-slate-800'}`}
+              <div className={`h-11 w-11 rounded-2xl flex items-center justify-center font-bold text-sm transition-all shadow-sm
+                ${step > s ? 'bg-emerald-100 dark:bg-emerald-900/30 text-emerald-600 dark:text-emerald-400' :
+                  step === s ? 'bg-indigo-600 dark:bg-indigo-600 text-white shadow-lg shadow-indigo-200 dark:shadow-none ring-4 ring-indigo-50 dark:ring-indigo-500/10' :
+                    'bg-white dark:bg-slate-900 text-slate-300 dark:text-slate-700 border border-slate-100 dark:border-slate-800'}`}
               >
                 {step > s ? <CheckCircleIcon className="w-5 h-5" /> : `0${s}`}
               </div>
               <div className={`hidden sm:block text-left ${step < s ? 'opacity-40' : ''}`}>
-                 <p className="text-[10px] font-black uppercase tracking-widest text-slate-400 dark:text-slate-500 leading-tight">Step {s}</p>
-                 <p className="text-xs font-bold text-slate-900 dark:text-white whitespace-nowrap">
-                   {s === 1 ? 'Metadata' : s === 2 ? 'Artifacts' : 'Validation'}
-                 </p>
+                <p className="text-xs font-medium text-slate-400 dark:text-slate-500 leading-tight">Step {s}</p>
+                <p className="text-xs font-bold text-slate-900 dark:text-white whitespace-nowrap">
+                  {s === 1 ? 'Metadata' : s === 2 ? 'Artifacts' : 'Validation'}
+                </p>
               </div>
               {s < 3 && <div className="hidden lg:block w-12 h-px bg-slate-200 dark:bg-slate-800 mx-2"></div>}
             </div>
@@ -285,23 +376,23 @@ const ProjectUpload = () => {
 
         {/* Submission Form Area (Vertical & Centered) */}
         <div className="space-y-8 animate-slide-up">
-          <form onSubmit={(e) => e.preventDefault()} className="space-y-10">
-            
-            {step === 1 && (
+          <form onSubmit={handleSubmit(onSubmit, (errs) => { console.error('Validation errors:', errs); toast.error('Validation failed. Check the fields in step 1 or 2.'); })} className="space-y-10">
+
+            <div className={step === 1 ? 'block' : 'hidden'}>
               <div className="space-y-8">
                 <div className="bg-white/60 dark:bg-slate-900/60 backdrop-blur-md rounded-3xl p-8 border border-white dark:border-slate-800 shadow-xl shadow-slate-200/50 dark:shadow-none space-y-8">
                   <div className="space-y-2">
-                    <label className="text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest ml-1">Project Title</label>
+                    <label className="text-sm font-medium text-slate-600 dark:text-slate-400 ml-1">Project Title</label>
                     <input
                       {...register('title')}
                       className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-800 border border-slate-100 dark:border-slate-700 focus:bg-white dark:focus:bg-slate-700/50 focus:border-indigo-500 rounded-xl transition-all outline-none text-sm font-semibold text-slate-800 dark:text-white"
                       placeholder="e.g. Distributed Task Orchestrator"
                     />
-                    {errors.title && <p className="text-red-500 text-[10px] font-bold mt-1 uppercase ml-1">{errors.title.message}</p>}
+                    {errors.title && <p className="text-red-500 text-xs font-medium mt-1 ml-1">{errors.title.message}</p>}
                   </div>
 
                   <div className="space-y-2">
-                    <label className="text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest ml-1">Contextual Summary</label>
+                    <label className="text-sm font-medium text-slate-600 dark:text-slate-400 ml-1">Contextual Summary</label>
                     <textarea
                       {...register('description')}
                       rows="4"
@@ -311,7 +402,7 @@ const ProjectUpload = () => {
                   </div>
 
                   <div className="space-y-2 relative" ref={dropdownRef}>
-                    <label className="text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest ml-1">Target Platform</label>
+                    <label className="text-sm font-medium text-slate-600 dark:text-slate-400 ml-1">Target Platform</label>
                     <button
                       type="button"
                       onClick={() => setIsDropdownOpen(!isDropdownOpen)}
@@ -322,10 +413,10 @@ const ProjectUpload = () => {
                         {selectedLang.name}
                       </span>
                       <div className={`transition-transform duration-300 ${isDropdownOpen ? 'rotate-180' : ''}`}>
-                         <svg className="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M19 9l-7 7-7-7"></path></svg>
+                        <svg className="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M19 9l-7 7-7-7"></path></svg>
                       </div>
                     </button>
-                    
+
                     {isDropdownOpen && (
                       <div className="absolute top-full left-0 w-full mt-2 bg-white dark:bg-slate-800 rounded-2xl shadow-2xl border border-slate-100 dark:border-slate-700 p-2 z-50 animate-fade-in overflow-hidden">
                         {languages.map((lang) => (
@@ -343,25 +434,174 @@ const ProjectUpload = () => {
                       </div>
                     )}
                   </div>
+
+                  {/* Project Links Section */}
+                  <>
+                    <div className="my-8 border-t border-slate-200 dark:border-slate-700/50 pt-8" />
+                    
+                    <div className="space-y-6">
+                      <div className="flex items-center gap-3 mb-6">
+                        <div className="h-10 w-10 flex items-center justify-center rounded-xl bg-indigo-50 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-400">
+                          <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" /></svg>
+                        </div>
+                        <div>
+                          <h3 className="text-sm font-bold text-slate-800 dark:text-white leading-tight uppercase tracking-widest">Project Links</h3>
+                          <p className="text-sm font-medium text-slate-600 dark:text-slate-400">Optional URLs</p>
+                        </div>
+                      </div>
+
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div className="space-y-2">
+                          <label className="text-sm font-medium text-slate-600 dark:text-slate-400 ml-1">Live Link</label>
+                          <input
+                            {...register('live_link')}
+                            className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-800 border border-slate-100 dark:border-slate-700 focus:bg-white dark:focus:bg-slate-700/50 focus:border-indigo-500 rounded-xl transition-all outline-none text-sm font-semibold text-slate-800 dark:text-white"
+                            placeholder="https://your-project-live-url.com"
+                          />
+                          {errors.live_link && <p className="text-red-500 text-xs font-medium mt-1 ml-1">{errors.live_link.message}</p>}
+                        </div>
+                        <div className="space-y-2">
+                          <label className="text-sm font-medium text-slate-600 dark:text-slate-400 ml-1">GitHub Repository Link</label>
+                          <input
+                            {...register('github_repo_link')}
+                            className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-800 border border-slate-100 dark:border-slate-700 focus:bg-white dark:focus:bg-slate-700/50 focus:border-indigo-500 rounded-xl transition-all outline-none text-sm font-semibold text-slate-800 dark:text-white"
+                            placeholder="https://github.com/username/repo"
+                          />
+                          {errors.github_repo_link && <p className="text-red-500 text-xs font-medium mt-1 ml-1">{errors.github_repo_link.message}</p>}
+                        </div>
+                      </div>
+                    </div>
+                  </>
+
+                  {/* Team & Faculty Section - Visible to ALL users */}
+                  <>
+                    <div className="my-8 border-t border-slate-200 dark:border-slate-700/50 pt-8" />
+                    
+                    <div className="space-y-6">
+                      <div className="flex items-center gap-3 mb-6">
+                        <div className="h-10 w-10 flex items-center justify-center rounded-xl bg-indigo-50 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-400">
+                          <UserGroupIcon className="h-5 w-5" />
+                        </div>
+                        <div>
+                          <h3 className="text-sm font-bold text-slate-800 dark:text-white leading-tight uppercase tracking-widest">Team Composition</h3>
+                          <p className="text-sm font-medium text-slate-600 dark:text-slate-400">{isFaculty ? 'Faculty Management Data' : 'Student Submission Data'}</p>
+                        </div>
+                      </div>
+
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div className="space-y-2">
+                          <label className="text-sm font-medium text-slate-600 dark:text-slate-400 ml-1">Team Name (Optional)</label>
+                          {isFaculty ? (
+                            <input
+                              {...register('team_name')}
+                              className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-800 border border-slate-100 dark:border-slate-700 focus:bg-white dark:focus:bg-slate-700/50 focus:border-indigo-500 rounded-xl transition-all outline-none text-sm font-semibold text-slate-800 dark:text-white"
+                              placeholder="e.g. Alpha Devs"
+                            />
+                          ) : (
+                            <input
+                              value={teamName}
+                              onChange={e => setTeamName(e.target.value)}
+                              className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-800 border border-slate-100 dark:border-slate-700 focus:bg-white dark:focus:bg-slate-700/50 focus:border-indigo-500 rounded-xl transition-all outline-none text-sm font-semibold text-slate-800 dark:text-white"
+                              placeholder="e.g. Alpha Devs"
+                            />
+                          )}
+                        </div>
+
+                        {isFaculty ? (
+                          <div className="space-y-2 relative">
+                            <label className="text-sm font-medium text-slate-600 dark:text-slate-400 ml-1">Assign to Group</label>
+                            <select
+                              value={selectedGroupId}
+                              onChange={(e) => setSelectedGroupId(e.target.value)}
+                              className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-800 border border-slate-100 dark:border-slate-700 focus:bg-white dark:focus:bg-slate-700/50 focus:border-indigo-500 rounded-xl transition-all outline-none text-sm font-semibold text-slate-800 dark:text-white appearance-none"
+                            >
+                              <option value="">-- No Group Assigned --</option>
+                              {groups.map(g => (
+                                <option key={g.id} value={g.id}>{g.name}</option>
+                              ))}
+                            </select>
+                          </div>
+                        ) : (
+                          <div className="space-y-2 relative">
+                            <label className="text-sm font-medium text-slate-600 dark:text-slate-400 ml-1">Assigned Faculty <span className="text-rose-500">*</span></label>
+                            <select
+                              value={selectedFacultyId}
+                              onChange={(e) => setSelectedFacultyId(e.target.value)}
+                              required
+                              disabled={facultyListLoading}
+                              className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-800 border border-slate-100 dark:border-slate-700 focus:bg-white dark:focus:bg-slate-700/50 focus:border-indigo-500 rounded-xl transition-all outline-none text-sm font-semibold text-slate-800 dark:text-white appearance-none disabled:opacity-60 disabled:cursor-wait"
+                            >
+                              <option value="">
+                                {facultyListLoading ? 'Loading faculty...' : facultyList.length === 0 ? '-- No faculty available --' : '-- Select a Faculty Member --'}
+                              </option>
+                              {facultyList.map(f => (
+                                <option key={f.id} value={f.id}>{f.full_name}{f.department ? ` (${f.department})` : ''}</option>
+                              ))}
+                            </select>
+                            {!facultyListLoading && facultyList.length === 0 && (
+                              <p className="text-[10px] text-rose-500 font-bold ml-1 mt-1">⚠ No faculty found. The backend may need to be restarted.</p>
+                            )}
+                          </div>
+                        )}
+                      </div>
+
+                      <div className="space-y-4 pt-4">
+                        <label className="text-sm font-medium text-slate-600 dark:text-slate-400 ml-1 block border-b border-slate-200 dark:border-slate-700/50 pb-2">Team Members</label>
+                        {teamMembers.map((member, index) => (
+                          <div key={index} className="flex flex-col sm:flex-row gap-3">
+                            <input
+                              placeholder="Full Name"
+                              value={member.name}
+                              onChange={(e) => updateTeamMember(index, 'name', e.target.value)}
+                              className="flex-1 px-4 py-3 bg-slate-50 dark:bg-slate-800 border border-slate-100 dark:border-slate-700 focus:bg-white dark:focus:border-indigo-500 rounded-xl outline-none text-sm font-medium dark:text-white"
+                            />
+                            <input
+                              placeholder="Enrollment / ID"
+                              value={member.enrollment}
+                              onChange={(e) => updateTeamMember(index, 'enrollment', e.target.value)}
+                              className="flex-1 px-4 py-3 bg-slate-50 dark:bg-slate-800 border border-slate-100 dark:border-slate-700 focus:bg-white dark:focus:border-indigo-500 rounded-xl outline-none text-sm font-medium dark:text-white"
+                            />
+                            <button
+                              type="button"
+                              onClick={() => removeTeamMember(index)}
+                              disabled={teamMembers.length === 1}
+                              className="p-3 text-rose-500 bg-rose-50 dark:bg-rose-900/10 rounded-xl hover:bg-rose-100 dark:hover:bg-rose-900/30 transition-colors disabled:opacity-30 self-stretch sm:self-auto flex items-center justify-center border border-rose-100 dark:border-rose-900/30"
+                            >
+                              <MinusCircleIcon className="w-5 h-5" />
+                            </button>
+                          </div>
+                        ))}
+                        <div className="pt-2">
+                          <button
+                            type="button"
+                            onClick={addTeamMember}
+                            className="inline-flex items-center gap-2 text-xs font-bold text-indigo-600 dark:text-indigo-400 bg-indigo-50 dark:bg-indigo-900/20 px-4 py-2 rounded-xl hover:bg-indigo-100 dark:hover:bg-indigo-900/40 transition-colors border border-indigo-100 dark:border-indigo-900/30"
+                          >
+                            <UserPlusIcon className="w-4 h-4" /> Add Team Member
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  </>
                 </div>
 
                 <div className="flex justify-center pt-1">
                   <button
                     type="button"
                     onClick={nextStep}
-                    className="flex items-center gap-3 bg-slate-900 dark:bg-indigo-600 text-white px-12 py-3.5 rounded-2xl text-xs font-extrabold uppercase tracking-widest hover:bg-slate-800 dark:hover:bg-indigo-700 hover:shadow-xl hover:shadow-indigo-500/20 transition-all duration-300"
+                    className="flex items-center gap-3 bg-slate-900 dark:bg-indigo-600 text-white px-12 py-3.5 rounded-2xl text-xs font-medium hover:bg-slate-800 dark:hover:bg-indigo-700 hover:shadow-xl hover:shadow-indigo-500/20 transition-all duration-300"
                   >
                     Select Artifacts <ArrowRightIcon className="w-4 h-4" />
                   </button>
                 </div>
               </div>
-            )}
+            </div>
 
-            {step === 2 && (
+            <div className={step === 2 ? 'block' : 'hidden'}>
               <div className="space-y-10">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                   <div className="space-y-3">
-                    <p className="text-[10px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-widest ml-1">01. Code Registry</p>
+                    <p className="text-xs font-semibold text-slate-600 dark:text-slate-400 ml-1">01. Code Registry</p>
                     <div {...getCodeRootProps()} className={`h-60 rounded-3xl border-2 border-dashed flex flex-col items-center justify-center p-6 transition-all cursor-pointer bg-white/40 dark:bg-slate-900/40 backdrop-blur-md
                       ${isCodeDragActive ? 'border-indigo-500 bg-indigo-50/30' : codeFile ? 'border-emerald-500 bg-emerald-50/20' : 'border-slate-200 dark:border-slate-800 hover:border-indigo-300 dark:hover:border-indigo-500/50 hover:bg-white dark:hover:bg-slate-800/50'}`}>
                       <input {...getCodeInputProps()} />
@@ -369,12 +609,12 @@ const ProjectUpload = () => {
                         <div className="text-center group">
                           <DocumentIcon className="w-10 h-10 text-emerald-500 mx-auto mb-3" />
                           <p className="text-xs font-bold text-slate-800 dark:text-slate-200 truncate px-4">{codeFile.name}</p>
-                          <button onClick={(e) => { e.stopPropagation(); setCodeFile(null); }} className="mt-4 text-[9px] font-black text-rose-500 uppercase tracking-widest underline underline-offset-4 decoration-rose-200">Reset</button>
+                          <button onClick={(e) => { e.stopPropagation(); setCodeFile(null); }} className="mt-4 text-[9px] font-bold text-rose-500 uppercase tracking-widest underline underline-offset-4 decoration-rose-200">Reset</button>
                         </div>
                       ) : (
                         <div className="text-center">
                           <CloudArrowUpIcon className="w-10 h-10 text-slate-300 mx-auto mb-3" />
-                          <p className="text-xs font-bold text-slate-700 uppercase">Drop Source</p>
+                          <p className="text-xs font-semibold text-slate-700">Drop Source</p>
                           <p className="text-[9px] text-slate-400 font-bold mt-1">ZIP, PY, JS, JAVA</p>
                         </div>
                       )}
@@ -382,7 +622,7 @@ const ProjectUpload = () => {
                   </div>
 
                   <div className="space-y-3">
-                    <p className="text-[10px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-widest ml-1">02. Documentation</p>
+                    <p className="text-xs font-semibold text-slate-600 dark:text-slate-400 ml-1">02. Documentation</p>
                     <div {...getDocRootProps()} className={`h-60 rounded-3xl border-2 border-dashed flex flex-col items-center justify-center p-6 transition-all cursor-pointer bg-white/40 dark:bg-slate-900/40 backdrop-blur-md
                       ${isDocDragActive ? 'border-indigo-500 bg-indigo-50/30' : docFile ? 'border-emerald-500 bg-emerald-50/20' : 'border-slate-200 dark:border-slate-800 hover:border-indigo-300 dark:hover:border-indigo-500/50 hover:bg-white dark:hover:bg-slate-800/50'}`}>
                       <input {...getDocInputProps()} />
@@ -390,12 +630,12 @@ const ProjectUpload = () => {
                         <div className="text-center group">
                           <DocumentTextIcon className="w-10 h-10 text-emerald-500 mx-auto mb-3" />
                           <p className="text-xs font-bold text-slate-800 dark:text-slate-200 truncate px-4">{docFile.name}</p>
-                          <button onClick={(e) => { e.stopPropagation(); setDocFile(null); }} className="mt-4 text-[9px] font-black text-rose-500 uppercase tracking-widest underline underline-offset-4 decoration-rose-200">Reset</button>
+                          <button onClick={(e) => { e.stopPropagation(); setDocFile(null); }} className="mt-4 text-[9px] font-bold text-rose-500 uppercase tracking-widest underline underline-offset-4 decoration-rose-200">Reset</button>
                         </div>
                       ) : (
                         <div className="text-center">
                           <DocumentTextIcon className="w-10 h-10 text-slate-300 mx-auto mb-3" />
-                          <p className="text-xs font-bold text-slate-700 uppercase">Drop Report</p>
+                          <p className="text-xs font-semibold text-slate-700">Drop Report</p>
                           <p className="text-[9px] text-slate-400 font-bold mt-1">PDF, MD, TXT</p>
                         </div>
                       )}
@@ -404,50 +644,51 @@ const ProjectUpload = () => {
                 </div>
 
                 <div className="flex justify-between items-center pt-6">
-                  <button onClick={prevStep} className="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest hover:text-slate-900 dark:hover:text-white transition-colors">Back to Meta</button>
+                  <button type="button" onClick={prevStep} className="text-xs font-medium text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white transition-colors">Back to Meta</button>
                   <button
+                    type="button"
                     disabled={!codeFile || !docFile}
                     onClick={nextStep}
-                    className="bg-indigo-600 text-white px-10 py-3.5 rounded-2xl text-xs font-extrabold uppercase tracking-widest shadow-xl shadow-indigo-100 dark:shadow-none hover:bg-indigo-700 hover:-translate-y-0.5 transition-all disabled:opacity-30 disabled:shadow-none"
+                    className="bg-indigo-600 text-white px-10 py-3.5 rounded-2xl text-xs font-medium shadow-xl shadow-indigo-100 dark:shadow-none hover:bg-indigo-700 hover:-translate-y-0.5 transition-all disabled:opacity-30 disabled:shadow-none"
                   >
                     Proceed to Review
                   </button>
                 </div>
               </div>
-            )}
+            </div>
 
-            {step === 3 && (
+            <div className={step === 3 ? 'block' : 'hidden'}>
               <div className="space-y-8">
                 <div className="bg-slate-900 rounded-[2.5rem] p-10 text-white shadow-2xl relative overflow-hidden">
                   <div className="absolute -top-10 -right-10 w-40 h-40 bg-indigo-500/20 rounded-full blur-3xl"></div>
                   <div className="relative z-10 space-y-8">
-                    <h3 className="text-sm font-black uppercase tracking-[0.3em] text-indigo-400">Final Verification</h3>
-                    
+                    <h3 className="text-sm font-bold text-indigo-400">Final Verification</h3>
+
                     <div className="grid grid-cols-2 gap-10">
-                       <div className="space-y-1">
-                          <p className="text-[10px] font-black text-slate-500 uppercase">Project Title</p>
-                          <p className="text-lg font-bold truncate leading-none">{formValues.title}</p>
-                       </div>
-                       <div className="space-y-1">
-                          <p className="text-[10px] font-black text-slate-500 uppercase">Target Runtime</p>
-                          <p className="text-lg font-bold capitalize leading-none">{formValues.programming_language}</p>
-                       </div>
+                      <div className="space-y-1">
+                        <p className="text-xs font-medium text-slate-600 dark:text-slate-400">Project Title</p>
+                        <p className="text-lg font-bold truncate leading-none">{formValues.title}</p>
+                      </div>
+                      <div className="space-y-1">
+                        <p className="text-xs font-medium text-slate-600 dark:text-slate-400">Target Runtime</p>
+                        <p className="text-lg font-bold capitalize leading-none">{formValues.programming_language}</p>
+                      </div>
                     </div>
 
                     <div className="space-y-4 pt-4 border-t border-slate-800 dark:border-slate-700">
                       <div className="flex items-center gap-4 bg-slate-800/50 dark:bg-slate-950/50 p-4 rounded-2xl border border-slate-700/50">
                         <DocumentIcon className="w-6 h-6 text-indigo-400" />
                         <div className="min-w-0 flex-1">
-                           <p className="text-[9px] font-black text-slate-500 uppercase">Source Registry</p>
-                           <p className="text-xs font-bold truncate">{codeFile?.name}</p>
+                          <p className="text-xs font-medium text-slate-600 dark:text-slate-400">Source Registry</p>
+                          <p className="text-xs font-bold truncate">{codeFile?.name}</p>
                         </div>
                         <CheckCircleIcon className="w-5 h-5 text-emerald-400" />
                       </div>
                       <div className="flex items-center gap-4 bg-slate-800/50 p-4 rounded-2xl border border-slate-700/50">
                         <DocumentTextIcon className="w-6 h-6 text-emerald-400" />
                         <div className="min-w-0 flex-1">
-                           <p className="text-[9px] font-black text-slate-500 uppercase">Academic Documentation</p>
-                           <p className="text-xs font-bold truncate">{docFile?.name}</p>
+                          <p className="text-xs font-medium text-slate-600 dark:text-slate-400">Academic Documentation</p>
+                          <p className="text-xs font-bold truncate">{docFile?.name}</p>
                         </div>
                         <CheckCircleIcon className="w-5 h-5 text-emerald-400" />
                       </div>
@@ -458,8 +699,8 @@ const ProjectUpload = () => {
                 {uploading ? (
                   <div className="bg-indigo-600 rounded-3xl p-6 text-white shadow-2xl">
                     <div className="flex justify-between items-center mb-3">
-                        <span className="text-[10px] font-black uppercase tracking-widest">Bridging secure connection...</span>
-                        <span className="text-2xl font-black">{uploadProgress}%</span>
+                      <span className="text-xs font-medium">Bridging secure connection...</span>
+                      <span className="text-2xl font-bold">{uploadProgress}%</span>
                     </div>
                     <div className="w-full bg-indigo-900/30 rounded-full h-1.5 backdrop-blur-sm overflow-hidden">
                       <div className="bg-white h-full transition-all duration-300 shadow-[0_0_10px_rgba(255,255,255,0.7)]" style={{ width: `${uploadProgress}%` }}></div>
@@ -467,12 +708,12 @@ const ProjectUpload = () => {
                   </div>
                 ) : (
                   <div className="flex flex-col sm:flex-row gap-4 pt-4">
-                    <button onClick={prevStep} className="flex-1 py-4 bg-slate-50 dark:bg-slate-800 rounded-2xl text-xs font-bold uppercase tracking-widest text-slate-500 dark:text-slate-400 hover:bg-white dark:hover:bg-slate-700 hover:shadow-sm border border-slate-100 dark:border-slate-700 transition-all">Revise Input</button>
-                    <button id="confirm-execute-btn" onClick={() => onSubmit(formValues)} className="flex-[2] py-4 bg-indigo-600 rounded-2xl text-xs font-black uppercase tracking-widest text-white shadow-xl shadow-indigo-200 dark:shadow-none hover:bg-indigo-700 hover:-translate-y-0.5 transition-all">Trigger AI Analysis</button>
+                    <button type="button" onClick={prevStep} className="flex-1 py-4 bg-slate-50 dark:bg-slate-800 rounded-2xl text-xs font-medium text-slate-500 dark:text-slate-400 hover:bg-white dark:hover:bg-slate-700 hover:shadow-sm border border-slate-100 dark:border-slate-700 transition-all">Revise Input</button>
+                    <button type="submit" id="confirm-execute-btn" className="flex-[2] py-4 bg-indigo-600 rounded-2xl text-xs font-medium text-white shadow-xl shadow-indigo-200 dark:shadow-none hover:bg-indigo-700 hover:-translate-y-0.5 transition-all">Analysis</button>
                   </div>
                 )}
               </div>
-            )}
+            </div>
 
           </form>
         </div>

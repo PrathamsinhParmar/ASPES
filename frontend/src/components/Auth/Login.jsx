@@ -4,7 +4,7 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
-import { AlertCircle, Loader2, Mail, Lock, Sparkles } from 'lucide-react';
+import { AlertCircle, Loader2, Mail, Lock, Sparkles, Eye, EyeOff } from 'lucide-react';
 import ThemeToggle from '../Common/ThemeToggle';
 
 const schema = yup.object().shape({
@@ -17,6 +17,7 @@ const Login = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const [apiError, setApiError] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
 
   const from = location.state?.from?.pathname || '/dashboard';
 
@@ -92,10 +93,21 @@ const Login = () => {
               </div>
               <input
                 {...register('password')}
-                type="password"
+                type={showPassword ? 'text' : 'password'}
                 placeholder="••••••••"
-                className={`text-gray-900 dark:text-white bg-white dark:bg-slate-800/50 block w-full pl-11 pr-3 py-3 border ${errors.password ? 'border-red-300 ring-4 ring-red-50 dark:ring-red-900/10' : 'border-gray-200 dark:border-slate-700 focus:ring-4 focus:ring-indigo-50 dark:focus:ring-indigo-900/10 focus:border-indigo-500'} rounded-xl shadow-sm placeholder-gray-400 dark:placeholder-slate-500 transition-all duration-200 ease-in-out sm:text-sm`}
+                className={`text-gray-900 dark:text-white bg-white dark:bg-slate-800/50 block w-full pl-11 pr-10 py-3 border ${errors.password ? 'border-red-300 ring-4 ring-red-50 dark:ring-red-900/10' : 'border-gray-200 dark:border-slate-700 focus:ring-4 focus:ring-indigo-50 dark:focus:ring-indigo-900/10 focus:border-indigo-500'} rounded-xl shadow-sm placeholder-gray-400 dark:placeholder-slate-500 transition-all duration-200 ease-in-out sm:text-sm`}
               />
+              <button
+                type="button"
+                className="absolute inset-y-0 right-0 pr-3 flex items-center"
+                onClick={() => setShowPassword(!showPassword)}
+              >
+                {showPassword ? (
+                  <EyeOff className="h-5 w-5 text-gray-400 dark:text-slate-500 hover:text-gray-500 dark:hover:text-slate-400 transition-colors" />
+                ) : (
+                  <Eye className="h-5 w-5 text-gray-400 dark:text-slate-500 hover:text-gray-500 dark:hover:text-slate-400 transition-colors" />
+                )}
+              </button>
             </div>
             {errors.password && <p className="mt-1.5 ml-1 text-sm text-red-500">{errors.password.message}</p>}
           </div>

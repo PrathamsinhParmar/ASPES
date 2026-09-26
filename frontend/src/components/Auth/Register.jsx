@@ -4,7 +4,7 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
-import { AlertCircle, Loader2, Mail, User, Briefcase, Lock, UserPlus, FileSignature, CheckCircle2 } from 'lucide-react';
+import { AlertCircle, Loader2, Mail, User, Briefcase, Lock, UserPlus, FileSignature, CheckCircle2, Eye, EyeOff } from 'lucide-react';
 import ThemeToggle from '../Common/ThemeToggle';
 
 const schema = yup.object().shape({
@@ -23,6 +23,8 @@ const Register = () => {
   const navigate = useNavigate();
   const [apiError, setApiError] = useState('');
   const [successMsg, setSuccessMsg] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
   const { register, handleSubmit, formState: { errors, isSubmitting } } = useForm({
     resolver: yupResolver(schema),
@@ -174,10 +176,21 @@ const Register = () => {
                   </div>
                   <input
                     {...register('password')}
-                    type="password"
+                    type={showPassword ? 'text' : 'password'}
                     placeholder="••••••••"
-                    className={`text-gray-900 dark:text-white bg-white dark:bg-slate-800/50 block w-full pl-10 pr-3 py-2.5 border ${errors.password ? 'border-red-300 ring-2 ring-red-50 dark:ring-red-900/10' : 'border-gray-200 dark:border-slate-700 focus:ring-4 focus:ring-indigo-50 dark:focus:ring-indigo-900/10 focus:border-indigo-500'} rounded-xl shadow-sm placeholder-gray-400 dark:placeholder-slate-500 transition-all sm:text-sm`}
+                    className={`text-gray-900 dark:text-white bg-white dark:bg-slate-800/50 block w-full pl-10 pr-10 py-2.5 border ${errors.password ? 'border-red-300 ring-2 ring-red-50 dark:ring-red-900/10' : 'border-gray-200 dark:border-slate-700 focus:ring-4 focus:ring-indigo-50 dark:focus:ring-indigo-900/10 focus:border-indigo-500'} rounded-xl shadow-sm placeholder-gray-400 dark:placeholder-slate-500 transition-all sm:text-sm`}
                   />
+                  <button
+                    type="button"
+                    className="absolute inset-y-0 right-0 pr-3 flex items-center"
+                    onClick={() => setShowPassword(!showPassword)}
+                  >
+                    {showPassword ? (
+                      <EyeOff className="h-4 w-4 text-gray-400 dark:text-slate-500 hover:text-gray-500 dark:hover:text-slate-400 transition-colors" />
+                    ) : (
+                      <Eye className="h-4 w-4 text-gray-400 dark:text-slate-500 hover:text-gray-500 dark:hover:text-slate-400 transition-colors" />
+                    )}
+                  </button>
                 </div>
                 {errors.password && <p className="mt-1 ml-1 text-xs text-red-500">{errors.password.message}</p>}
               </div>
@@ -190,10 +203,21 @@ const Register = () => {
                   </div>
                   <input
                     {...register('confirm_password')}
-                    type="password"
+                    type={showConfirmPassword ? 'text' : 'password'}
                     placeholder="••••••••"
-                    className={`text-gray-900 dark:text-white bg-white dark:bg-slate-800/50 block w-full pl-10 pr-3 py-2.5 border ${errors.confirm_password ? 'border-red-300 ring-2 ring-red-50 dark:ring-red-900/10' : 'border-gray-200 dark:border-slate-700 focus:ring-4 focus:ring-indigo-50 dark:focus:ring-indigo-900/10 focus:border-indigo-500'} rounded-xl shadow-sm placeholder-gray-400 dark:placeholder-slate-500 transition-all sm:text-sm`}
+                    className={`text-gray-900 dark:text-white bg-white dark:bg-slate-800/50 block w-full pl-10 pr-10 py-2.5 border ${errors.confirm_password ? 'border-red-300 ring-2 ring-red-50 dark:ring-red-900/10' : 'border-gray-200 dark:border-slate-700 focus:ring-4 focus:ring-indigo-50 dark:focus:ring-indigo-900/10 focus:border-indigo-500'} rounded-xl shadow-sm placeholder-gray-400 dark:placeholder-slate-500 transition-all sm:text-sm`}
                   />
+                  <button
+                    type="button"
+                    className="absolute inset-y-0 right-0 pr-3 flex items-center"
+                    onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                  >
+                    {showConfirmPassword ? (
+                      <EyeOff className="h-4 w-4 text-gray-400 dark:text-slate-500 hover:text-gray-500 dark:hover:text-slate-400 transition-colors" />
+                    ) : (
+                      <Eye className="h-4 w-4 text-gray-400 dark:text-slate-500 hover:text-gray-500 dark:hover:text-slate-400 transition-colors" />
+                    )}
+                  </button>
                 </div>
                 {errors.confirm_password && <p className="mt-1 ml-1 text-xs text-red-500">{errors.confirm_password.message}</p>}
               </div>

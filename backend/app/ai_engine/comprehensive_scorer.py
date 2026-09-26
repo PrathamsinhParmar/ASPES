@@ -6,7 +6,12 @@ all sub-engines to generate a final weighted score, letter grade,
 and comprehensive feedback.
 """
 import logging
+import os
+import shutil
+import tempfile
+import zipfile
 import concurrent.futures
+from pathlib import Path
 from typing import Any, Dict, List, Tuple
 
 logger = logging.getLogger(__name__)
@@ -230,6 +235,31 @@ class EnhancedProjectEvaluator:
         self.scorer = ComprehensiveScorer()
         self.feedback_generator = EnhancedFeedbackGenerator()
 
+    @staticmethod
+    def _extract_py_files(zip_path: str, extract_dir: str) -> List[str]:
+        """
+        Safely extract a zip archive and return a list of absolute paths
+        to every .py file inside it (excluding hidden/dunder directories).
+        """
+        py_files: List[str] = []
+        try:
+            with zipfile.ZipFile(zip_path, 'r') as zf:
+                for member in zf.namelist():
+                    # Skip hidden dirs, __pycache__, and zip-slip paths
+                    parts = Path(member).parts
+                    if any(p.startswith('.') or p == '__pycache__' for p in parts):
+                        continue
+                    if '..' in member or member.startswith('/') or member.startswith('\\'):
+                        continue
+                    if member.endswith('.py'):
+                        zf.extract(member, extract_dir)
+                        py_files.append(os.path.join(extract_dir, member))
+        except zipfile.BadZipFile as e:
+            logger.warning(f"Bad zip file {zip_path}: {e}")
+        except Exception as e:
+            logger.warning(f"Zip extraction failed for {zip_path}: {e}")
+        return py_files
+
     def evaluate_project(self, project_data: Dict[str, Any]) -> Dict[str, Any]:
         """
         Complete AI evaluation pipeline.
@@ -266,15 +296,80 @@ class EnhancedProjectEvaluator:
         except Exception as e:
             logger.warning(f"Failed to pre-load ML models: {e}")
 
-        # 2. Run Ensembles concurrently
+        # 2. Resolve code path — handle zip extraction so the analyzer
+        #    always receives .py files (it only supports Python files).
+        _temp_extract_dir = None  # track for cleanup
+        try:
+            code_path_obj = Path(code_path)
+            if code_path_obj.suffix.lower() == ".zip":
+                _temp_extract_dir = tempfile.mkdtemp(prefix="aspes_code_extract_")
+                py_files = self._extract_py_files(code_path, _temp_extract_dir)
+                if py_files:
+                    _resolved_code_path = py_files[0]   # primary file for text-based analyses
+                    _py_file_list = py_files
+                else:
+                    # No Python files inside the zip — fall back gracefully
+                    _resolved_code_path = code_path
+                    _py_file_list = []
+            elif code_path_obj.suffix.lower() == ".py":
+                _resolved_code_path = code_path
+                _py_file_list = [code_path]
+            else:
+                # Non-Python, non-zip upload (e.g. .js, .java) — analyzer will
+                # return a graceful error dict; score will be 0 for code quality
+                # but the rest of the pipeline continues normally.
+                _resolved_code_path = code_path
+                _py_file_list = []
+        except Exception as _e:
+            logger.warning(f"Code path resolution failed: {_e}")
+            _resolved_code_path = code_path
+            _py_file_list = []
+
+        # Re-read code_content if zip was extracted and we now have a real .py
+        if not code_content and _resolved_code_path != code_path:
+            try:
+                with open(_resolved_code_path, 'r', encoding='utf-8', errors='ignore') as f:
+                    code_content = f.read()
+            except Exception:
+                pass
+
+        # 3. Run Ensembles concurrently
         with concurrent.futures.ThreadPoolExecutor(max_workers=5) as executor:
-            # Submit independent tasks
-            future_code = executor.submit(self.code_analyzer.analyze, code_path)
+            # Submit code analysis — use analyze_project for multi-file zips,
+            # analyze for a single .py file.
+            if len(_py_file_list) > 1:
+                future_code = executor.submit(self.code_analyzer.analyze_project, _py_file_list)
+            elif len(_py_file_list) == 1:
+                future_code = executor.submit(self.code_analyzer.analyze, _py_file_list[0])
+            else:
+                # No Python files found — submit a dummy that returns a neutral result.
+                # All three Metric Breakdown keys must be present so the frontend
+                # never renders —/100.
+                future_code = executor.submit(lambda: {
+                    'final_score': 50.0,
+                    'grade': 'C',
+                    'scores': {
+                        'quality': 50.0, 'maintainability': 50.0, 'complexity': 50.0,
+                        'security': 50.0, 'documentation': 50.0, 'duplication': 50.0,
+                        'type_safety': 50.0,
+                    },
+                    'quality': 50.0,
+                    'maintainability': 50.0,
+                    'complexity': 50.0,
+                    # Frontend Metric Breakdown aliases
+                    'clean_code_score':      50.0,
+                    'maintainability_index': 50.0,
+                    'complexity_score':      50.0,
+                    'error': 'No Python (.py) files found — code quality scored as neutral',
+                    'code_smells': [],
+                    'security_issues': [],
+                    'diagnostics': ['⚠️ Non-Python submission: code quality analysis skipped'],
+                })
             
             doc_path = project_data.get('doc_file_path', '')
             future_doc = executor.submit(self.doc_evaluator.evaluate, doc_path)
             
-            future_ai = executor.submit(self.ai_detector.analyze, code_content, code_path)
+            future_ai = executor.submit(self.ai_detector.analyze, code_content, _resolved_code_path)
             
             existing_projects = project_data.get('existing_projects', [])
             future_plag = executor.submit(self.plagiarism_detector.detect, code_content, existing_projects)
@@ -293,7 +388,7 @@ class EnhancedProjectEvaluator:
                 self.aligner.analyze_alignment,
                 report_text=doc_text, 
                 code_content=code_content,
-                file_paths=[code_path]
+                file_paths=_py_file_list if _py_file_list else [_resolved_code_path]
             )
 
             # Gather remaining results
@@ -321,7 +416,14 @@ class EnhancedProjectEvaluator:
                 logger.error(f"Alignment analysis failed: {e}")
                 results['alignment'] = {}
 
-        # 3. Compile Master Score
+        # 4. Cleanup temp extraction directory
+        if _temp_extract_dir:
+            try:
+                shutil.rmtree(_temp_extract_dir, ignore_errors=True)
+            except Exception:
+                pass
+
+        # 5. Compile Master Score
         scoring_breakdown = self.scorer.calculate_overall_score(results)
         results['scoring'] = scoring_breakdown
 

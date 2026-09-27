@@ -3,6 +3,7 @@ import ReactMarkdown from 'react-markdown';
 import { XMarkIcon, ArrowDownTrayIcon, DocumentChartBarIcon, ShieldCheckIcon, CodeBracketIcon, DocumentTextIcon, MagnifyingGlassIcon, ClipboardDocumentListIcon, StarIcon, ChatBubbleLeftRightIcon, ExclamationTriangleIcon, CheckBadgeIcon, ArrowPathIcon } from '@heroicons/react/24/outline';
 import { reportService } from '../../services/reportService';
 import { toast } from 'react-toastify';
+import { formatLanguageName } from '../../utils/languageFormatter';
 
 // ─── Utility helpers ────────────────────────────────────────────────────────
 
@@ -297,7 +298,7 @@ const ReportModal = ({ projectId, projectTitle, isOpen, onClose }) => {
                     <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 sm:gap-4">
                       {[
                         ['Project', report.project.title],
-                        ['Course', report.project.course_name || '—'],
+                        ['Course / Language', formatLanguageName(report.project.course_name) || '—'],
                         ['Team', report.team.team_name],
                         ['Faculty', report.team.faculty_name],
                         ['Student', report.team.student_name],

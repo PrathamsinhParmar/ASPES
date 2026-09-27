@@ -4,6 +4,7 @@ import { useAuth } from '../../context/AuthContext';
 import { useNotifications } from '../../context/NotificationContext';
 import notificationService from '../../services/notificationService';
 import { useNavigate } from 'react-router-dom';
+import { formatLanguageName } from '../../utils/languageFormatter';
 import {
   BellIcon,
   CheckCircleIcon,
@@ -558,7 +559,7 @@ const NotificationPanel = ({ defaultTab = 'all', compact = false }) => {
                               </h5>
                               <div className="space-y-1 text-slate-600 dark:text-slate-300">
                                 <div><span className="font-semibold text-slate-400">Submission ID: </span>#{meta.submission_id || notif.related_project_id}</div>
-                                <div><span className="font-semibold text-slate-400">Course / Language: </span>{meta.course_name || 'N/A'}</div>
+                                <div><span className="font-semibold text-slate-400">Course / Language: </span>{meta.course_name ? formatLanguageName(meta.course_name) : 'N/A'}</div>
                                 <div><span className="font-semibold text-slate-400">Submitted At: </span>{meta.submitted_at_str || new Date(notif.created_at).toLocaleString()}</div>
                               </div>
                             </div>

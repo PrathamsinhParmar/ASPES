@@ -17,6 +17,7 @@ import {
   ChartBarIcon,
 } from '@heroicons/react/24/outline';
 import { format } from 'date-fns';
+import { formatLanguageName } from '../utils/languageFormatter';
 
 const API_BASE_URL = api.defaults.baseURL?.replace('/api/v1', '') ?? '';
 
@@ -256,7 +257,7 @@ const FacultyDashboardViewPage = () => {
                       </div>
                     </td>
                     <td className="px-4 py-4">
-                      <span className="text-sm font-semibold text-slate-500 dark:text-slate-400 capitalize">{project.course_name || '—'}</span>
+                      <span className="text-sm font-semibold text-slate-500 dark:text-slate-400">{formatLanguageName(project.course_name) || '—'}</span>
                     </td>
                     <td className="px-4 py-4">
                       <span className="text-sm font-semibold text-slate-500 dark:text-slate-400">{project.team_name || '—'}</span>

@@ -8,6 +8,7 @@ import { useNotifications } from '../../context/NotificationContext';
 import NotificationPanel from '../Notification/NotificationPanel';
 import { format } from 'date-fns';
 import { toast } from 'react-toastify';
+import { formatLanguageName } from '../../utils/languageFormatter';
 
 const StudentDashboard = () => {
   const { user } = useAuth();
@@ -268,7 +269,7 @@ const StudentDashboard = () => {
                       <div className="flex items-center gap-3">
                         <div>
                           <div className="text-sm font-bold text-slate-900 dark:text-white leading-tight">{project.title}</div>
-                          <div className="text-xs text-slate-500 dark:text-slate-400 font-medium">{project.course_name}</div>
+                          <div className="text-xs text-slate-500 dark:text-slate-400 font-medium">{formatLanguageName(project.course_name)}</div>
                         </div>
                       </div>
                     </td>

@@ -88,7 +88,7 @@ function DashboardLayout() {
   const navItems = getNavItems(user?.role);
 
   return (
-    <div className="min-h-screen bg-transparent dark:bg-slate-950 flex text-gray-900 dark:text-gray-100">
+    <div className="min-h-screen bg-transparent dark:bg-slate-950 flex text-gray-900 dark:text-gray-100 font-sans">
       {/* ---- Sidebar ---- */}
       <aside className={`
         fixed inset-y-0 left-0 z-40 flex flex-col
@@ -142,7 +142,7 @@ function DashboardLayout() {
             <ThemeToggle />
           </div>
 
-          <div className="flex items-center gap-3 px-3 py-2 bg-white/50 dark:bg-slate-800/50 rounded-xl">
+          <div className="flex items-center gap-3 px-3 py-2 bg-white/50 dark:bg-slate-800/50 rounded-lg">
             {user?.profile_photo ? (
               <img 
                 src={`${API_BASE_URL}${user.profile_photo}?v=${new Date(user.updated_at || Date.now()).getTime()}`} 
@@ -179,7 +179,7 @@ function DashboardLayout() {
           <div className="flex items-center gap-3">
             <button
               onClick={toggleSidebar}
-              className="p-2 rounded-xl text-slate-500 hover:text-slate-800 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800/60 transition-colors"
+              className="p-2 rounded-lg text-slate-500 hover:text-slate-800 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800/60 transition-colors"
               title="Toggle Sidebar"
             >
               <Bars3Icon className="w-5 h-5" />

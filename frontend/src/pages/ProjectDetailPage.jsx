@@ -2,9 +2,27 @@ import React, { useState, useEffect, useRef } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import { projectService } from '../services/projectService';
 import { useAuth } from '../context/AuthContext';
-import { ChartBarIcon, DocumentIcon, CodeBracketIcon, ArrowPathIcon, CheckCircleIcon, UserGroupIcon, IdentificationIcon, ClipboardDocumentCheckIcon, ArrowDownTrayIcon, EyeIcon, XMarkIcon, DocumentChartBarIcon } from '@heroicons/react/24/outline';
+import { 
+  DocumentTextIcon, 
+  DocumentIcon, 
+  CodeBracketIcon, 
+  ArrowPathIcon, 
+  CheckCircleIcon, 
+  UserGroupIcon, 
+  IdentificationIcon, 
+  ClipboardDocumentCheckIcon, 
+  ArrowDownTrayIcon, 
+  EyeIcon, 
+  XMarkIcon, 
+  DocumentChartBarIcon,
+  ArrowLeftIcon,
+  CalendarDaysIcon,
+  ArrowTopRightOnSquareIcon
+} from '@heroicons/react/24/outline';
+import { format } from 'date-fns';
 import { toast } from 'react-toastify';
 import ReportModal from '../components/Report/ReportModal';
+import { formatLanguageName } from '../utils/languageFormatter';
 
 const POLL_INTERVAL_MS = 3000; // Poll every 3 seconds
 
@@ -158,301 +176,420 @@ const ProjectDetailPage = () => {
     project.evaluation.status === 'pending' || 
     project.evaluation.status === 'processing';
 
+  const score = project?.evaluation?.total_score != null ? Math.round(project.evaluation.total_score) : null;
+  const scoreTier = score != null 
+    ? score >= 80 
+      ? { label: 'Distinction', bg: 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/20' }
+      : score >= 50 
+        ? { label: 'Passing', bg: 'bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 border-indigo-500/20' }
+        : { label: 'Needs Review', bg: 'bg-amber-500/10 text-amber-600 dark:text-amber-400 border-amber-500/20' }
+    : null;
+
   return (
-    <div className="p-4 lg:p-5 sm:p-6 max-w-7xl mx-auto dark:text-white text-slate-900">
-      <div className="flex flex-col md:flex-row justify-between items-start gap-4 mb-4">
-        <div>
-          <div className="flex flex-wrap items-center gap-3">
-             <h1 className="text-3xl lg:text-4xl font-bold dark:text-white text-slate-900 tracking-tight">
-               {project.title}
-             </h1>
-             <div className={`px-3 py-1 rounded-full font-bold uppercase text-[10px] tracking-widest ${
-               project.status === 'published' || project.status === 'evaluated'
-                 ? 'bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400' 
-                 : project.status === 'under_evaluation'
-                 ? 'bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-400'
-                 : 'bg-yellow-100 dark:bg-yellow-900/30 text-yellow-700 dark:text-yellow-400'
-             }`}>
-               {project.status.replace(/_/g, ' ')}
-             </div>
+    <div className="font-sans p-4 sm:p-6 lg:p-8 max-w-7xl mx-auto space-y-6 text-slate-900 dark:text-white">
+      {/* Top Navigation & Header Banner */}
+      <div className="bg-white/90 dark:bg-slate-900/90 backdrop-blur-sm p-5 sm:p-6 rounded-xl border border-slate-200/80 dark:border-slate-800/80 shadow-sm dark:shadow-[0_1px_0_0_rgba(255,255,255,0.05)_inset,0_4px_24px_rgba(0,0,0,0.35)]">
+        <button
+          onClick={() => navigate(-1)}
+          className="inline-flex items-center gap-1.5 text-xs font-semibold text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white transition-colors mb-3 group"
+        >
+          <ArrowLeftIcon className="w-3.5 h-3.5 transition-transform group-hover:-translate-x-0.5" />
+          <span>Back to Projects</span>
+        </button>
+
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+          <div className="space-y-2 min-w-0">
+            <div className="flex flex-wrap items-center gap-2.5">
+              <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-slate-900 dark:text-white truncate">
+                {project.title}
+              </h1>
+              <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold tracking-wide uppercase ${
+                project.status === 'published' || project.status === 'evaluated'
+                  ? 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20'
+                  : project.status === 'under_evaluation'
+                  ? 'bg-blue-500/10 text-blue-600 dark:text-blue-400 border border-blue-500/20'
+                  : 'bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-500/20'
+              }`}>
+                {project.status.replace(/_/g, ' ')}
+              </span>
+            </div>
+
+            <div className="flex flex-wrap items-center gap-3 text-xs text-slate-500 dark:text-slate-400">
+              {project.course_name && (
+                <span className="inline-flex items-center gap-1.5 font-medium px-2 py-0.5 rounded-md bg-slate-100 dark:bg-slate-800/80 text-slate-700 dark:text-slate-300 border border-slate-200/60 dark:border-slate-700/60">
+                  <span className="w-1.5 h-1.5 rounded-full bg-blue-500"></span>
+                  {formatLanguageName(project.course_name)}
+                </span>
+              )}
+              {project.created_at && (
+                <span className="inline-flex items-center gap-1">
+                  <CalendarDaysIcon className="w-3.5 h-3.5 text-slate-400" />
+                  Submitted {format(new Date(project.created_at), 'MMM dd, yyyy')}
+                </span>
+              )}
+            </div>
           </div>
-          <p className="text-gray-500 dark:text-gray-400 mt-2 font-medium flex items-center gap-2">
-            <span className="w-2 h-2 rounded-full bg-blue-500"></span>
-            {project.course_name}
-          </p>
-        </div>
-        
-        {project.team_name && (
-          <div className="bg-indigo-50 dark:bg-indigo-900/20 border border-indigo-100 dark:border-indigo-800/50 px-4 py-2 rounded-2xl flex items-center gap-3">
-             <div className="p-2 bg-indigo-500 rounded-lg text-white">
+
+          {project.team_name && (
+            <div className="flex-shrink-0 inline-flex items-center gap-3 px-3.5 py-2 rounded-xl bg-indigo-50/70 dark:bg-indigo-950/30 border border-indigo-200/60 dark:border-indigo-800/50">
+              <div className="w-8 h-8 rounded-lg bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 flex items-center justify-center">
                 <UserGroupIcon className="w-4 h-4" />
-             </div>
-             <div>
-                <p className="text-[10px] font-bold text-indigo-500 dark:text-indigo-400 uppercase tracking-widest leading-none mb-1">Team</p>
-                <p className="font-bold text-sm dark:text-indigo-200">{project.team_name}</p>
-             </div>
-          </div>
-        )}
+              </div>
+              <div className="leading-tight">
+                <span className="text-[10px] font-bold uppercase tracking-wider text-indigo-500 dark:text-indigo-400 block">Team</span>
+                <span className="text-sm font-semibold text-slate-900 dark:text-indigo-200">{project.team_name}</span>
+              </div>
+            </div>
+          )}
+        </div>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-4">
+      {/* Main Grid: Content + Sidebar */}
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
         {/* Left Column (Main Content) */}
-        <div className="lg:col-span-8 space-y-5">
-           {/* Expandable Description Section */}
-           <div className="bg-white dark:bg-[#161B22] p-5 sm:p-6 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-800 flex flex-col transition-all">
-              <div className="flex items-center gap-3 mb-4">
-                 <div className="p-2 bg-blue-50 dark:bg-blue-900/20 rounded-lg text-blue-600 dark:text-blue-400 font-bold">
-                    <ChartBarIcon className="w-5 h-5" />
-                 </div>
-                 <h3 className="text-xl font-bold dark:text-slate-200 tracking-tight">Project Description</h3>
+        <div className="lg:col-span-8 space-y-6">
+          {/* Project Description */}
+          <div className="bg-white/90 dark:bg-slate-900/90 backdrop-blur-sm p-5 sm:p-6 rounded-xl border border-slate-200/80 dark:border-slate-800/80 shadow-sm dark:shadow-[0_1px_0_0_rgba(255,255,255,0.05)_inset,0_4px_24px_rgba(0,0,0,0.35)]">
+            <div className="flex items-center gap-2.5 pb-3 mb-3 border-b border-slate-100 dark:border-slate-800/60">
+              <div className="w-7 h-7 rounded-lg bg-blue-500/10 text-blue-600 dark:text-blue-400 flex items-center justify-center">
+                <DocumentTextIcon className="w-4 h-4" />
               </div>
-              <p className="text-slate-600 dark:text-gray-400 text-base leading-relaxed whitespace-pre-wrap">{project.description || "No description provided."}</p>
-           </div>
+              <h2 className="text-sm font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300">
+                Project Description
+              </h2>
+            </div>
+            <p className="text-sm text-slate-600 dark:text-slate-300 leading-relaxed whitespace-pre-wrap">
+              {project.description || "No description provided."}
+            </p>
+          </div>
 
-           {/* Project Links Section */}
-           {(project.live_link || project.github_repo_link) && (
-             <div className="bg-white dark:bg-[#161B22] p-5 sm:p-6 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-800 transition-all">
-                <div className="flex items-center gap-3 mb-4">
-                   <div className="p-2 bg-pink-50 dark:bg-pink-900/20 rounded-lg text-pink-600 dark:text-pink-400">
-                      <svg className="w-5 h-5 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" /></svg>
-                   </div>
-                   <h3 className="text-xl font-bold dark:text-slate-200 tracking-tight truncate">Project Links</h3>
+          {/* Project Links Section */}
+          {(project.live_link || project.github_repo_link) && (
+            <div className="bg-white/90 dark:bg-slate-900/90 backdrop-blur-sm p-5 sm:p-6 rounded-xl border border-slate-200/80 dark:border-slate-800/80 shadow-sm dark:shadow-[0_1px_0_0_rgba(255,255,255,0.05)_inset,0_4px_24px_rgba(0,0,0,0.35)]">
+              <div className="flex items-center gap-2.5 pb-3 mb-3 border-b border-slate-100 dark:border-slate-800/60">
+                <div className="w-7 h-7 rounded-lg bg-pink-500/10 text-pink-600 dark:text-pink-400 flex items-center justify-center">
+                  <ArrowTopRightOnSquareIcon className="w-4 h-4" />
                 </div>
-                
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  {project.live_link && (
-                    <a href={project.live_link} target="_blank" rel="noopener noreferrer" className="flex items-center justify-between p-4 bg-slate-50 dark:bg-slate-800/40 rounded-xl border border-slate-100 dark:border-slate-800 hover:border-pink-200 dark:hover:border-pink-900/50 transition-all group overflow-hidden">
-                      <div className="flex items-center gap-3 min-w-0 pr-4">
-                        <div className="h-10 w-10 flex-shrink-0 flex items-center justify-center rounded-full bg-white dark:bg-slate-800 border-2 border-slate-200 dark:border-slate-700 text-pink-600 dark:text-pink-400 shadow-sm group-hover:scale-110 transition-transform">
-                          <svg className="w-5 h-5 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9" /></svg>
+                <h2 className="text-sm font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300">
+                  Project Links
+                </h2>
+              </div>
+              
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                {project.live_link && (
+                  <a
+                    href={project.live_link}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex items-center justify-between p-3.5 rounded-lg bg-slate-50/80 dark:bg-slate-800/40 border border-slate-200/60 dark:border-slate-800/60 hover:border-pink-500/30 hover:bg-pink-500/5 hover:-translate-y-0.5 transition-all duration-150 group"
+                  >
+                    <div className="flex items-center gap-3 min-w-0 pr-2">
+                      <div className="w-9 h-9 rounded-lg bg-pink-500/10 text-pink-600 dark:text-pink-400 flex items-center justify-center flex-shrink-0">
+                        <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9" />
+                        </svg>
+                      </div>
+                      <div className="min-w-0">
+                        <p className="text-xs font-semibold text-slate-900 dark:text-white truncate">Live Project</p>
+                        <p className="text-[11px] text-slate-500 dark:text-slate-400 truncate">{project.live_link.replace(/^https?:\/\//, '')}</p>
+                      </div>
+                    </div>
+                    <ArrowTopRightOnSquareIcon className="w-4 h-4 text-slate-400 group-hover:text-pink-500 transition-colors flex-shrink-0" />
+                  </a>
+                )}
+                {project.github_repo_link && (
+                  <a
+                    href={project.github_repo_link}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex items-center justify-between p-3.5 rounded-lg bg-slate-50/80 dark:bg-slate-800/40 border border-slate-200/60 dark:border-slate-800/60 hover:border-violet-500/30 hover:bg-violet-500/5 hover:-translate-y-0.5 transition-all duration-150 group"
+                  >
+                    <div className="flex items-center gap-3 min-w-0 pr-2">
+                      <div className="w-9 h-9 rounded-lg bg-violet-500/10 text-violet-600 dark:text-violet-400 flex items-center justify-center flex-shrink-0">
+                        <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
+                          <path fillRule="evenodd" d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z" clipRule="evenodd" />
+                        </svg>
+                      </div>
+                      <div className="min-w-0">
+                        <p className="text-xs font-semibold text-slate-900 dark:text-white truncate">GitHub Repo</p>
+                        <p className="text-[11px] text-slate-500 dark:text-slate-400 truncate">{project.github_repo_link.replace(/^https?:\/\//, '')}</p>
+                      </div>
+                    </div>
+                    <ArrowTopRightOnSquareIcon className="w-4 h-4 text-slate-400 group-hover:text-violet-500 transition-colors flex-shrink-0" />
+                  </a>
+                )}
+              </div>
+            </div>
+          )}
+
+          {/* Collaborators Section */}
+          {project.team_members && (
+            <div className="bg-white/90 dark:bg-slate-900/90 backdrop-blur-sm p-5 sm:p-6 rounded-xl border border-slate-200/80 dark:border-slate-800/80 shadow-sm dark:shadow-[0_1px_0_0_rgba(255,255,255,0.05)_inset,0_4px_24px_rgba(0,0,0,0.35)]">
+              <div className="flex items-center gap-2.5 pb-3 mb-3 border-b border-slate-100 dark:border-slate-800/60">
+                <div className="w-7 h-7 rounded-lg bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 flex items-center justify-center">
+                  <UserGroupIcon className="w-4 h-4" />
+                </div>
+                <h2 className="text-sm font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300">
+                  Collaborators
+                </h2>
+              </div>
+              
+              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
+                {(() => {
+                  try {
+                    const members = typeof project.team_members === 'string' ? JSON.parse(project.team_members) : project.team_members;
+                    return members?.map((member, idx) => (
+                      <div
+                        key={idx}
+                        className="flex items-center gap-3 p-3 rounded-lg bg-slate-50/80 dark:bg-slate-800/40 border border-slate-200/60 dark:border-slate-800/60"
+                      >
+                        <div className="w-8 h-8 rounded-lg bg-indigo-500/10 border border-indigo-500/20 text-indigo-600 dark:text-indigo-400 flex items-center justify-center flex-shrink-0">
+                          <IdentificationIcon className="w-4 h-4" />
                         </div>
                         <div className="min-w-0">
-                          <p className="text-sm font-bold text-slate-900 dark:text-white truncate leading-tight">Live Project</p>
-                          <p className="text-[10px] font-bold text-slate-500 dark:text-slate-500 uppercase tracking-wider truncate">{project.live_link.replace(/^https?:\/\//, '')}</p>
+                          <p className="text-xs font-semibold text-slate-900 dark:text-white truncate">{member.name}</p>
+                          <p className="text-[11px] text-slate-500 dark:text-slate-400 font-mono truncate">{member.enrollment}</p>
                         </div>
                       </div>
-                      <svg className="w-5 h-5 flex-shrink-0 text-gray-400 dark:text-gray-500 group-hover:text-pink-500 transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" /></svg>
-                    </a>
-                  )}
-                  {project.github_repo_link && (
-                    <a href={project.github_repo_link} target="_blank" rel="noopener noreferrer" className="flex items-center justify-between p-4 bg-slate-50 dark:bg-slate-800/40 rounded-xl border border-slate-100 dark:border-slate-800 hover:border-violet-200 dark:hover:border-violet-900/50 transition-all group overflow-hidden">
-                      <div className="flex items-center gap-3 min-w-0 pr-4">
-                        <div className="h-10 w-10 flex-shrink-0 flex items-center justify-center rounded-full bg-white dark:bg-slate-800 border-2 border-slate-200 dark:border-slate-700 text-violet-600 dark:text-violet-400 shadow-sm group-hover:scale-110 transition-transform">
-                          <svg className="w-5 h-5 flex-shrink-0" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path fillRule="evenodd" d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z" clipRule="evenodd" /></svg>
-                        </div>
-                        <div className="min-w-0">
-                          <p className="text-sm font-bold text-slate-900 dark:text-white truncate leading-tight">GitHub Repo</p>
-                          <p className="text-[10px] font-bold text-slate-500 dark:text-slate-500 uppercase tracking-wider truncate">{project.github_repo_link.replace(/^https?:\/\//, '')}</p>
-                        </div>
-                      </div>
-                      <svg className="w-5 h-5 flex-shrink-0 text-gray-400 dark:text-gray-500 group-hover:text-violet-500 transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" /></svg>
-                    </a>
-                  )}
-                </div>
-             </div>
-           )}
+                    ));
+                  } catch (e) {
+                    return <p className="text-xs text-slate-400 italic">Unable to parse collaborator details</p>;
+                  }
+                })()}
+              </div>
+            </div>
+          )}
 
-           {/* Collaborators Section */}
-           {project.team_members && (
-             <div className="bg-white dark:bg-[#161B22] p-5 sm:p-6 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-800">
-                <div className="flex items-center gap-3 mb-4">
-                   <div className="p-2 bg-indigo-50 dark:bg-indigo-900/20 rounded-lg text-indigo-600 dark:text-indigo-400">
-                      <UserGroupIcon className="w-5 h-5 flex-shrink-0" />
-                   </div>
-                   <h3 className="text-lg font-bold dark:text-slate-200 truncate">Collaborators</h3>
+          {/* Read-Only Evaluator Notes (for Students / Viewers) */}
+          {(project.status === 'evaluated' || project.status === 'published') && project.evaluation?.professor_feedback && user?.role !== 'faculty' && user?.role !== 'professor' && (
+            <div className="bg-white/90 dark:bg-slate-900/90 backdrop-blur-sm p-5 sm:p-6 rounded-xl border border-emerald-500/30 shadow-sm">
+              <div className="flex items-center gap-2.5 pb-3 mb-3 border-b border-emerald-500/10">
+                <div className="w-7 h-7 rounded-lg bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 flex items-center justify-center">
+                  <ClipboardDocumentCheckIcon className="w-4 h-4" />
                 </div>
-                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
-                  {(() => {
-                    try {
-                      const members = typeof project.team_members === 'string' ? JSON.parse(project.team_members) : project.team_members;
-                      return members?.map((member, idx) => (
-                        <div key={idx} className="flex items-center gap-3 p-4 bg-slate-50 dark:bg-slate-800/40 rounded-xl border border-slate-100 dark:border-slate-800 hover:border-indigo-200 dark:hover:border-indigo-900/50 transition-all group overflow-hidden">
-                          <div className="h-10 w-10 flex-shrink-0 flex items-center justify-center rounded-full bg-white dark:bg-slate-800 border-2 border-slate-200 dark:border-slate-700 text-indigo-600 dark:text-indigo-400 shadow-sm group-hover:scale-110 transition-transform">
-                            <IdentificationIcon className="w-5 h-5 flex-shrink-0" />
-                          </div>
-                          <div className="min-w-0">
-                            <p className="text-sm font-bold text-slate-900 dark:text-white truncate leading-tight">{member.name}</p>
-                            <p className="text-[10px] font-bold text-slate-500 dark:text-slate-500 uppercase tracking-wider truncate">{member.enrollment}</p>
-                          </div>
-                        </div>
-                      ));
-                    } catch(e) { return <p className="text-xs text-gray-400 dark:text-gray-500 italic">Unable to retrieve team metadata</p>; }
-                  })()}
-                </div>
-             </div>
-           )}
+                <h2 className="text-sm font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300">
+                  Faculty Evaluation Remarks
+                </h2>
+              </div>
+              <div className="p-4 rounded-lg bg-slate-50/80 dark:bg-slate-800/50 border border-slate-200/60 dark:border-slate-800/60">
+                <p className="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-2">Evaluator Notes</p>
+                <p className="text-sm text-slate-700 dark:text-slate-200 leading-relaxed whitespace-pre-wrap">
+                  {project.evaluation.professor_feedback}
+                </p>
+              </div>
+            </div>
+          )}
 
-           {/* Read-Only Faculty Feedback Section for Students/Others */}
-           {(project.status === 'evaluated' || project.status === 'published') && project.evaluation?.professor_feedback && user?.role !== 'faculty' && user?.role !== 'professor' && (
-             <div className="bg-white dark:bg-[#161B22] p-5 sm:p-6 rounded-2xl shadow-sm border border-emerald-100 dark:border-emerald-900/30 transition-all">
-                <div className="flex items-center gap-3 mb-4">
-                   <div className="p-2 bg-emerald-50 dark:bg-emerald-900/20 rounded-lg text-emerald-600 dark:text-emerald-400">
-                      <ClipboardDocumentCheckIcon className="w-5 h-5" />
-                   </div>
-                   <h3 className="text-xl font-bold dark:text-slate-200 tracking-tight">Faculty Evaluation</h3>
-                </div>
-                
-
-                <div className="bg-slate-50 dark:bg-slate-800/40 p-6 rounded-2xl border border-slate-100 dark:border-slate-800">
-                  <p className="text-sm font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest mb-3">Evaluator Notes</p>
-                  <p className="text-slate-700 dark:text-slate-300 text-base leading-relaxed whitespace-pre-wrap">
-                    {project.evaluation.professor_feedback}
-                  </p>
-                </div>
-             </div>
-           )}
-
-           {/* Faculty Evaluation Section */}
-           {(user?.role === 'faculty' || user?.role === 'professor') && project.status !== 'published' && (
-             <div className="bg-white dark:bg-[#161B22] p-5 sm:p-6 rounded-2xl shadow-sm border border-indigo-100 dark:border-indigo-900/30">
-                <div className="flex items-center gap-3 mb-4">
-                   <div className="p-2 bg-emerald-50 dark:bg-emerald-900/20 rounded-lg text-emerald-600 dark:text-emerald-400">
-                      <ClipboardDocumentCheckIcon className="w-5 h-5" />
-                   </div>
-                   <h3 className="text-xl font-bold dark:text-slate-200 tracking-tight">Faculty Evaluation</h3>
-                </div>
-                
-                {project.status === 'evaluated' ? (
-                  <div className="p-4 bg-emerald-50 dark:bg-emerald-900/10 rounded-xl border border-emerald-100 dark:border-emerald-800">
-                    <p className="text-emerald-700 dark:text-emerald-400 font-bold mb-2">Project Already Evaluated</p>
-                    <p className="text-sm text-emerald-600 dark:text-emerald-500 mb-4">You have successfully evaluated this project. You can edit your notes and score below if needed.</p>
+          {/* Faculty Evaluation Form (for Faculty / Professors) */}
+          {(user?.role === 'faculty' || user?.role === 'professor') && project.status !== 'published' && (
+            <div className="bg-white/90 dark:bg-slate-900/90 backdrop-blur-sm p-5 sm:p-6 rounded-xl border border-slate-200/80 dark:border-slate-800/80 shadow-sm dark:shadow-[0_1px_0_0_rgba(255,255,255,0.05)_inset,0_4px_24px_rgba(0,0,0,0.35)] space-y-4">
+              <div className="flex items-center justify-between pb-3 border-b border-slate-100 dark:border-slate-800/60">
+                <div className="flex items-center gap-2.5">
+                  <div className="w-7 h-7 rounded-lg bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 flex items-center justify-center">
+                    <ClipboardDocumentCheckIcon className="w-4 h-4" />
                   </div>
-                ) : null}
+                  <h2 className="text-sm font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300">
+                    Faculty Evaluation
+                  </h2>
+                </div>
+                {project.status === 'evaluated' && (
+                  <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20">
+                    <CheckCircleIcon className="w-3.5 h-3.5" />
+                    Evaluated
+                  </span>
+                )}
+              </div>
 
-                <div className="space-y-4 mt-4">
+              {project.status === 'evaluated' && (
+                <div className="p-3.5 rounded-lg bg-emerald-500/5 dark:bg-emerald-950/20 border border-emerald-500/20 text-xs text-emerald-700 dark:text-emerald-400 flex items-start gap-2.5">
+                  <CheckCircleIcon className="w-4 h-4 flex-shrink-0 mt-0.5" />
                   <div>
-                    <label className="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-2">Evaluation Notes & Comments</label>
-                    <textarea 
-                      className="w-full bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 rounded-xl px-4 py-3 text-sm focus:ring-2 focus:ring-indigo-500 outline-none text-slate-900 dark:text-white min-h-[120px]"
-                      placeholder="Add your feedback, notes, or remarks here..."
-                      value={project.status === 'evaluated' && !evalNotes && project.evaluation?.professor_feedback ? project.evaluation.professor_feedback : evalNotes}
-                      onChange={(e) => setEvalNotes(e.target.value)}
-                    ></textarea>
-                  </div>
-
-                  <div className="pt-4 flex items-center gap-4">
-                    <button 
-                      onClick={handleEvaluate}
-                      disabled={evaluating}
-                      className="px-6 py-3 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-xl shadow-lg shadow-emerald-500/20 transition-all active:scale-95 disabled:opacity-50 flex items-center gap-2"
-                    >
-                      <CheckCircleIcon className="w-5 h-5" />
-                      {evaluating ? 'Processing...' : project.status === 'evaluated' ? 'Update Evaluation' : 'Mark as Evaluated'}
-                    </button>
+                    <span className="font-semibold block">Evaluation Recorded</span>
+                    <span>You have previously submitted an evaluation. You may update your feedback or remarks below.</span>
                   </div>
                 </div>
-             </div>
-           )}
+              )}
+
+              <div className="space-y-3">
+                <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 uppercase tracking-wider">
+                  Evaluation Notes & Feedback
+                </label>
+                <textarea 
+                  className="w-full bg-slate-50/80 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 rounded-lg px-3.5 py-2.5 text-sm focus:ring-2 focus:ring-indigo-500/40 focus:border-indigo-500 outline-none text-slate-900 dark:text-white min-h-[110px] resize-y placeholder:text-slate-400 transition-colors"
+                  placeholder="Provide concrete evaluation remarks, areas of strength, or required revisions..."
+                  value={project.status === 'evaluated' && !evalNotes && project.evaluation?.professor_feedback ? project.evaluation.professor_feedback : evalNotes}
+                  onChange={(e) => setEvalNotes(e.target.value)}
+                ></textarea>
+
+                <div className="flex justify-end pt-1">
+                  <button 
+                    onClick={handleEvaluate}
+                    disabled={evaluating}
+                    className="inline-flex items-center gap-2 px-4 py-2 bg-emerald-600 hover:bg-emerald-500 active:bg-emerald-700 text-white text-xs font-semibold rounded-lg shadow-sm hover:shadow-emerald-500/20 hover:-translate-y-0.5 active:translate-y-0 transition-all duration-150 disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                    <CheckCircleIcon className="w-4 h-4" />
+                    {evaluating ? 'Submitting...' : project.status === 'evaluated' ? 'Update Evaluation' : 'Submit Evaluation'}
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
         </div>
 
         {/* Right Column (Sidebar) */}
-        <div className="lg:col-span-4 space-y-5">
-           {/* Evaluation Result / Action Area */}
-           {project.evaluation && project.evaluation.status === 'completed' ? (
-              <div className="bg-gradient-to-br from-blue-600 to-indigo-700 p-5 sm:p-6 rounded-3xl shadow-xl shadow-blue-500/10 text-white relative overflow-hidden">
-                 <div className="absolute -top-10 -right-10 w-32 h-32 bg-white opacity-5 rounded-full"></div>
-                 <h3 className="text-sm font-bold mb-4 uppercase tracking-[0.2em] opacity-80">Final Score</h3>
-                 <div className="flex items-baseline gap-2 mb-6">
-                   <span className="text-7xl font-bold tracking-tighter">
-                     {project.evaluation.total_score != null ? Math.round(project.evaluation.total_score) : '—'}
-                   </span>
-                   <span className="text-2xl font-bold opacity-40">/100</span>
-                 </div>
-                 <div className="space-y-3">
-                   <Link 
-                     to={`/evaluations/${project.evaluation.id}`}
-                     className="flex items-center justify-center gap-2 w-full py-3.5 bg-white text-blue-700 font-bold rounded-2xl hover:bg-blue-50 transition-all shadow-lg hover:shadow-xl active:scale-95 group"
-                   >
-                     <span>View Analysis</span>
-                     <ArrowPathIcon className="w-4 h-4 transition-transform group-hover:rotate-180 duration-500" />
-                   </Link>
-                   <button
-                     id="generate-report-btn"
-                     onClick={() => setReportModalOpen(true)}
-                     className="flex items-center justify-center gap-2 w-full py-3.5 bg-white/15 hover:bg-white/25 border border-white/30 text-white font-bold rounded-2xl transition-all active:scale-95"
-                   >
-                     <DocumentChartBarIcon className="w-4 h-4" />
-                     Generate Report
-                   </button>
-                 </div>
-              </div>
-           ) : project.evaluation && project.evaluation.status === 'failed' ? (
-              <div className="bg-white dark:bg-[#161B22] p-5 sm:p-6 rounded-3xl border border-red-100 dark:border-red-900/30 flex flex-col items-center text-center">
-                 <div className="w-16 h-16 bg-red-50 dark:bg-red-900/20 rounded-full flex items-center justify-center mb-4 text-red-500">
-                    <CheckCircleIcon className="w-8 h-8" />
-                 </div>
-                 <h3 className="text-xl font-bold text-slate-900 dark:text-red-400 mb-2 tracking-tight">Analysis Failed</h3>
-                 <p className="text-sm text-slate-500 dark:text-red-300/60 mb-6 max-w-[200px]">The AI engine encountered an obstacle parsing this submission.</p>
-                 <Link to="/projects/new" className="group relative overflow-hidden flex items-center justify-center w-full py-4 rounded-2xl shadow-xl shadow-red-500/20 text-sm font-bold uppercase tracking-wider text-white bg-gradient-to-r from-red-600 to-rose-600 hover:from-red-700 hover:to-rose-700 hover:shadow-red-500/40 hover:-translate-y-0.5 transition-all duration-300 border border-red-400/20">
-                   <div className="absolute inset-0 bg-white/10 translate-y-full group-hover:translate-y-0 transition-transform duration-500"></div>
-                   <span className="relative">Restart Analysis</span>
-                 </Link>
-              </div>
-           ) : (
-              <div className="bg-slate-900 p-5 sm:p-6 rounded-3xl border border-slate-800 text-white shadow-2xl">
-                 <div className="flex items-center gap-3 mb-4">
-                    <div className="w-10 h-10 border-3 border-blue-500 border-t-transparent rounded-full animate-spin flex-shrink-0"></div>
-                    <h3 className="text-lg font-bold">AI Running</h3>
-                 </div>
-                 <p className="text-xs text-gray-400 mb-6 leading-relaxed opacity-70">
-                   System is currently evaluating project files. Results update automatically.
-                 </p>
-                 <div className="space-y-4">
-                   {['Core Analysis', 'Security Scan', 'Doc Review'].map((step, i) => (
-                     <div key={i} className="flex items-center gap-3">
-                       <div className={`w-3 h-3 rounded-full ${i === 0 ? 'bg-blue-500 animate-pulse' : 'bg-slate-700'}`}></div>
-                       <span className={`text-[10px] font-bold ${i === 0 ? 'text-blue-300' : 'text-slate-600'}`}>{step}</span>
-                     </div>
-                   ))}
-                 </div>
-              </div>
-           )}
+        <div className="lg:col-span-4 space-y-6">
+          {/* Final Score / AI Evaluation Summary Card */}
+          {project.evaluation && project.evaluation.status === 'completed' ? (
+            <div className="bg-slate-900 text-white p-5 sm:p-6 rounded-xl border border-slate-800 shadow-xl relative overflow-hidden">
+              {/* Subtle ambient glow backdrop */}
+              <div className="absolute -top-16 -right-16 w-40 h-40 bg-indigo-500/20 rounded-full blur-2xl pointer-events-none"></div>
+              
+              <div className="relative z-10 space-y-4">
+                <div className="flex items-center justify-between">
+                  <span className="text-[11px] font-bold uppercase tracking-wider text-slate-400">
+                    Final Score
+                  </span>
+                  {scoreTier && (
+                    <span className={`inline-flex items-center px-2 py-0.5 rounded-md text-[10px] font-bold uppercase tracking-wider border ${scoreTier.bg}`}>
+                      {scoreTier.label}
+                    </span>
+                  )}
+                </div>
 
+                <div className="flex items-baseline gap-2">
+                  <span className="text-5xl font-bold tracking-tight text-white">
+                    {score != null ? score : '—'}
+                  </span>
+                  <span className="text-base font-semibold text-slate-400">/ 100</span>
+                </div>
 
+                {/* Metric Progress Bar Track */}
+                <div className="w-full bg-slate-800 rounded-full h-1.5 overflow-hidden">
+                  <div 
+                    className="h-full bg-gradient-to-r from-blue-500 to-indigo-500 rounded-full transition-all duration-700 ease-out"
+                    style={{ width: `${Math.min(100, Math.max(0, score || 0))}%` }}
+                  ></div>
+                </div>
 
+                {/* Primary & Secondary Actions */}
+                <div className="pt-2 space-y-2.5">
+                  <Link 
+                    to={`/evaluations/${project.evaluation.id}`}
+                    className="flex items-center justify-center gap-2 w-full py-2.5 px-4 bg-indigo-600 hover:bg-indigo-500 active:bg-indigo-700 text-white text-xs font-semibold rounded-lg shadow-sm hover:shadow-indigo-500/20 hover:-translate-y-0.5 active:translate-y-0 transition-all duration-150 group"
+                  >
+                    <span>View Detailed Analysis</span>
+                    <ArrowTopRightOnSquareIcon className="w-3.5 h-3.5 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
+                  </Link>
 
-           {/* Repositioned Resources Section */}
-           <div className="bg-white dark:bg-[#161B22] p-6 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-800">
-              <div className="flex items-center gap-3 mb-4">
-                 <div className="p-2 bg-purple-50 dark:bg-purple-900/20 rounded-lg text-purple-600 dark:text-purple-400">
-                    <DocumentIcon className="w-5 h-5" />
-                 </div>
-                 <h3 className="text-lg font-bold dark:text-slate-200">Resources</h3>
+                  <button 
+                    id="generate-report-btn"
+                    onClick={() => setReportModalOpen(true)}
+                    className="flex items-center justify-center gap-2 w-full py-2.5 px-4 bg-slate-800/80 hover:bg-slate-800 text-slate-200 hover:text-white border border-slate-700/80 text-xs font-semibold rounded-lg hover:-translate-y-0.5 active:translate-y-0 transition-all duration-150"
+                  >
+                    <DocumentChartBarIcon className="w-3.5 h-3.5 text-slate-400" />
+                    <span>Generate Report</span>
+                  </button>
+                </div>
               </div>
-               <div className="space-y-3">
-                 <button 
-                    onClick={handleDownloadSource}
-                    disabled={downloadingSource}
-                    className="w-full flex items-center justify-between p-3 bg-slate-50 dark:bg-slate-800/50 rounded-xl border border-slate-100 dark:border-slate-800 transition-colors hover:bg-slate-100 dark:hover:bg-slate-800 cursor-pointer group disabled:opacity-50 disabled:cursor-not-allowed"
-                 >
-                    <div className="flex items-center gap-3">
-                       <CodeBracketIcon className="w-5 h-5 text-gray-400 dark:text-gray-500 group-hover:text-blue-500 transition-colors" />
-                       <span className="text-sm font-semibold dark:text-slate-300">Download Source</span>
-                    </div>
-                    {downloadingSource ? (
-                       <div className="w-4 h-4 border-2 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
-                    ) : (
-                       <ArrowDownTrayIcon className="w-4 h-4 text-blue-500 dark:text-blue-400 group-hover:scale-110 transition-transform" />
-                    )}
-                 </button>
-                 <button 
-                    onClick={handleViewReport}
-                    className="w-full flex items-center justify-between p-3 bg-slate-50 dark:bg-slate-800/50 rounded-xl border border-slate-100 dark:border-slate-800 transition-colors hover:bg-slate-100 dark:hover:bg-slate-800 cursor-pointer group"
-                 >
-                    <div className="flex items-center gap-3">
-                       <DocumentIcon className="w-5 h-5 text-gray-400 dark:text-gray-500 group-hover:text-purple-500 transition-colors" />
-                       <span className="text-sm font-semibold dark:text-slate-300">View Technical Report</span>
-                    </div>
-                    <EyeIcon className="w-4 h-4 text-purple-500 dark:text-purple-400 group-hover:scale-110 transition-transform" />
-                 </button>
+            </div>
+          ) : project.evaluation && project.evaluation.status === 'failed' ? (
+            <div className="bg-white/90 dark:bg-slate-900/90 backdrop-blur-sm p-5 sm:p-6 rounded-xl border border-rose-500/30 shadow-sm text-center space-y-3">
+              <div className="w-10 h-10 rounded-full bg-rose-500/10 text-rose-500 flex items-center justify-center mx-auto">
+                <CheckCircleIcon className="w-5 h-5" />
               </div>
-           </div>
-         </div>
+              <div>
+                <h3 className="text-sm font-bold text-slate-900 dark:text-white">Analysis Incomplete</h3>
+                <p className="text-xs text-slate-500 dark:text-slate-400 mt-1 max-w-[240px] mx-auto">
+                  The AI engine encountered an error while processing the project files.
+                </p>
+              </div>
+              <Link 
+                to="/projects/new" 
+                className="inline-flex items-center justify-center w-full py-2 px-3 text-xs font-semibold text-white bg-rose-600 hover:bg-rose-500 rounded-lg shadow-sm transition-all"
+              >
+                Restart Analysis
+              </Link>
+            </div>
+          ) : (
+            <div className="bg-slate-900 text-white p-5 sm:p-6 rounded-xl border border-slate-800 shadow-xl space-y-4">
+              <div className="flex items-center gap-3">
+                <div className="w-7 h-7 border-2 border-indigo-500 border-t-transparent rounded-full animate-spin flex-shrink-0"></div>
+                <div>
+                  <h3 className="text-sm font-bold text-white">AI Evaluation Running</h3>
+                  <p className="text-[11px] text-slate-400">Processing repository and documentation...</p>
+                </div>
+              </div>
+              <div className="space-y-2 pt-2 border-t border-slate-800 text-xs">
+                {['Core Code Analysis', 'Plagiarism & Quality Checks', 'Document & Alignment Verification'].map((step, i) => (
+                  <div key={i} className="flex items-center gap-2.5">
+                    <span className={`w-2 h-2 rounded-full ${i === 0 ? 'bg-indigo-400 animate-pulse' : 'bg-slate-700'}`}></span>
+                    <span className={i === 0 ? 'text-indigo-300 font-medium' : 'text-slate-500'}>{step}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* Resources Card */}
+          <div className="bg-white/90 dark:bg-slate-900/90 backdrop-blur-sm p-5 sm:p-6 rounded-xl border border-slate-200/80 dark:border-slate-800/80 shadow-sm dark:shadow-[0_1px_0_0_rgba(255,255,255,0.05)_inset,0_4px_24px_rgba(0,0,0,0.35)]">
+            <div className="flex items-center gap-2.5 pb-3 mb-3 border-b border-slate-100 dark:border-slate-800/60">
+              <div className="w-7 h-7 rounded-lg bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 flex items-center justify-center">
+                <DocumentIcon className="w-4 h-4" />
+              </div>
+              <h2 className="text-sm font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300">
+                Resources
+              </h2>
+            </div>
+
+            <div className="space-y-2.5">
+              <button 
+                onClick={handleDownloadSource}
+                disabled={downloadingSource}
+                className="w-full flex items-center justify-between p-3 rounded-lg bg-slate-50/80 dark:bg-slate-800/40 border border-slate-200/60 dark:border-slate-800/60 hover:border-indigo-500/30 hover:bg-indigo-500/5 hover:-translate-y-0.5 transition-all duration-150 group disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                <div className="flex items-center gap-2.5">
+                  <div className="w-7 h-7 rounded-md bg-blue-500/10 text-blue-600 dark:text-blue-400 flex items-center justify-center">
+                    <CodeBracketIcon className="w-4 h-4" />
+                  </div>
+                  <div className="text-left">
+                    <span className="text-xs font-semibold text-slate-800 dark:text-slate-200 block group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors">
+                      Download Source
+                    </span>
+                    <span className="text-[10px] text-slate-400 uppercase tracking-wider">ZIP Archive</span>
+                  </div>
+                </div>
+                {downloadingSource ? (
+                  <div className="w-4 h-4 border-2 border-indigo-500 border-t-transparent rounded-full animate-spin"></div>
+                ) : (
+                  <ArrowDownTrayIcon className="w-4 h-4 text-slate-400 group-hover:text-indigo-500 transition-colors" />
+                )}
+              </button>
+
+              <button 
+                onClick={handleViewReport}
+                className="w-full flex items-center justify-between p-3 rounded-lg bg-slate-50/80 dark:bg-slate-800/40 border border-slate-200/60 dark:border-slate-800/60 hover:border-purple-500/30 hover:bg-purple-500/5 hover:-translate-y-0.5 transition-all duration-150 group"
+              >
+                <div className="flex items-center gap-2.5">
+                  <div className="w-7 h-7 rounded-md bg-purple-500/10 text-purple-600 dark:text-purple-400 flex items-center justify-center">
+                    <DocumentIcon className="w-4 h-4" />
+                  </div>
+                  <div className="text-left">
+                    <span className="text-xs font-semibold text-slate-800 dark:text-slate-200 block group-hover:text-purple-600 dark:group-hover:text-purple-400 transition-colors">
+                      View Technical Report
+                    </span>
+                    <span className="text-[10px] text-slate-400 uppercase tracking-wider">PDF Document</span>
+                  </div>
+                </div>
+                <EyeIcon className="w-4 h-4 text-slate-400 group-hover:text-purple-500 transition-colors" />
+              </button>
+            </div>
+          </div>
+        </div>
       </div>
 
       {viewerOpen && (
         <div className="fixed inset-0 z-[100] flex items-center justify-center bg-slate-900/80 backdrop-blur-sm p-4 lg:p-10">
-          <div className="bg-white dark:bg-slate-900 rounded-3xl shadow-2xl w-full max-w-5xl h-full pb-0 sm:h-[90vh] flex flex-col overflow-hidden border border-slate-200 dark:border-slate-800 animate-in zoom-in-95 duration-200">
+          <div className="bg-white dark:bg-slate-900 rounded-xl shadow-2xl w-full max-w-5xl h-full pb-0 sm:h-[90vh] flex flex-col overflow-hidden border border-slate-200 dark:border-slate-800 animate-in zoom-in-95 duration-200">
             <div className="flex flex-wrap items-center justify-between p-4 sm:p-6 border-b border-slate-100 dark:border-slate-800 bg-slate-50 dark:bg-slate-900/50">
               <div className="flex items-center gap-3 w-full sm:w-auto mb-4 sm:mb-0">
                 <div className="p-2 bg-purple-100 dark:bg-purple-900/30 text-purple-600 dark:text-purple-400 rounded-xl">
@@ -475,20 +612,20 @@ const ProjectDetailPage = () => {
                     a.click();
                     document.body.removeChild(a);
                   }}
-                  className="flex-1 sm:flex-none flex justify-center items-center gap-2 px-5 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-bold rounded-xl transition-all shadow-md hover:shadow-xl active:scale-95"
+                  className="flex-1 sm:flex-none flex justify-center items-center gap-2 px-5 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-semibold rounded-lg transition-all shadow-sm hover:shadow-md hover:-translate-y-0.5 active:translate-y-0"
                 >
                   <ArrowDownTrayIcon className="w-4 h-4" />
                   <span>Download File</span>
                 </button>
                 <button 
                   onClick={() => setViewerOpen(false)}
-                  className="p-2.5 bg-white dark:bg-slate-800 hover:bg-red-50 dark:hover:bg-red-900/20 text-slate-400 hover:text-red-500 rounded-xl transition-colors border border-slate-200 dark:border-slate-700 shadow-sm"
+                  className="p-2.5 bg-white dark:bg-slate-800 hover:bg-red-50 dark:hover:bg-red-900/20 text-slate-400 hover:text-red-500 rounded-lg transition-colors border border-slate-200 dark:border-slate-700 shadow-sm"
                 >
                   <XMarkIcon className="w-5 h-5" />
                 </button>
               </div>
             </div>
-            <div className="flex-1 bg-slate-100/50 dark:bg-[#0d1117] p-2 sm:p-4 overflow-hidden relative rounded-b-3xl flex flex-col justify-center items-center">
+            <div className="flex-1 bg-slate-100/50 dark:bg-[#0d1117] p-2 sm:p-4 overflow-hidden relative rounded-b-xl flex flex-col justify-center items-center">
               {reportLoading ? (
                 <div className="flex flex-col items-center justify-center space-y-4">
                   <div className="w-12 h-12 border-4 border-indigo-500 border-t-transparent rounded-full animate-spin"></div>
@@ -498,7 +635,7 @@ const ProjectDetailPage = () => {
                 <iframe 
                   src={reportBlobUrl || ''} 
                   title="Document Viewer" 
-                  className="w-full h-full rounded-2xl border border-slate-200 dark:border-slate-800 shadow-inner bg-white dark:bg-slate-900"
+                  className="w-full h-full rounded-lg border border-slate-200 dark:border-slate-800 shadow-inner bg-white dark:bg-slate-900"
                 />
               )}
             </div>

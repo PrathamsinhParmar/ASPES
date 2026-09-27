@@ -62,7 +62,7 @@ const ProfilePage = () => {
 
     return (
       <div className="col-span-1">
-        <label className="block text-sm font-medium text-slate-600 dark:text-slate-400 mb-1.5">{label}</label>
+        <label className="block text-xs font-semibold uppercase tracking-wide text-slate-600 dark:text-slate-400 mb-1.5">{label}</label>
         {isEditing ? (
           <div className="relative">
             {Icon && (
@@ -101,7 +101,7 @@ const ProfilePage = () => {
   };
 
   return (
-    <div className="p-4 sm:p-6 lg:p-8 max-w-5xl mx-auto space-y-6 animate-fade-in relative dark:bg-slate-950 min-h-screen">
+    <div className="p-4 sm:p-6 lg:p-8 max-w-5xl mx-auto space-y-6 animate-fade-in relative dark:bg-slate-950 min-h-screen font-sans">
       
       {/* Decorative Blur Backgrounds */}
       <div className="absolute top-0 right-0 w-[600px] h-[600px] bg-indigo-200/20 dark:bg-indigo-500/10 blur-[120px] rounded-full pointer-events-none -z-10 translate-x-1/3 -translate-y-1/3"></div>
@@ -110,7 +110,7 @@ const ProfilePage = () => {
       <div className="flex justify-between items-end mb-8 z-10 relative">
         <div>
           <h1 className="text-3xl font-bold text-slate-900 dark:text-white tracking-tight">My Profile</h1>
-          <p className="mt-2 text-slate-500 dark:text-slate-400">Manage your personal information and professional presence.</p>
+          <p className="mt-2 text-sm text-slate-500 dark:text-slate-400 font-normal">Manage your personal information and professional presence.</p>
         </div>
         
         {/* Edit / Save Actions */}
@@ -119,13 +119,13 @@ const ProfilePage = () => {
             <>
               <button 
                 onClick={handleCancel}
-                className="inline-flex items-center px-4 py-2 border border-slate-300 dark:border-slate-700 shadow-sm text-sm font-bold rounded-xl text-slate-700 dark:text-slate-300 bg-white dark:bg-slate-900 hover:bg-slate-50 dark:hover:bg-slate-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-colors"
+                className="inline-flex items-center px-4 py-2 border border-slate-300 dark:border-slate-700 shadow-sm text-sm font-medium rounded-lg text-slate-700 dark:text-slate-300 bg-white dark:bg-slate-900 hover:bg-slate-50 dark:hover:bg-slate-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-colors"
               >
                 <XMarkIcon className="-ml-1 mr-2 h-4 w-4" /> Cancel
               </button>
               <button 
                 onClick={handleSave}
-                className="inline-flex items-center px-4 py-2 border border-transparent shadow-md shadow-indigo-500/20 text-sm font-bold rounded-xl text-white bg-indigo-600 hover:bg-indigo-700 hover:-translate-y-0.5 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-all"
+                className="inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-semibold rounded-lg text-white bg-indigo-600 hover:bg-indigo-700 hover:-translate-y-0.5 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-all"
               >
                 <CheckIcon className="-ml-1 mr-2 h-4 w-4" /> Save Profile
               </button>
@@ -133,7 +133,7 @@ const ProfilePage = () => {
           ) : (
             <button 
               onClick={() => setIsEditing(true)}
-              className="inline-flex items-center px-4 py-2 border border-slate-200 shadow-sm text-sm font-bold rounded-xl text-indigo-700 bg-indigo-50 hover:bg-indigo-100 hover:-translate-y-0.5 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-all"
+              className="inline-flex items-center px-4 py-2 border border-slate-200 shadow-sm text-sm font-semibold rounded-lg text-indigo-700 bg-indigo-50 hover:bg-indigo-100 hover:-translate-y-0.5 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-all"
             >
               <PencilSquareIcon className="-ml-1 mr-2 h-4 w-4" /> Edit Profile
             </button>
@@ -141,7 +141,7 @@ const ProfilePage = () => {
         </div>
       </div>
 
-      <div className="bg-white/70 dark:bg-slate-900/70 backdrop-blur-xl rounded-3xl shadow-sm border border-slate-200 dark:border-slate-800 overflow-hidden z-10 relative">
+      <div className="bg-white/70 dark:bg-slate-900/70 backdrop-blur-xl rounded-xl shadow-sm border border-slate-200 dark:border-slate-800 overflow-hidden z-10 relative">
         {/* Cover Image */}
         <div className="bg-gradient-to-r from-indigo-500 to-blue-500 h-28 sm:h-32 relative transition-all duration-500">
            <div className="absolute inset-0 bg-white/10 pattern-grid-lg"></div>
@@ -185,8 +185,8 @@ const ProfilePage = () => {
              {/* Left Column: Core Info & Bio */}
              <div className="lg:col-span-7 space-y-8">
                 
-                {/* About Section */}
-                <div className="bg-slate-50/50 dark:bg-slate-800/50 rounded-2xl p-6 border border-slate-100 dark:border-slate-800">
+                 {/* About Section */}
+                <div className="bg-slate-50/50 dark:bg-slate-800/50 rounded-lg p-6 border border-slate-100 dark:border-slate-800">
                   <InputField label="About & Bio" name="bio" isTextArea={true} />
                 </div>
 
@@ -202,7 +202,7 @@ const ProfilePage = () => {
              {/* Right Column: Skills & Socials */}
              <div className="lg:col-span-5 space-y-8">
                 
-                <div className="bg-indigo-50/30 dark:bg-indigo-900/10 rounded-2xl p-6 border border-indigo-50 dark:border-indigo-900/30 flex flex-col gap-6">
+                <div className="bg-indigo-50/30 dark:bg-indigo-900/10 rounded-lg p-6 border border-indigo-50 dark:border-indigo-900/30 flex flex-col gap-6">
                   <InputField label="Key Skills & Technologies" name="skills" icon={UserCircleIcon} isTextArea={isEditing} />
                   
                   <div className="h-px bg-indigo-100 dark:bg-indigo-900/50 w-full"></div>

@@ -222,12 +222,12 @@ const NotificationPanel = ({ defaultTab = 'all', compact = false }) => {
   };
 
   return (
-    <div className="bg-white/80 dark:bg-slate-900/80 backdrop-blur-md border border-slate-200 dark:border-slate-800 rounded-3xl shadow-sm overflow-hidden">
+    <div className="bg-white/80 dark:bg-slate-900/80 backdrop-blur-md border border-slate-200 dark:border-slate-800 rounded-xl shadow-sm overflow-hidden font-sans">
       {/* Top Banner / Tabs Header */}
       <div className="p-5 sm:p-6 border-b border-slate-200 dark:border-slate-800 flex flex-col md:flex-row md:items-center justify-between gap-4 bg-slate-50/50 dark:bg-slate-950/40">
         <div>
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-2xl bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 flex items-center justify-center font-bold">
+            <div className="w-10 h-10 rounded-lg bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 flex items-center justify-center font-bold">
               <BellIcon className="w-6 h-6" />
             </div>
             <div>
@@ -239,7 +239,7 @@ const NotificationPanel = ({ defaultTab = 'all', compact = false }) => {
                   </span>
                 )}
               </h2>
-              <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
+              <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5 font-normal">
                 {isFaculty
                   ? 'Real-time student submissions, evaluations, and administrative notices.'
                   : isStudent
@@ -255,7 +255,7 @@ const NotificationPanel = ({ defaultTab = 'all', compact = false }) => {
           {unreadCount > 0 && activeTab !== 'composer' && activeTab !== 'tracking' && activeTab !== 'audit' && (
             <button
               onClick={markAllAsRead}
-              className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-indigo-600 dark:text-indigo-400 bg-indigo-50 dark:bg-indigo-900/20 hover:bg-indigo-100 dark:hover:bg-indigo-900/40 rounded-xl transition-colors border border-indigo-200/50 dark:border-indigo-800/50"
+              className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-indigo-600 dark:text-indigo-400 bg-indigo-50 dark:bg-indigo-900/20 hover:bg-indigo-100 dark:hover:bg-indigo-900/40 rounded-lg transition-colors border border-indigo-200/50 dark:border-indigo-800/50"
             >
               <CheckIcon className="w-4 h-4" />
               <span>Mark all read</span>
@@ -268,7 +268,7 @@ const NotificationPanel = ({ defaultTab = 'all', compact = false }) => {
               else if (activeTab === 'audit') fetchAuditLogs();
               else fetchNotifications();
             }}
-            className="p-2 text-slate-500 hover:text-slate-700 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-xl transition-colors"
+            className="p-2 text-slate-500 hover:text-slate-700 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg transition-colors"
             title="Refresh"
           >
             <ArrowPathIcon className={`w-4 h-4 ${loading ? 'animate-spin' : ''}`} />
@@ -377,7 +377,7 @@ const NotificationPanel = ({ defaultTab = 'all', compact = false }) => {
                 placeholder="Search title, student, remarks..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full pl-9 pr-4 py-2 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-xs sm:text-sm text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                className="w-full pl-9 pr-4 py-2 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-xs sm:text-sm text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-500"
               />
             </div>
 
@@ -387,7 +387,7 @@ const NotificationPanel = ({ defaultTab = 'all', compact = false }) => {
               <select
                 value={typeFilter}
                 onChange={(e) => setTypeFilter(e.target.value)}
-                className="px-3 py-2 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-xs font-medium text-slate-700 dark:text-slate-200 focus:outline-none"
+                className="px-3 py-2 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-xs font-medium text-slate-700 dark:text-slate-200 focus:outline-none"
               >
                 <option value="all">All Types</option>
                 {isFaculty && <option value="project_submission">Student Submissions</option>}
@@ -400,7 +400,7 @@ const NotificationPanel = ({ defaultTab = 'all', compact = false }) => {
               <select
                 value={priorityFilter}
                 onChange={(e) => setPriorityFilter(e.target.value)}
-                className="px-3 py-2 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-xs font-medium text-slate-700 dark:text-slate-200 focus:outline-none"
+                className="px-3 py-2 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-xs font-medium text-slate-700 dark:text-slate-200 focus:outline-none"
               >
                 <option value="all">All Priorities</option>
                 <option value="urgent">Urgent</option>
@@ -417,7 +417,7 @@ const NotificationPanel = ({ defaultTab = 'all', compact = false }) => {
               <p className="text-xs text-slate-400 mt-2">Loading notifications...</p>
             </div>
           ) : items.length === 0 ? (
-            <div className="p-12 text-center bg-slate-50/50 dark:bg-slate-950/20 rounded-2xl border border-dashed border-slate-200 dark:border-slate-800">
+            <div className="p-12 text-center bg-slate-50/50 dark:bg-slate-950/20 rounded-lg border border-dashed border-slate-200 dark:border-slate-800">
               <BellIcon className="w-12 h-12 mx-auto text-slate-300 dark:text-slate-700 mb-2 stroke-1" />
               <h4 className="text-base font-bold text-slate-800 dark:text-slate-200">No notifications found</h4>
               <p className="text-xs text-slate-500 dark:text-slate-400 mt-1 max-w-sm mx-auto">
@@ -438,9 +438,9 @@ const NotificationPanel = ({ defaultTab = 'all', compact = false }) => {
                 return (
                   <div
                     key={notif.id}
-                    className={`rounded-2xl border transition-all duration-200 overflow-hidden ${
+                    className={`rounded-lg border transition-all duration-200 overflow-hidden ${
                       !notif.is_read
-                        ? 'bg-indigo-50/20 dark:bg-indigo-950/10 border-indigo-200/80 dark:border-indigo-800/40 shadow-sm'
+                        ? 'bg-indigo-50/20 dark:bg-indigo-950/10 border-indigo-200/80 dark:border-indigo-800/40 shadow-xs'
                         : 'bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800/80 hover:border-slate-300'
                     }`}
                   >
@@ -451,7 +451,7 @@ const NotificationPanel = ({ defaultTab = 'all', compact = false }) => {
                     >
                       <div className="flex items-start gap-3.5 flex-1 min-w-0">
                         {/* Icon */}
-                        <div className="p-2.5 rounded-2xl bg-slate-100 dark:bg-slate-800 flex-shrink-0 mt-0.5">
+                        <div className="p-2.5 rounded-lg bg-slate-100 dark:bg-slate-800 flex-shrink-0 mt-0.5">
                           {notif.type === 'project_submission' ? (
                             <InboxArrowDownIcon className="w-5 h-5 text-blue-600 dark:text-blue-400" />
                           ) : notif.type === 'faculty_evaluation' ? (
@@ -533,15 +533,15 @@ const NotificationPanel = ({ defaultTab = 'all', compact = false }) => {
                     {isExpanded && (
                       <div className="px-5 pb-5 pt-2 border-t border-slate-100 dark:border-slate-800/80 bg-slate-50/50 dark:bg-slate-950/30 space-y-4 animate-in fade-in duration-150">
                         {/* Full Message Body */}
-                        <div className="p-3.5 bg-white dark:bg-slate-900 rounded-xl border border-slate-200/80 dark:border-slate-800 text-xs sm:text-sm text-slate-800 dark:text-slate-200 leading-relaxed whitespace-pre-line">
+                        <div className="p-3.5 bg-white dark:bg-slate-900 rounded-lg border border-slate-200/80 dark:border-slate-800 text-xs sm:text-sm text-slate-800 dark:text-slate-200 leading-relaxed whitespace-pre-line">
                           {notif.message}
                         </div>
 
                         {/* ── Faculty Specific: Student Submission Details ── */}
                         {notif.type === 'project_submission' && (
                           <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-xs">
-                            <div className="p-3.5 bg-white dark:bg-slate-900 rounded-xl border border-slate-200/80 dark:border-slate-800 space-y-2">
-                              <h5 className="font-bold text-slate-900 dark:text-white flex items-center gap-1.5">
+                            <div className="p-3.5 bg-white dark:bg-slate-900 rounded-lg border border-slate-200/80 dark:border-slate-800 space-y-2">
+                              <h5 className="font-semibold text-slate-900 dark:text-white flex items-center gap-1.5">
                                 <UserIcon className="w-4 h-4 text-blue-500" /> Submitting Student Information
                               </h5>
                               <div className="space-y-1 text-slate-600 dark:text-slate-300">
@@ -552,8 +552,8 @@ const NotificationPanel = ({ defaultTab = 'all', compact = false }) => {
                               </div>
                             </div>
 
-                            <div className="p-3.5 bg-white dark:bg-slate-900 rounded-xl border border-slate-200/80 dark:border-slate-800 space-y-2">
-                              <h5 className="font-bold text-slate-900 dark:text-white flex items-center gap-1.5">
+                            <div className="p-3.5 bg-white dark:bg-slate-900 rounded-lg border border-slate-200/80 dark:border-slate-800 space-y-2">
+                              <h5 className="font-semibold text-slate-900 dark:text-white flex items-center gap-1.5">
                                 <ClipboardDocumentCheckIcon className="w-4 h-4 text-indigo-500" /> Submission Metadata
                               </h5>
                               <div className="space-y-1 text-slate-600 dark:text-slate-300">
@@ -567,17 +567,17 @@ const NotificationPanel = ({ defaultTab = 'all', compact = false }) => {
 
                         {/* ── Student Specific: Faculty Evaluation Assessment Details ── */}
                         {notif.type === 'faculty_evaluation' && (
-                          <div className="p-4 bg-gradient-to-br from-indigo-50/60 to-purple-50/40 dark:from-indigo-950/30 dark:to-purple-950/20 border border-indigo-100 dark:border-indigo-900/50 rounded-2xl space-y-3 text-xs">
+                          <div className="p-4 bg-gradient-to-br from-indigo-50/60 to-purple-50/40 dark:from-indigo-950/30 dark:to-purple-950/20 border border-indigo-100 dark:border-indigo-900/50 rounded-lg space-y-3 text-xs">
                             <div className="flex items-center justify-between">
                               <div className="flex items-center gap-2">
                                 <SparklesIcon className="w-5 h-5 text-indigo-600 dark:text-indigo-400" />
-                                <span className="font-bold text-slate-900 dark:text-white text-sm">
+                                <span className="font-semibold text-slate-900 dark:text-white text-sm">
                                   Evaluation Verdict: {meta.evaluation_status || 'Reviewed'}
                                 </span>
                               </div>
                               {meta.score !== null && meta.score !== undefined && (
                                 <div className="text-right">
-                                  <span className="text-lg font-extrabold text-indigo-600 dark:text-indigo-400">
+                                  <span className="text-lg font-bold text-indigo-600 dark:text-indigo-400">
                                     {meta.score} / 100
                                   </span>
                                 </div>
@@ -587,21 +587,21 @@ const NotificationPanel = ({ defaultTab = 'all', compact = false }) => {
                             {/* Sub scores if available */}
                             {meta.metrics && (
                               <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 pt-2 border-t border-indigo-200/50 dark:border-indigo-800/40">
-                                <div className="bg-white/70 dark:bg-slate-900/70 p-2 rounded-lg text-center">
+                                <div className="bg-white/70 dark:bg-slate-900/70 p-2 rounded-md text-center">
                                   <span className="text-[10px] text-slate-400">Code Quality</span>
-                                  <p className="font-bold text-slate-800 dark:text-slate-200">{meta.metrics.code_quality ?? 'N/A'}%</p>
+                                  <p className="font-semibold text-slate-800 dark:text-slate-200">{meta.metrics.code_quality ?? 'N/A'}%</p>
                                 </div>
-                                <div className="bg-white/70 dark:bg-slate-900/70 p-2 rounded-lg text-center">
+                                <div className="bg-white/70 dark:bg-slate-900/70 p-2 rounded-md text-center">
                                   <span className="text-[10px] text-slate-400">Documentation</span>
-                                  <p className="font-bold text-slate-800 dark:text-slate-200">{meta.metrics.documentation ?? 'N/A'}%</p>
+                                  <p className="font-semibold text-slate-800 dark:text-slate-200">{meta.metrics.documentation ?? 'N/A'}%</p>
                                 </div>
-                                <div className="bg-white/70 dark:bg-slate-900/70 p-2 rounded-lg text-center">
+                                <div className="bg-white/70 dark:bg-slate-900/70 p-2 rounded-md text-center">
                                   <span className="text-[10px] text-slate-400">Originality</span>
-                                  <p className="font-bold text-slate-800 dark:text-slate-200">{meta.metrics.plagiarism ?? 'N/A'}%</p>
+                                  <p className="font-semibold text-slate-800 dark:text-slate-200">{meta.metrics.plagiarism ?? 'N/A'}%</p>
                                 </div>
-                                <div className="bg-white/70 dark:bg-slate-900/70 p-2 rounded-lg text-center">
+                                <div className="bg-white/70 dark:bg-slate-900/70 p-2 rounded-md text-center">
                                   <span className="text-[10px] text-slate-400">Alignment</span>
-                                  <p className="font-bold text-slate-800 dark:text-slate-200">{meta.metrics.report_alignment ?? 'N/A'}%</p>
+                                  <p className="font-semibold text-slate-800 dark:text-slate-200">{meta.metrics.report_alignment ?? 'N/A'}%</p>
                                 </div>
                               </div>
                             )}
@@ -616,7 +616,7 @@ const NotificationPanel = ({ defaultTab = 'all', compact = false }) => {
 
                         {/* Admin Platform Notation note */}
                         {meta.admin_notation && (
-                          <div className="p-3 bg-amber-50 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-800/40 rounded-xl flex items-start gap-2 text-xs text-amber-800 dark:text-amber-300">
+                          <div className="p-3 bg-amber-50 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-800/40 rounded-lg flex items-start gap-2 text-xs text-amber-800 dark:text-amber-300">
                             <InformationCircleIcon className="w-4 h-4 text-amber-600 dark:text-amber-400 flex-shrink-0 mt-0.5" />
                             <div>
                               <span className="font-semibold">Institutional Instruction: </span>
@@ -633,7 +633,7 @@ const NotificationPanel = ({ defaultTab = 'all', compact = false }) => {
                                 href={`${API_BASE_URL}/${notif.attachment_url.replace(/^\.\//, '')}`}
                                 target="_blank"
                                 rel="noreferrer"
-                                className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-indigo-600 dark:text-indigo-400 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl hover:bg-slate-50 transition-colors shadow-sm"
+                                className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-indigo-600 dark:text-indigo-400 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-lg hover:bg-slate-50 transition-colors shadow-xs"
                               >
                                 <PaperClipIcon className="w-3.5 h-3.5" />
                                 <span>{notif.attachment_name || 'Download Attachment'}</span>
@@ -644,7 +644,7 @@ const NotificationPanel = ({ defaultTab = 'all', compact = false }) => {
                           {notif.related_project_id && (
                             <button
                               onClick={() => navigate(`/projects/${notif.related_project_id}`)}
-                              className="inline-flex items-center gap-1.5 px-4 py-2 text-xs font-bold text-white bg-indigo-600 hover:bg-indigo-700 rounded-xl shadow-sm transition-all hover:scale-105 active:scale-95"
+                              className="inline-flex items-center gap-1.5 px-4 py-2 text-xs font-semibold text-white bg-indigo-600 hover:bg-indigo-700 rounded-lg shadow-sm transition-all hover:-translate-y-0.5"
                             >
                               <span>Open Project Workspace</span>
                               <ArrowTopRightOnSquareIcon className="w-3.5 h-3.5" />
@@ -685,7 +685,7 @@ const NotificationPanel = ({ defaultTab = 'all', compact = false }) => {
                 placeholder="e.g. Final Project Submission Rubric & Deadline Extension"
                 value={broadcastForm.title}
                 onChange={(e) => setBroadcastForm({ ...broadcastForm, title: e.target.value })}
-                className="w-full px-4 py-2.5 bg-slate-50 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 rounded-xl text-sm text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 font-medium"
+                className="w-full px-4 py-2.5 bg-slate-50 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 rounded-lg text-sm text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 font-medium"
               />
             </div>
 
@@ -698,7 +698,7 @@ const NotificationPanel = ({ defaultTab = 'all', compact = false }) => {
                 <select
                   value={broadcastForm.target_audience}
                   onChange={(e) => setBroadcastForm({ ...broadcastForm, target_audience: e.target.value })}
-                  className="w-full px-4 py-2.5 bg-slate-50 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 rounded-xl text-sm font-medium text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                  className="w-full px-4 py-2.5 bg-slate-50 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 rounded-lg text-sm font-medium text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500"
                 >
                   <option value="all">All Roles (Students & Faculty)</option>
                   <option value="students">All Students</option>
@@ -714,7 +714,7 @@ const NotificationPanel = ({ defaultTab = 'all', compact = false }) => {
                 <select
                   value={broadcastForm.priority}
                   onChange={(e) => setBroadcastForm({ ...broadcastForm, priority: e.target.value })}
-                  className="w-full px-4 py-2.5 bg-slate-50 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 rounded-xl text-sm font-medium text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                  className="w-full px-4 py-2.5 bg-slate-50 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 rounded-lg text-sm font-medium text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500"
                 >
                   <option value="normal">Normal Announcement</option>
                   <option value="urgent">Urgent / Deadline Notice</option>
@@ -725,7 +725,7 @@ const NotificationPanel = ({ defaultTab = 'all', compact = false }) => {
 
             {/* Individual Recipients Multi-select (if Target Audience == individual) */}
             {broadcastForm.target_audience === 'individual' && (
-              <div className="p-4 bg-slate-50 dark:bg-slate-800/40 rounded-2xl border border-slate-200 dark:border-slate-700 space-y-2">
+              <div className="p-4 bg-slate-50 dark:bg-slate-800/40 rounded-lg border border-slate-200 dark:border-slate-700 space-y-2">
                 <label className="block text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">
                   Select Specific Individuals ({broadcastForm.target_user_ids.length} selected)
                 </label>
@@ -735,7 +735,7 @@ const NotificationPanel = ({ defaultTab = 'all', compact = false }) => {
                     return (
                       <label
                         key={r.id}
-                        className="flex items-center gap-3 p-2 hover:bg-white dark:hover:bg-slate-800 rounded-lg cursor-pointer text-xs"
+                        className="flex items-center gap-3 p-2 hover:bg-white dark:hover:bg-slate-800 rounded-md cursor-pointer text-xs"
                       >
                         <input
                           type="checkbox"
@@ -777,7 +777,7 @@ const NotificationPanel = ({ defaultTab = 'all', compact = false }) => {
                 placeholder="Write structured guidelines, policy notifications, evaluation rubrics, or platform instructions..."
                 value={broadcastForm.message}
                 onChange={(e) => setBroadcastForm({ ...broadcastForm, message: e.target.value })}
-                className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 rounded-xl text-sm text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 leading-relaxed font-sans"
+                className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 rounded-lg text-sm text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 leading-relaxed font-sans"
               />
             </div>
 
@@ -790,7 +790,7 @@ const NotificationPanel = ({ defaultTab = 'all', compact = false }) => {
                 <input
                   type="file"
                   onChange={(e) => setAttachmentFile(e.target.files?.[0] || null)}
-                  className="block w-full text-xs text-slate-500 file:mr-3 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-semibold file:bg-indigo-50 dark:file:bg-indigo-900/30 file:text-indigo-600 dark:file:text-indigo-400 hover:file:bg-indigo-100 cursor-pointer"
+                  className="block w-full text-xs text-slate-500 file:mr-3 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-indigo-50 dark:file:bg-indigo-900/30 file:text-indigo-600 dark:file:text-indigo-400 hover:file:bg-indigo-100 cursor-pointer"
                 />
               </div>
 
@@ -802,7 +802,7 @@ const NotificationPanel = ({ defaultTab = 'all', compact = false }) => {
                   type="datetime-local"
                   value={broadcastForm.scheduled_for}
                   onChange={(e) => setBroadcastForm({ ...broadcastForm, scheduled_for: e.target.value })}
-                  className="w-full px-4 py-2 bg-slate-50 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 rounded-xl text-xs font-medium text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                  className="w-full px-4 py-2 bg-slate-50 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 rounded-lg text-xs font-medium text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500"
                 />
               </div>
             </div>
@@ -812,7 +812,7 @@ const NotificationPanel = ({ defaultTab = 'all', compact = false }) => {
               <button
                 type="submit"
                 disabled={isSubmittingBroadcast}
-                className="flex items-center gap-2 px-6 py-3 text-sm font-bold text-white bg-indigo-600 hover:bg-indigo-700 rounded-xl shadow-lg shadow-indigo-500/20 hover:scale-105 active:scale-95 transition-all disabled:opacity-50"
+                className="flex items-center gap-2 px-6 py-2.5 text-sm font-semibold text-white bg-indigo-600 hover:bg-indigo-700 rounded-lg shadow-sm shadow-indigo-500/20 hover:-translate-y-0.5 transition-all disabled:opacity-50"
               >
                 <PaperAirplaneIcon className="w-4 h-4" />
                 <span>{isSubmittingBroadcast ? 'Dispatching...' : 'Dispatch Real-Time Broadcast'}</span>
@@ -843,12 +843,12 @@ const NotificationPanel = ({ defaultTab = 'all', compact = false }) => {
           </div>
 
           {broadcastsList.length === 0 ? (
-            <div className="p-12 text-center text-slate-400 bg-slate-50/50 dark:bg-slate-900/50 rounded-2xl">
+            <div className="p-12 text-center text-slate-400 bg-slate-50/50 dark:bg-slate-900/50 rounded-lg">
               <EyeIcon className="w-10 h-10 mx-auto text-slate-300 dark:text-slate-700 mb-2 stroke-1" />
               <p className="text-sm font-medium">No broadcasts created yet.</p>
               <button
                 onClick={() => setActiveTab('composer')}
-                className="mt-3 text-xs font-bold text-indigo-600 hover:underline"
+                className="mt-3 text-xs font-semibold text-indigo-600 hover:underline"
               >
                 + Compose First Broadcast
               </button>
@@ -858,22 +858,22 @@ const NotificationPanel = ({ defaultTab = 'all', compact = false }) => {
               {broadcastsList.map((b) => (
                 <div
                   key={b.broadcast_id}
-                  className="p-5 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl space-y-3 shadow-sm"
+                  className="p-5 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-lg space-y-3 shadow-xs"
                 >
                   <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
                     <div>
-                      <span className="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded bg-indigo-50 dark:bg-indigo-950 text-indigo-600 dark:text-indigo-400 border border-indigo-200/50 dark:border-indigo-800/50">
+                      <span className="text-[10px] font-semibold uppercase tracking-wider px-2 py-0.5 rounded bg-indigo-50 dark:bg-indigo-950 text-indigo-600 dark:text-indigo-400 border border-indigo-200/50 dark:border-indigo-800/50">
                         Audience: {b.target_audience}
                       </span>
-                      <h4 className="text-base font-bold text-slate-900 dark:text-white mt-1">{b.title}</h4>
-                      <p className="text-xs text-slate-500 line-clamp-1 mt-0.5">{b.message}</p>
+                      <h4 className="text-base font-semibold text-slate-900 dark:text-white mt-1">{b.title}</h4>
+                      <p className="text-xs text-slate-500 line-clamp-1 mt-0.5 font-normal">{b.message}</p>
                     </div>
 
                     <div className="text-right flex-shrink-0">
                       <p className="text-xs text-slate-400">{new Date(b.created_at).toLocaleDateString()}</p>
                       <button
                         onClick={() => setSelectedReceiptBroadcast(b)}
-                        className="mt-1 px-3 py-1.5 text-xs font-bold text-indigo-600 dark:text-indigo-400 bg-indigo-50 dark:bg-indigo-900/20 hover:bg-indigo-100 rounded-lg transition-colors inline-flex items-center gap-1"
+                        className="mt-1 px-3 py-1.5 text-xs font-semibold text-indigo-600 dark:text-indigo-400 bg-indigo-50 dark:bg-indigo-900/20 hover:bg-indigo-100 rounded-md transition-colors inline-flex items-center gap-1"
                       >
                         <EyeIcon className="w-3.5 h-3.5" />
                         <span>View Read Receipts</span>
@@ -887,7 +887,7 @@ const NotificationPanel = ({ defaultTab = 'all', compact = false }) => {
                       <span className="text-slate-500">
                         Delivered to: <strong className="text-slate-800 dark:text-slate-200">{b.total_delivered} recipients</strong>
                       </span>
-                      <span className="font-bold text-indigo-600 dark:text-indigo-400">
+                      <span className="font-semibold text-indigo-600 dark:text-indigo-400">
                         {b.total_read} Read ({b.read_percentage}%)
                       </span>
                     </div>
@@ -912,11 +912,11 @@ const NotificationPanel = ({ defaultTab = 'all', compact = false }) => {
                 }}
                 className="fixed inset-0 z-[9999] flex items-center justify-center p-4 sm:p-6 bg-slate-950/70 backdrop-blur-sm animate-in fade-in duration-200"
               >
-                <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl shadow-2xl max-w-xl w-full p-6 space-y-4 max-h-[85vh] flex flex-col animate-in zoom-in-95 duration-150">
+                <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl shadow-2xl max-w-xl w-full p-6 space-y-4 max-h-[85vh] flex flex-col animate-in zoom-in-95 duration-150 font-sans">
                   {/* Modal Header */}
                   <div className="flex items-start justify-between border-b border-slate-100 dark:border-slate-800 pb-4">
                     <div className="flex items-center gap-3">
-                      <div className="w-10 h-10 rounded-2xl bg-indigo-50 dark:bg-indigo-900/30 flex items-center justify-center text-indigo-600 dark:text-indigo-400 flex-shrink-0">
+                      <div className="w-10 h-10 rounded-lg bg-indigo-50 dark:bg-indigo-900/30 flex items-center justify-center text-indigo-600 dark:text-indigo-400 flex-shrink-0">
                         <EyeIcon className="w-5 h-5" />
                       </div>
                       <div>
@@ -924,7 +924,7 @@ const NotificationPanel = ({ defaultTab = 'all', compact = false }) => {
                           <h4 className="text-base font-bold text-slate-900 dark:text-white">
                             Recipient Read Receipts
                           </h4>
-                          <span className="text-[11px] font-bold px-2 py-0.5 rounded-full bg-indigo-50 dark:bg-indigo-950 text-indigo-600 dark:text-indigo-400 border border-indigo-200/50 dark:border-indigo-800/50">
+                          <span className="text-[11px] font-semibold px-2 py-0.5 rounded-full bg-indigo-50 dark:bg-indigo-950 text-indigo-600 dark:text-indigo-400 border border-indigo-200/50 dark:border-indigo-800/50">
                             {selectedReceiptBroadcast.total_read} / {selectedReceiptBroadcast.total_delivered} Read
                           </span>
                         </div>
@@ -935,7 +935,7 @@ const NotificationPanel = ({ defaultTab = 'all', compact = false }) => {
                     </div>
                     <button
                       onClick={() => setSelectedReceiptBroadcast(null)}
-                      className="p-1.5 rounded-xl text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
+                      className="p-1.5 rounded-lg text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
                       title="Close"
                     >
                       <XMarkIcon className="w-5 h-5" />
@@ -954,11 +954,11 @@ const NotificationPanel = ({ defaultTab = 'all', compact = false }) => {
                         return (
                           <div key={r.recipient_id} className="py-3 flex items-center justify-between gap-3">
                             <div className="flex items-center gap-3 min-w-0">
-                              <div className="w-8 h-8 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 flex items-center justify-center font-bold text-xs uppercase flex-shrink-0">
+                              <div className="w-8 h-8 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 flex items-center justify-center font-semibold text-xs uppercase flex-shrink-0">
                                 {initials}
                               </div>
                               <div className="min-w-0">
-                                <p className="font-bold text-slate-900 dark:text-white truncate">
+                                <p className="font-semibold text-slate-900 dark:text-white truncate">
                                   {r.recipient_name}
                                 </p>
                                 <p className="text-[11px] text-slate-400 truncate">
@@ -969,14 +969,14 @@ const NotificationPanel = ({ defaultTab = 'all', compact = false }) => {
 
                             <div className="text-right flex-shrink-0">
                               {r.is_read ? (
-                                <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-emerald-50 dark:bg-emerald-950/30 text-emerald-600 dark:text-emerald-400 font-semibold border border-emerald-200/50 dark:border-emerald-800/50">
+                                <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-emerald-50 dark:bg-emerald-950/30 text-emerald-600 dark:text-emerald-400 font-semibold border border-emerald-200/50 dark:border-emerald-800/50">
                                   <CheckCircleIcon className="w-4 h-4" />
                                   <span>
                                     Read {r.read_at ? new Date(r.read_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : ''}
                                   </span>
                                 </div>
                               ) : (
-                                <span className="inline-flex items-center px-2.5 py-1 rounded-lg bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400 font-medium">
+                                <span className="inline-flex items-center px-2.5 py-1 rounded-md bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400 font-medium">
                                   Delivered (Unread)
                                 </span>
                               )}
@@ -998,7 +998,7 @@ const NotificationPanel = ({ defaultTab = 'all', compact = false }) => {
                     </span>
                     <button
                       onClick={() => setSelectedReceiptBroadcast(null)}
-                      className="px-4 py-2 text-xs font-bold text-slate-700 dark:text-slate-300 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 rounded-xl transition-colors"
+                      className="px-4 py-2 text-xs font-semibold text-slate-700 dark:text-slate-300 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 rounded-lg transition-colors"
                     >
                       Close
                     </button>
@@ -1027,11 +1027,11 @@ const NotificationPanel = ({ defaultTab = 'all', compact = false }) => {
               placeholder="Filter by action (e.g. READ, CREATED)..."
               value={auditFilter}
               onChange={(e) => setAuditFilter(e.target.value)}
-              className="px-3.5 py-1.5 text-xs bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-slate-900 dark:text-white"
+              className="px-3.5 py-1.5 text-xs bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-slate-900 dark:text-white"
             />
           </div>
 
-          <div className="overflow-x-auto rounded-2xl border border-slate-200 dark:border-slate-800">
+          <div className="overflow-x-auto rounded-xl border border-slate-200 dark:border-slate-800">
             <table className="w-full text-left text-xs">
               <thead className="bg-slate-50 dark:bg-slate-800/80 text-slate-500 uppercase tracking-wider font-semibold border-b border-slate-200 dark:border-slate-800">
                 <tr>
@@ -1052,14 +1052,14 @@ const NotificationPanel = ({ defaultTab = 'all', compact = false }) => {
                 ) : (
                   auditLogs.map((log) => (
                     <tr key={log.id} className="hover:bg-slate-50/50 dark:hover:bg-slate-800/40">
-                      <td className="py-3 px-4 font-mono font-bold text-indigo-600 dark:text-indigo-400">
+                      <td className="py-3 px-4 font-semibold text-indigo-600 dark:text-indigo-400">
                         {log.action}
                       </td>
                       <td className="py-3 px-4 font-medium text-slate-800 dark:text-slate-200">
                         {log.actor_name || 'System'}
                       </td>
                       <td className="py-3 px-4 text-slate-500 capitalize">{log.actor_role || 'System'}</td>
-                      <td className="py-3 px-4 text-slate-500 font-mono text-[11px] truncate max-w-xs">
+                      <td className="py-3 px-4 text-slate-500 text-[11px] truncate max-w-xs">
                         {log.details ? JSON.stringify(log.details) : '—'}
                       </td>
                       <td className="py-3 px-4 text-slate-400">

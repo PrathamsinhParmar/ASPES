@@ -120,12 +120,12 @@ function CreateFacultyModal({ onClose, onCreated }) {
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/60 backdrop-blur-sm animate-in fade-in duration-200">
-      <div className="w-full max-w-md bg-white dark:bg-slate-900 rounded-2xl shadow-2xl border border-gray-100 dark:border-slate-800 overflow-hidden animate-in zoom-in-95 duration-200">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/60 backdrop-blur-sm animate-in fade-in duration-200 font-sans">
+      <div className="w-full max-w-md bg-white dark:bg-slate-900 rounded-xl shadow-2xl border border-gray-100 dark:border-slate-800 overflow-hidden animate-in zoom-in-95 duration-200">
         {/* Header */}
         <div className="flex items-center justify-between px-6 py-5 border-b border-gray-100 dark:border-slate-800 bg-gradient-to-r from-indigo-600 to-blue-600">
           <div className="flex items-center gap-3">
-            <div className="w-9 h-9 rounded-xl bg-white/20 flex items-center justify-center">
+            <div className="w-9 h-9 rounded-lg bg-white/20 flex items-center justify-center">
               <UserPlusIcon className="w-5 h-5 text-white" />
             </div>
             <div>
@@ -144,7 +144,7 @@ function CreateFacultyModal({ onClose, onCreated }) {
         {/* Body */}
         <form onSubmit={handleSubmit(onSubmit)} className="p-6 space-y-4 max-h-[75vh] overflow-y-auto">
           {apiError && (
-            <div className="flex items-start gap-3 p-3 rounded-xl bg-red-50 dark:bg-red-900/10 border border-red-100 dark:border-red-900/20">
+            <div className="flex items-start gap-3 p-3 rounded-lg bg-red-50 dark:bg-red-900/10 border border-red-100 dark:border-red-900/20">
               <ExclamationTriangleIcon className="w-4 h-4 text-red-500 mt-0.5 flex-shrink-0" />
               <p className="text-sm text-red-700 dark:text-red-400">{apiError}</p>
             </div>
@@ -196,7 +196,7 @@ function CreateFacultyModal({ onClose, onCreated }) {
               {...register('full_name')}
               type="text"
               placeholder="Dr. Jane Smith"
-              className={`w-full px-4 py-2.5 rounded-xl border text-sm text-gray-900 dark:text-white bg-white dark:bg-slate-800/50 placeholder-gray-400 dark:placeholder-slate-500 transition-all focus:outline-none focus:ring-2 ${
+              className={`w-full px-4 py-2.5 rounded-lg border text-sm text-gray-900 dark:text-white bg-white dark:bg-slate-800/50 placeholder-gray-400 dark:placeholder-slate-500 transition-all focus:outline-none focus:ring-2 ${
                 errors.full_name
                   ? 'border-red-300 focus:ring-red-200 dark:focus:ring-red-900/20'
                   : 'border-gray-200 dark:border-slate-700 focus:ring-indigo-100 dark:focus:ring-indigo-900/20 focus:border-indigo-400'
@@ -216,7 +216,7 @@ function CreateFacultyModal({ onClose, onCreated }) {
               {...register('department')}
               type="text"
               placeholder="e.g. Computer Science"
-              className={`w-full px-4 py-2.5 rounded-xl border text-sm text-gray-900 dark:text-white bg-white dark:bg-slate-800/50 placeholder-gray-400 dark:placeholder-slate-500 transition-all focus:outline-none focus:ring-2 ${
+              className={`w-full px-4 py-2.5 rounded-lg border text-sm text-gray-900 dark:text-white bg-white dark:bg-slate-800/50 placeholder-gray-400 dark:placeholder-slate-500 transition-all focus:outline-none focus:ring-2 ${
                 errors.department
                   ? 'border-red-300 focus:ring-red-200 dark:focus:ring-red-900/20'
                   : 'border-gray-200 dark:border-slate-700 focus:ring-indigo-100 dark:focus:ring-indigo-900/20 focus:border-indigo-400'
@@ -236,7 +236,7 @@ function CreateFacultyModal({ onClose, onCreated }) {
               {...register('email')}
               type="email"
               placeholder="faculty@university.edu"
-              className={`w-full px-4 py-2.5 rounded-xl border text-sm text-gray-900 dark:text-white bg-white dark:bg-slate-800/50 placeholder-gray-400 dark:placeholder-slate-500 transition-all focus:outline-none focus:ring-2 ${
+              className={`w-full px-4 py-2.5 rounded-lg border text-sm text-gray-900 dark:text-white bg-white dark:bg-slate-800/50 placeholder-gray-400 dark:placeholder-slate-500 transition-all focus:outline-none focus:ring-2 ${
                 errors.email
                   ? 'border-red-300 focus:ring-red-200 dark:focus:ring-red-900/20'
                   : 'border-gray-200 dark:border-slate-700 focus:ring-indigo-100 dark:focus:ring-indigo-900/20 focus:border-indigo-400'
@@ -256,7 +256,7 @@ function CreateFacultyModal({ onClose, onCreated }) {
               {...register('username')}
               type="text"
               placeholder="jane_smith"
-              className={`w-full px-4 py-2.5 rounded-xl border text-sm text-gray-900 dark:text-white bg-white dark:bg-slate-800/50 placeholder-gray-400 dark:placeholder-slate-500 transition-all focus:outline-none focus:ring-2 ${
+              className={`w-full px-4 py-2.5 rounded-lg border text-sm text-gray-900 dark:text-white bg-white dark:bg-slate-800/50 placeholder-gray-400 dark:placeholder-slate-500 transition-all focus:outline-none focus:ring-2 ${
                 errors.username
                   ? 'border-red-300 focus:ring-red-200 dark:focus:ring-red-900/20'
                   : 'border-gray-200 dark:border-slate-700 focus:ring-indigo-100 dark:focus:ring-indigo-900/20 focus:border-indigo-400'
@@ -277,7 +277,7 @@ function CreateFacultyModal({ onClose, onCreated }) {
                 {...register('password')}
                 type="password"
                 placeholder="••••••••"
-                className={`w-full px-4 py-2.5 rounded-xl border text-sm text-gray-900 dark:text-white bg-white dark:bg-slate-800/50 placeholder-gray-400 transition-all focus:outline-none focus:ring-2 ${
+                className={`w-full px-4 py-2.5 rounded-lg border text-sm text-gray-900 dark:text-white bg-white dark:bg-slate-800/50 placeholder-gray-400 transition-all focus:outline-none focus:ring-2 ${
                   errors.password
                     ? 'border-red-300 focus:ring-red-200'
                     : 'border-gray-200 dark:border-slate-700 focus:ring-indigo-100 focus:border-indigo-400'
@@ -295,7 +295,7 @@ function CreateFacultyModal({ onClose, onCreated }) {
                 {...register('confirm_password')}
                 type="password"
                 placeholder="••••••••"
-                className={`w-full px-4 py-2.5 rounded-xl border text-sm text-gray-900 dark:text-white bg-white dark:bg-slate-800/50 placeholder-gray-400 transition-all focus:outline-none focus:ring-2 ${
+                className={`w-full px-4 py-2.5 rounded-lg border text-sm text-gray-900 dark:text-white bg-white dark:bg-slate-800/50 placeholder-gray-400 transition-all focus:outline-none focus:ring-2 ${
                   errors.confirm_password
                     ? 'border-red-300 focus:ring-red-200'
                     : 'border-gray-200 dark:border-slate-700 focus:ring-indigo-100 focus:border-indigo-400'
@@ -312,14 +312,14 @@ function CreateFacultyModal({ onClose, onCreated }) {
             <button
               type="button"
               onClick={onClose}
-              className="px-4 py-2 text-sm font-medium text-gray-600 dark:text-slate-300 bg-gray-100 dark:bg-slate-800 hover:bg-gray-200 dark:hover:bg-slate-700 rounded-xl transition-colors"
+              className="px-4 py-2 text-sm font-medium text-gray-600 dark:text-slate-300 bg-gray-100 dark:bg-slate-800 hover:bg-gray-200 dark:hover:bg-slate-700 rounded-lg transition-colors"
             >
               Cancel
             </button>
             <button
               type="submit"
               disabled={isSubmitting}
-              className="px-6 py-2 text-sm font-bold text-white bg-indigo-600 hover:bg-indigo-700 disabled:opacity-60 rounded-xl shadow-sm transition-all flex items-center gap-2"
+              className="px-6 py-2 text-sm font-semibold text-white bg-indigo-600 hover:bg-indigo-700 disabled:opacity-60 rounded-lg shadow-sm hover:-translate-y-0.5 transition-all flex items-center gap-2"
             >
               {isSubmitting ? (
                 <div className="w-4 h-4 border-2 border-white/50 border-t-white rounded-full animate-spin" />
@@ -421,12 +421,12 @@ function EditFacultyModal({ faculty, onClose, onUpdated }) {
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/60 backdrop-blur-sm animate-in fade-in duration-200">
-      <div className="w-full max-w-md bg-white dark:bg-slate-900 rounded-2xl shadow-2xl border border-gray-100 dark:border-slate-800 overflow-hidden animate-in zoom-in-95 duration-200">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/60 backdrop-blur-sm animate-in fade-in duration-200 font-sans">
+      <div className="w-full max-w-md bg-white dark:bg-slate-900 rounded-xl shadow-2xl border border-gray-100 dark:border-slate-800 overflow-hidden animate-in zoom-in-95 duration-200">
         {/* Header */}
         <div className="flex items-center justify-between px-6 py-5 border-b border-gray-100 dark:border-slate-800 bg-gradient-to-r from-indigo-600 to-blue-600">
           <div className="flex items-center gap-3">
-            <div className="w-9 h-9 rounded-xl bg-white/20 flex items-center justify-center">
+            <div className="w-9 h-9 rounded-lg bg-white/20 flex items-center justify-center">
               <PencilSquareIcon className="w-5 h-5 text-white" />
             </div>
             <div>
@@ -442,7 +442,7 @@ function EditFacultyModal({ faculty, onClose, onUpdated }) {
         {/* Body */}
         <form onSubmit={handleSubmit(onSubmit)} className="p-6 space-y-4 max-h-[75vh] overflow-y-auto">
           {apiError && (
-            <div className="flex items-start gap-3 p-3 rounded-xl bg-red-50 dark:bg-red-900/10 border border-red-100 dark:border-red-900/20">
+            <div className="flex items-start gap-3 p-3 rounded-lg bg-red-50 dark:bg-red-900/10 border border-red-100 dark:border-red-900/20">
               <ExclamationTriangleIcon className="w-4 h-4 text-red-500 mt-0.5 flex-shrink-0" />
               <p className="text-sm text-red-700 dark:text-red-400">{apiError}</p>
             </div>
@@ -491,7 +491,7 @@ function EditFacultyModal({ faculty, onClose, onUpdated }) {
             <input
               {...register('full_name')}
               type="text"
-              className={`w-full px-4 py-2.5 rounded-xl border text-sm text-gray-900 dark:text-white bg-white dark:bg-slate-800/50 placeholder-gray-400 dark:placeholder-slate-500 transition-all focus:outline-none focus:ring-2 ${errors.full_name ? 'border-red-300 focus:ring-red-200' : 'border-gray-200 dark:border-slate-700 focus:ring-indigo-100 focus:border-indigo-400'}`}
+              className={`w-full px-4 py-2.5 rounded-lg border text-sm text-gray-900 dark:text-white bg-white dark:bg-slate-800/50 placeholder-gray-400 dark:placeholder-slate-500 transition-all focus:outline-none focus:ring-2 ${errors.full_name ? 'border-red-300 focus:ring-red-200' : 'border-gray-200 dark:border-slate-700 focus:ring-indigo-100 focus:border-indigo-400'}`}
             />
             {errors.full_name && <p className="mt-1 text-xs text-red-500">{errors.full_name.message}</p>}
           </div>
@@ -503,7 +503,7 @@ function EditFacultyModal({ faculty, onClose, onUpdated }) {
               {...register('department')}
               type="text"
               placeholder="e.g. Computer Science"
-              className={`w-full px-4 py-2.5 rounded-xl border text-sm text-gray-900 dark:text-white bg-white dark:bg-slate-800/50 placeholder-gray-400 dark:placeholder-slate-500 transition-all focus:outline-none focus:ring-2 ${errors.department ? 'border-red-300 focus:ring-red-200' : 'border-gray-200 dark:border-slate-700 focus:ring-indigo-100 focus:border-indigo-400'}`}
+              className={`w-full px-4 py-2.5 rounded-lg border text-sm text-gray-900 dark:text-white bg-white dark:bg-slate-800/50 placeholder-gray-400 dark:placeholder-slate-500 transition-all focus:outline-none focus:ring-2 ${errors.department ? 'border-red-300 focus:ring-red-200' : 'border-gray-200 dark:border-slate-700 focus:ring-indigo-100 focus:border-indigo-400'}`}
             />
             {errors.department && <p className="mt-1 text-xs text-red-500">{errors.department.message}</p>}
           </div>
@@ -514,7 +514,7 @@ function EditFacultyModal({ faculty, onClose, onUpdated }) {
             <input
               {...register('email')}
               type="email"
-              className={`w-full px-4 py-2.5 rounded-xl border text-sm text-gray-900 dark:text-white bg-white dark:bg-slate-800/50 placeholder-gray-400 dark:placeholder-slate-500 transition-all focus:outline-none focus:ring-2 ${errors.email ? 'border-red-300 focus:ring-red-200' : 'border-gray-200 dark:border-slate-700 focus:ring-indigo-100 focus:border-indigo-400'}`}
+              className={`w-full px-4 py-2.5 rounded-lg border text-sm text-gray-900 dark:text-white bg-white dark:bg-slate-800/50 placeholder-gray-400 dark:placeholder-slate-500 transition-all focus:outline-none focus:ring-2 ${errors.email ? 'border-red-300 focus:ring-red-200' : 'border-gray-200 dark:border-slate-700 focus:ring-indigo-100 focus:border-indigo-400'}`}
             />
             {errors.email && <p className="mt-1 text-xs text-red-500">{errors.email.message}</p>}
           </div>
@@ -525,7 +525,7 @@ function EditFacultyModal({ faculty, onClose, onUpdated }) {
             <input
               {...register('username')}
               type="text"
-              className={`w-full px-4 py-2.5 rounded-xl border text-sm text-gray-900 dark:text-white bg-white dark:bg-slate-800/50 placeholder-gray-400 dark:placeholder-slate-500 transition-all focus:outline-none focus:ring-2 ${errors.username ? 'border-red-300 focus:ring-red-200' : 'border-gray-200 dark:border-slate-700 focus:ring-indigo-100 focus:border-indigo-400'}`}
+              className={`w-full px-4 py-2.5 rounded-lg border text-sm text-gray-900 dark:text-white bg-white dark:bg-slate-800/50 placeholder-gray-400 dark:placeholder-slate-500 transition-all focus:outline-none focus:ring-2 ${errors.username ? 'border-red-300 focus:ring-red-200' : 'border-gray-200 dark:border-slate-700 focus:ring-indigo-100 focus:border-indigo-400'}`}
             />
             {errors.username && <p className="mt-1 text-xs text-red-500">{errors.username.message}</p>}
           </div>
@@ -552,7 +552,7 @@ function EditFacultyModal({ faculty, onClose, onUpdated }) {
                 {...register('password')}
                 type="password"
                 placeholder="Leave blank to keep"
-                className={`w-full px-4 py-2.5 rounded-xl border text-sm text-gray-900 dark:text-white bg-white dark:bg-slate-800/50 placeholder-gray-400 transition-all focus:outline-none focus:ring-2 ${errors.password ? 'border-red-300 focus:ring-red-200' : 'border-gray-200 dark:border-slate-700 focus:ring-indigo-100 focus:border-indigo-400'}`}
+                className={`w-full px-4 py-2.5 rounded-lg border text-sm text-gray-900 dark:text-white bg-white dark:bg-slate-800/50 placeholder-gray-400 transition-all focus:outline-none focus:ring-2 ${errors.password ? 'border-red-300 focus:ring-red-200' : 'border-gray-200 dark:border-slate-700 focus:ring-indigo-100 focus:border-indigo-400'}`}
               />
               {errors.password && <p className="mt-1 text-xs text-red-500">{errors.password.message}</p>}
             </div>
@@ -562,7 +562,7 @@ function EditFacultyModal({ faculty, onClose, onUpdated }) {
                 {...register('confirm_password')}
                 type="password"
                 placeholder="Leave blank to keep"
-                className={`w-full px-4 py-2.5 rounded-xl border text-sm text-gray-900 dark:text-white bg-white dark:bg-slate-800/50 placeholder-gray-400 transition-all focus:outline-none focus:ring-2 ${errors.confirm_password ? 'border-red-300 focus:ring-red-200' : 'border-gray-200 dark:border-slate-700 focus:ring-indigo-100 focus:border-indigo-400'}`}
+                className={`w-full px-4 py-2.5 rounded-lg border text-sm text-gray-900 dark:text-white bg-white dark:bg-slate-800/50 placeholder-gray-400 transition-all focus:outline-none focus:ring-2 ${errors.confirm_password ? 'border-red-300 focus:ring-red-200' : 'border-gray-200 dark:border-slate-700 focus:ring-indigo-100 focus:border-indigo-400'}`}
               />
               {errors.confirm_password && <p className="mt-1 text-xs text-red-500">{errors.confirm_password.message}</p>}
             </div>
@@ -573,14 +573,14 @@ function EditFacultyModal({ faculty, onClose, onUpdated }) {
             <button
               type="button"
               onClick={onClose}
-              className="px-4 py-2 text-sm font-medium text-gray-600 dark:text-slate-300 bg-gray-100 dark:bg-slate-800 hover:bg-gray-200 dark:hover:bg-slate-700 rounded-xl transition-colors"
+              className="px-4 py-2 text-sm font-medium text-gray-600 dark:text-slate-300 bg-gray-100 dark:bg-slate-800 hover:bg-gray-200 dark:hover:bg-slate-700 rounded-lg transition-colors"
             >
               Cancel
             </button>
             <button
               type="submit"
               disabled={isSubmitting || (!isDirty && !photoFile && !removeExistingPhoto)}
-              className="px-6 py-2 text-sm font-bold text-white bg-indigo-600 hover:bg-indigo-700 disabled:opacity-60 rounded-xl shadow-sm transition-all flex items-center gap-2"
+              className="px-6 py-2 text-sm font-semibold text-white bg-indigo-600 hover:bg-indigo-700 disabled:opacity-60 rounded-lg shadow-sm hover:-translate-y-0.5 transition-all flex items-center gap-2"
             >
               {isSubmitting ? (
                 <div className="w-4 h-4 border-2 border-white/50 border-t-white rounded-full animate-spin" />
@@ -599,8 +599,8 @@ function EditFacultyModal({ faculty, onClose, onUpdated }) {
 // ─── Delete Confirmation Modal ────────────────────────────────────────────────
 function DeleteConfirmationModal({ onClose, onConfirm, isDeleting, facultyName }) {
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/60 backdrop-blur-sm animate-in fade-in duration-200">
-      <div className="w-full max-w-sm bg-white dark:bg-slate-900 rounded-2xl shadow-2xl border border-gray-100 dark:border-slate-800 overflow-hidden animate-in zoom-in-95 duration-200">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/60 backdrop-blur-sm animate-in fade-in duration-200 font-sans">
+      <div className="w-full max-w-sm bg-white dark:bg-slate-900 rounded-xl shadow-2xl border border-gray-100 dark:border-slate-800 overflow-hidden animate-in zoom-in-95 duration-200">
         <div className="p-6 text-center">
           <div className="w-12 h-12 rounded-full bg-red-100 dark:bg-red-900/20 flex items-center justify-center mx-auto mb-4">
             <ExclamationTriangleIcon className="w-6 h-6 text-red-600 dark:text-red-400" />
@@ -613,14 +613,14 @@ function DeleteConfirmationModal({ onClose, onConfirm, isDeleting, facultyName }
             <button
               onClick={onClose}
               disabled={isDeleting}
-              className="flex-1 px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 hover:bg-gray-200 dark:text-slate-300 dark:bg-slate-800 dark:hover:bg-slate-700 rounded-xl transition-colors disabled:opacity-50"
+              className="flex-1 px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 hover:bg-gray-200 dark:text-slate-300 dark:bg-slate-800 dark:hover:bg-slate-700 rounded-lg transition-colors disabled:opacity-50"
             >
               Cancel
             </button>
             <button
               onClick={onConfirm}
               disabled={isDeleting}
-              className="flex-1 px-4 py-2 text-sm font-bold text-white bg-red-600 hover:bg-red-700 rounded-xl transition-colors disabled:opacity-50 flex justify-center items-center"
+              className="flex-1 px-4 py-2 text-sm font-semibold text-white bg-red-600 hover:bg-red-700 rounded-lg transition-colors disabled:opacity-50 flex justify-center items-center hover:-translate-y-0.5"
             >
               {isDeleting ? (
                 <div className="w-4 h-4 border-2 border-white/50 border-t-white rounded-full animate-spin" />
@@ -725,24 +725,24 @@ const FacultyListPage = () => {
   );
 
   return (
-    <div className="p-4 sm:p-6 lg:p-8 space-y-6 animate-fade-in bg-transparent dark:bg-slate-950 min-h-screen">
+    <div className="p-4 sm:p-6 lg:p-8 space-y-6 animate-fade-in bg-transparent dark:bg-slate-950 min-h-screen font-sans">
       {/* Header */}
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
           <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-indigo-500 to-blue-600 flex items-center justify-center shadow-lg shadow-indigo-500/20">
+            <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-indigo-500 to-blue-600 flex items-center justify-center shadow-md shadow-indigo-500/20">
               <AcademicCapIcon className="w-6 h-6 text-white" />
             </div>
             Faculty Members
           </h1>
-          <p className="mt-1 text-gray-500 dark:text-gray-400">
+          <p className="mt-1 text-sm text-gray-500 dark:text-gray-400 font-normal">
             Manage faculty accounts. Click a member to view their dashboard.
           </p>
         </div>
         <button
           id="create-faculty-btn"
           onClick={() => setShowModal(true)}
-          className="flex items-center gap-2 px-5 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-bold rounded-xl shadow-md shadow-indigo-500/20 transition-all hover:scale-105 active:scale-95"
+          className="flex items-center gap-2 px-5 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-semibold rounded-lg shadow-sm transition-all duration-200 hover:-translate-y-0.5 active:translate-y-0"
         >
           <UserPlusIcon className="w-4 h-4" />
           Add Faculty
@@ -751,7 +751,7 @@ const FacultyListPage = () => {
 
       {/* Success Banner */}
       {successMsg && (
-        <div className="flex items-center gap-3 p-4 rounded-xl bg-emerald-50 dark:bg-emerald-900/10 border border-emerald-100 dark:border-emerald-900/20 text-emerald-700 dark:text-emerald-400 text-sm font-medium animate-in slide-in-from-top-2 duration-300">
+        <div className="flex items-center gap-3 p-4 rounded-lg bg-emerald-50 dark:bg-emerald-900/10 border border-emerald-100 dark:border-emerald-900/20 text-emerald-700 dark:text-emerald-400 text-sm font-medium animate-in slide-in-from-top-2 duration-300">
           <div className="w-4 h-4 rounded-full bg-emerald-500 flex items-center justify-center flex-shrink-0">
             <svg className="w-2.5 h-2.5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" /></svg>
           </div>
@@ -767,7 +767,7 @@ const FacultyListPage = () => {
           placeholder="Search faculty..."
           value={search}
           onChange={(e) => setSearch(e.target.value)}
-          className="w-full pl-9 pr-4 py-2.5 rounded-xl border border-gray-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-sm text-gray-900 dark:text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-200 dark:focus:ring-indigo-900/30 focus:border-indigo-400 transition-all"
+          className="w-full pl-9 pr-4 py-2.5 rounded-lg border border-gray-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-sm text-gray-900 dark:text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-200 dark:focus:ring-indigo-900/30 focus:border-indigo-400 transition-all"
         />
       </div>
 
@@ -782,7 +782,7 @@ const FacultyListPage = () => {
           <p className="text-gray-500 dark:text-gray-400">{error}</p>
           <button
             onClick={fetchFaculty}
-            className="px-4 py-2 text-sm font-medium text-indigo-600 border border-indigo-200 rounded-xl hover:bg-indigo-50 transition-colors"
+            className="px-4 py-2 text-sm font-medium text-indigo-600 border border-indigo-200 rounded-lg hover:bg-indigo-50 transition-colors"
           >
             Retry
           </button>
@@ -816,7 +816,7 @@ const FacultyListPage = () => {
                 key={faculty.id}
                 id={`faculty-card-${faculty.id}`}
                 onClick={() => navigate(`/faculty/${faculty.id}/dashboard`)}
-                className="group relative bg-white dark:bg-slate-900 border border-gray-100 dark:border-slate-800 rounded-2xl p-5 shadow-sm hover:shadow-md hover:border-indigo-200 dark:hover:border-indigo-700/50 transition-all duration-200 cursor-pointer hover:-translate-y-0.5"
+                className="group relative bg-white dark:bg-slate-900 border border-gray-100 dark:border-slate-800 rounded-xl p-5 shadow-sm hover:shadow-md hover:border-indigo-200 dark:hover:border-indigo-700/50 transition-all duration-200 cursor-pointer hover:-translate-y-0.5"
               >
                 <div className="flex items-start gap-4">
                   {/* Avatar */}
@@ -824,10 +824,10 @@ const FacultyListPage = () => {
                     <img
                       src={`${API_BASE_URL}${faculty.profile_photo}?v=${new Date(faculty.updated_at || Date.now()).getTime()}`}
                       alt={faculty.full_name}
-                      className="w-12 h-12 rounded-xl object-cover shadow-md flex-shrink-0 group-hover:scale-105 transition-transform"
+                      className="w-12 h-12 rounded-lg object-cover shadow-sm flex-shrink-0 group-hover:-translate-y-0.5 transition-transform"
                     />
                   ) : (
-                    <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-indigo-400 to-blue-500 flex items-center justify-center text-white text-xl font-bold shadow-md shadow-indigo-500/20 flex-shrink-0 group-hover:scale-105 transition-transform">
+                    <div className="w-12 h-12 rounded-lg bg-gradient-to-br from-indigo-400 to-blue-500 flex items-center justify-center text-white text-xl font-bold shadow-sm shadow-indigo-500/20 flex-shrink-0 group-hover:-translate-y-0.5 transition-transform">
                       {faculty.full_name?.[0]?.toUpperCase() || 'F'}
                     </div>
                   )}

@@ -82,7 +82,7 @@ const NotificationBell = ({ onOpenFullPanel }) => {
         {unreadCount > 0 ? (
           <BellAlertIcon className="w-5 h-5 text-indigo-600 dark:text-indigo-400 animate-wiggle" />
         ) : (
-          <BellIcon className="w-5 h-5 group-hover:scale-110 transition-transform" />
+          <BellIcon className="w-5 h-5 text-slate-600 dark:text-slate-300 group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors" />
         )}
 
         {/* Live WS connection status tiny dot */}
@@ -103,7 +103,7 @@ const NotificationBell = ({ onOpenFullPanel }) => {
 
       {/* Dropdown Menu */}
       {isOpen && (
-        <div className="absolute right-0 mt-3 w-80 sm:w-96 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl shadow-2xl z-50 overflow-hidden transform animate-in fade-in slide-in-from-top-2 duration-200">
+        <div className="absolute right-0 mt-3 w-80 sm:w-96 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl shadow-2xl z-50 overflow-hidden transform animate-in fade-in slide-in-from-top-2 duration-200 font-sans">
           {/* Header */}
           <div className="px-4 py-3.5 border-b border-slate-100 dark:border-slate-800 flex items-center justify-between bg-slate-50/70 dark:bg-slate-900/70 backdrop-blur-sm">
             <div className="flex items-center gap-2">

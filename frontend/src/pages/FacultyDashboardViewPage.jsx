@@ -82,7 +82,7 @@ const FacultyDashboardViewPage = () => {
         <p className="text-sm text-gray-400">{error}</p>
         <button
           onClick={() => navigate('/faculty')}
-          className="px-4 py-2 text-sm font-medium text-indigo-600 border border-indigo-200 rounded-xl hover:bg-indigo-50 transition-colors"
+          className="px-4 py-2 text-sm font-semibold text-indigo-600 border border-indigo-200 rounded-lg hover:bg-indigo-50 transition-colors"
         >
           ← Back to Faculty List
         </button>
@@ -91,7 +91,7 @@ const FacultyDashboardViewPage = () => {
   }
 
   return (
-    <div className="p-4 sm:p-6 lg:p-8 space-y-6 animate-fade-in bg-transparent dark:bg-slate-950 min-h-screen">
+    <div className="p-4 sm:p-6 lg:p-8 space-y-6 animate-fade-in bg-transparent dark:bg-slate-950 min-h-screen font-sans">
 
       {/* Back Navigation */}
       <button
@@ -103,7 +103,7 @@ const FacultyDashboardViewPage = () => {
       </button>
 
       {/* Read-Only Banner */}
-      <div className="flex items-center gap-3 px-4 py-3 rounded-xl bg-amber-50 dark:bg-amber-900/10 border border-amber-100 dark:border-amber-700/30">
+      <div className="flex items-center gap-3 px-4 py-3 rounded-lg bg-amber-50 dark:bg-amber-900/10 border border-amber-100 dark:border-amber-700/30">
         <EyeIcon className="w-4 h-4 text-amber-600 dark:text-amber-400 flex-shrink-0" />
         <p className="text-sm text-amber-700 dark:text-amber-400">
           <span className="font-semibold">Read-only view.</span> You are viewing this faculty dashboard as an administrator. No actions can be taken.
@@ -111,16 +111,16 @@ const FacultyDashboardViewPage = () => {
       </div>
 
       {/* Faculty Profile Card */}
-      <div className="bg-white dark:bg-slate-900 border border-gray-100 dark:border-slate-800 rounded-2xl p-6 shadow-sm">
+      <div className="bg-white dark:bg-slate-900 border border-gray-100 dark:border-slate-800 rounded-xl p-6 shadow-sm">
         <div className="flex items-start gap-5">
           {faculty.profile_photo ? (
             <img 
               src={`${API_BASE_URL}${faculty.profile_photo}?v=${new Date(faculty.updated_at || Date.now()).getTime()}`} 
               alt={faculty.full_name} 
-              className="w-16 h-16 rounded-2xl object-cover shadow-lg shadow-indigo-500/10 flex-shrink-0"
+              className="w-16 h-16 rounded-lg object-cover shadow-sm flex-shrink-0"
             />
           ) : (
-            <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-indigo-400 to-blue-500 flex items-center justify-center text-white text-2xl font-bold shadow-lg shadow-indigo-500/20 flex-shrink-0">
+            <div className="w-16 h-16 rounded-lg bg-gradient-to-br from-indigo-400 to-blue-500 flex items-center justify-center text-white text-2xl font-bold shadow-sm shadow-indigo-500/20 flex-shrink-0">
               {faculty.full_name?.[0]?.toUpperCase() || 'F'}
             </div>
           )}
@@ -160,53 +160,52 @@ const FacultyDashboardViewPage = () => {
       {/* Stats Cards - Modern Horizontal Layout */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         {/* Total Assigned */}
-        <div className="bg-white dark:bg-slate-900 rounded-3xl p-6 border border-slate-100 dark:border-slate-800 shadow-sm hover:shadow-xl hover:shadow-indigo-500/5 transition-all group relative overflow-hidden">
+        <div className="bg-white dark:bg-slate-900 rounded-xl p-6 border border-slate-100 dark:border-slate-800 shadow-sm hover:shadow-md hover:-translate-y-0.5 transition-all duration-200 group relative overflow-hidden">
           <div className="flex justify-between items-start">
             <div>
               <p className="text-xs font-medium text-slate-600 dark:text-slate-400 mb-1.5">Total Assigned</p>
               <h3 className="text-3xl font-bold text-slate-900 dark:text-white leading-none">{stats.total}</h3>
             </div>
-            <div className="h-12 w-12 rounded-2xl bg-indigo-50 dark:bg-indigo-900/40 flex items-center justify-center text-indigo-600 dark:text-indigo-400 group-hover:scale-110 transition-transform">
+            <div className="h-12 w-12 rounded-lg bg-indigo-50 dark:bg-indigo-900/40 flex items-center justify-center text-indigo-600 dark:text-indigo-400 group-hover:-translate-y-0.5 transition-transform">
               <FolderIcon className="w-6 h-6" />
             </div>
           </div>
         </div>
 
         {/* Pending Review */}
-        <div className="bg-white dark:bg-slate-900 rounded-3xl p-6 border border-slate-100 dark:border-slate-800 shadow-sm hover:shadow-xl hover:shadow-amber-500/5 transition-all group relative overflow-hidden">
+        <div className="bg-white dark:bg-slate-900 rounded-xl p-6 border border-slate-100 dark:border-slate-800 shadow-sm hover:shadow-md hover:-translate-y-0.5 transition-all duration-200 group relative overflow-hidden">
           <div className="flex justify-between items-start">
             <div>
               <p className="text-xs font-medium text-slate-600 dark:text-slate-400 mb-1.5">Pending Review</p>
               <h3 className="text-3xl font-bold text-slate-900 dark:text-white leading-none">{stats.pending}</h3>
             </div>
-            <div className="h-12 w-12 rounded-2xl bg-amber-50 dark:bg-amber-900/40 flex items-center justify-center text-amber-600 dark:text-amber-400 group-hover:scale-110 transition-transform">
+            <div className="h-12 w-12 rounded-lg bg-amber-50 dark:bg-amber-900/40 flex items-center justify-center text-amber-600 dark:text-amber-400 group-hover:-translate-y-0.5 transition-transform">
               <ClockIcon className="w-6 h-6" />
             </div>
           </div>
         </div>
 
         {/* Evaluated */}
-        <div className="bg-white dark:bg-slate-900 rounded-3xl p-6 border border-slate-100 dark:border-slate-800 shadow-sm hover:shadow-xl hover:shadow-emerald-500/5 transition-all group relative overflow-hidden">
+        <div className="bg-white dark:bg-slate-900 rounded-xl p-6 border border-slate-100 dark:border-slate-800 shadow-sm hover:shadow-md hover:-translate-y-0.5 transition-all duration-200 group relative overflow-hidden">
           <div className="flex justify-between items-start">
             <div>
               <p className="text-xs font-medium text-slate-600 dark:text-slate-400 mb-1.5">Evaluated</p>
               <h3 className="text-3xl font-bold text-slate-900 dark:text-white leading-none">{stats.evaluated}</h3>
             </div>
-            <div className="h-12 w-12 rounded-2xl bg-emerald-50 dark:bg-emerald-900/40 flex items-center justify-center text-emerald-600 dark:text-emerald-400 group-hover:scale-110 transition-transform">
+            <div className="h-12 w-12 rounded-lg bg-emerald-50 dark:bg-emerald-900/40 flex items-center justify-center text-emerald-600 dark:text-emerald-400 group-hover:-translate-y-0.5 transition-transform">
               <CheckBadgeIcon className="w-6 h-6" />
             </div>
           </div>
         </div>
 
         {/* Avg AI Score */}
-        <div className="bg-indigo-600 rounded-3xl p-6 shadow-xl shadow-indigo-500/20 group relative overflow-hidden">
-          <div className="absolute -top-6 -right-6 w-24 h-24 bg-white opacity-5 rounded-full group-hover:scale-150 transition-transform duration-700"></div>
+        <div className="bg-indigo-600 rounded-xl p-6 shadow-md hover:shadow-lg hover:-translate-y-0.5 transition-all duration-200 group relative overflow-hidden">
           <div className="flex justify-between items-start relative z-10">
             <div>
               <p className="text-xs font-medium text-indigo-100/80 mb-1.5">Avg AI Score</p>
               <h3 className="text-3xl font-bold text-white leading-none">{stats.avgScore}<span className="text-sm font-bold opacity-50 ml-1">/100</span></h3>
             </div>
-            <div className="h-12 w-12 rounded-2xl bg-white/10 backdrop-blur-md flex items-center justify-center text-white group-hover:rotate-12 transition-transform">
+            <div className="h-12 w-12 rounded-lg bg-white/10 backdrop-blur-md flex items-center justify-center text-white group-hover:-translate-y-0.5 transition-transform">
               <ChartBarIcon className="w-6 h-6" />
             </div>
           </div>
@@ -214,7 +213,7 @@ const FacultyDashboardViewPage = () => {
       </div>
 
       {/* Assigned Projects — Read-only Table */}
-      <div className="bg-white dark:bg-slate-900 shadow-sm rounded-2xl overflow-hidden border border-gray-100 dark:border-slate-800">
+      <div className="bg-white dark:bg-slate-900 shadow-sm rounded-xl overflow-hidden border border-gray-100 dark:border-slate-800">
         <div className="px-6 py-4 border-b border-gray-100 dark:border-slate-800 flex items-center gap-2">
           <ClipboardDocumentCheckIcon className="h-5 w-5 text-indigo-500" />
           <h3 className="text-base font-semibold text-gray-900 dark:text-gray-100">

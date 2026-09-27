@@ -59,4 +59,19 @@ export const formatLanguageName = (name) => {
     .join(' ');
 };
 
+/**
+ * Formats a project status string into Capitalized/Title Case.
+ * e.g., 'submitted' -> 'Submitted', 'under_evaluation' -> 'Under Evaluation', 'evaluated' -> 'Evaluated'
+ */
+export const formatStatus = (status) => {
+  if (!status || typeof status !== 'string') return '';
+  return status
+    .replace(/_/g, ' ')
+    .trim()
+    .split(/\s+/)
+    .map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
+    .join(' ');
+};
+
 export default formatLanguageName;
+

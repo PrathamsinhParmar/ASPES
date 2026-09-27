@@ -22,7 +22,7 @@ import {
 import { format } from 'date-fns';
 import { toast } from 'react-toastify';
 import ReportModal from '../components/Report/ReportModal';
-import { formatLanguageName } from '../utils/languageFormatter';
+import { formatLanguageName, formatStatus } from '../utils/languageFormatter';
 
 const POLL_INTERVAL_MS = 3000; // Poll every 3 seconds
 
@@ -203,14 +203,14 @@ const ProjectDetailPage = () => {
               <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-slate-900 dark:text-white truncate">
                 {project.title}
               </h1>
-              <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold tracking-wide uppercase ${
+              <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold capitalize ${
                 project.status === 'published' || project.status === 'evaluated'
                   ? 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20'
                   : project.status === 'under_evaluation'
                   ? 'bg-blue-500/10 text-blue-600 dark:text-blue-400 border border-blue-500/20'
                   : 'bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-500/20'
               }`}>
-                {project.status.replace(/_/g, ' ')}
+                {formatStatus(project.status)}
               </span>
             </div>
 

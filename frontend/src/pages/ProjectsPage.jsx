@@ -5,7 +5,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { FolderIcon, InboxArrowDownIcon, PlusIcon, MagnifyingGlassIcon, TrashIcon, ExclamationTriangleIcon, PencilSquareIcon, XMarkIcon } from '@heroicons/react/24/outline';
 import { toast } from 'react-toastify';
-import { formatLanguageName } from '../utils/languageFormatter';
+import { formatLanguageName, formatStatus } from '../utils/languageFormatter';
 
 const ProjectsPage = () => {
   const [projects, setProjects] = useState([]);
@@ -238,8 +238,8 @@ const ProjectsPage = () => {
                   
                   {/* Status Badge - Pinned at Top Right */}
                   <div className="absolute top-4 right-4 z-20">
-                    <span className={`px-2 py-1 rounded-md text-xs font-semibold border shadow-sm backdrop-blur-md ${statusColorMap[p.status.toLowerCase()] || statusColorMap.draft}`}>
-                      {p.status.replace('_', ' ')}
+                    <span className={`px-2.5 py-1 rounded-md text-xs font-semibold border shadow-sm backdrop-blur-md capitalize ${statusColorMap[p.status.toLowerCase()] || statusColorMap.draft}`}>
+                      {formatStatus(p.status)}
                     </span>
                   </div>
 
@@ -310,7 +310,7 @@ const ProjectsPage = () => {
                       {['submitted', 'under_evaluation'].includes(projectToDelete?.status.toLowerCase()) && (
                         <div className="p-3 bg-amber-50 dark:bg-amber-900/20 rounded-lg border border-amber-100 dark:border-amber-800/30">
                           <p className="text-xs font-semibold text-amber-700 dark:text-amber-400">
-                            Warning: Project is currently undergoing {projectToDelete?.status.replace('_', ' ')} logic.
+                            Warning: Project is currently undergoing {formatStatus(projectToDelete?.status)} logic.
                           </p>
                         </div>
                       )}

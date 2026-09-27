@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { groupService } from '../services/groupService';
 import { toast } from 'react-toastify';
+import { formatStatus } from '../utils/languageFormatter';
 import { 
   UserGroupIcon, 
   FolderIcon, 
@@ -215,7 +216,7 @@ const GroupsPage = () => {
                    <h4 className="font-bold text-slate-800 dark:text-white truncate" title={p.title}>{p.title}</h4>
                    {p.team_name && <p className="text-xs text-slate-500 font-semibold mt-1">Team: {p.team_name}</p>}
                    <div className="mt-4 pt-4 border-t border-slate-100 dark:border-slate-800 flex justify-between items-center">
-                     <span className="text-xs font-medium text-slate-500">{p.status.replace('_', ' ')}</span>
+                     <span className="text-xs font-medium text-slate-500 capitalize">{formatStatus(p.status)}</span>
                      <div className="flex gap-4">
                         <Link to={`/projects/${p.id}`} className="text-xs font-semibold text-indigo-500 hover:text-indigo-600 transition-colors border-b border-indigo-500 pb-0.5">View Details</Link>
                      </div>

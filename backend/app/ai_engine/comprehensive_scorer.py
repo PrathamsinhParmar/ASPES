@@ -260,6 +260,95 @@ class EnhancedProjectEvaluator:
             logger.warning(f"Zip extraction failed for {zip_path}: {e}")
         return py_files
 
+    @classmethod
+    def extract_code_from_path(cls, file_path: str, max_chars: int = 200000) -> str:
+        """
+        Safely extract readable source code from a file path (.py, .js, .jsx, etc.
+        or from inside a .zip archive).
+        """
+        if not file_path:
+            return ""
+        if not os.path.isabs(file_path):
+            candidate = os.path.join(os.getcwd(), file_path)
+            if os.path.exists(candidate):
+                file_path = candidate
+            else:
+                base_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
+                candidate = os.path.join(base_dir, file_path)
+                if os.path.exists(candidate):
+                    file_path = candidate
+        if not os.path.exists(file_path):
+            return ""
+
+        if file_path.lower().endswith(".zip") and zipfile.is_zipfile(file_path):
+            chunks: List[str] = []
+            try:
+                with zipfile.ZipFile(file_path, "r") as z:
+                    valid_exts = {".py", ".js", ".jsx", ".ts", ".tsx", ".html", ".css", ".java", ".cpp", ".c"}
+                    for n in z.namelist():
+                        parts = n.replace("\\", "/").split("/")
+                        if any(p.startswith(".") or p in ("__pycache__", "node_modules", "venv", ".venv", "env", "dist", "build") for p in parts):
+                            continue
+                        ext = os.path.splitext(n)[1].lower()
+                        if ext in valid_exts:
+                            try:
+                                content = z.read(n).decode("utf-8", errors="ignore").strip()
+                                if content:
+                                    chunks.append(f"# File: {n}\n{content}")
+                            except Exception:
+                                pass
+                            if sum(len(c) for c in chunks) >= max_chars:
+                                break
+            except Exception as e:
+                logger.warning(f"Failed to read zip archive {file_path}: {e}")
+            return "\n\n".join(chunks)[:max_chars]
+
+        try:
+            with open(file_path, "r", encoding="utf-8", errors="ignore") as f:
+                return f.read()[:max_chars]
+        except Exception as e:
+            logger.warning(f"Failed to read file {file_path}: {e}")
+            return ""
+
+    @classmethod
+    def _fetch_existing_projects_from_db(cls, current_project_id: Any) -> List[Dict[str, Any]]:
+        """
+        Fetch existing projects from database as a fallback when none are passed in project_data.
+        """
+        existing = []
+        try:
+            import sqlite3
+            db_path = os.path.join(os.getcwd(), "aspes_dev.db")
+            if not os.path.exists(db_path):
+                base_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
+                candidate = os.path.join(base_dir, "aspes_dev.db")
+                if os.path.exists(candidate):
+                    db_path = candidate
+
+            if os.path.exists(db_path):
+                conn = sqlite3.connect(db_path)
+                cursor = conn.cursor()
+                curr_id_str = str(current_project_id) if current_project_id else ""
+                cursor.execute(
+                    "SELECT id, title, code_file_path FROM projects WHERE code_file_path IS NOT NULL AND id != ?",
+                    (curr_id_str,)
+                )
+                rows = cursor.fetchall()
+                conn.close()
+
+                for pid, title, cpath in rows:
+                    if cpath:
+                        code_text = cls.extract_code_from_path(cpath)
+                        if code_text and code_text.strip():
+                            existing.append({
+                                "id": str(pid),
+                                "code": code_text,
+                                "student_name": title or f"Project {pid}",
+                            })
+        except Exception as e:
+            logger.warning(f"Failed to auto-fetch existing projects from DB: {e}")
+        return existing
+
     def evaluate_project(self, project_data: Dict[str, Any]) -> Dict[str, Any]:
         """
         Complete AI evaluation pipeline.
@@ -276,15 +365,8 @@ class EnhancedProjectEvaluator:
         logger.info(f"Starting full evaluation for project ID {project_data.get('id')}")
         results = {}
         
-        # 1. Read source code
         code_path = project_data.get('code_file_path', '')
-        code_content = ""
-        try:
-            with open(code_path, 'r', encoding='utf-8', errors='ignore') as f:
-                code_content = f.read()
-        except Exception as e:
-            logger.error(f"Failed to read code file {code_path}: {e}")
-            
+        
         # Pre-load ML models on the main thread safely to prevent race conditions during parallel execution
         try:
             from app.ai_engine.ai_code_detector import _get_ml_model
@@ -296,28 +378,24 @@ class EnhancedProjectEvaluator:
         except Exception as e:
             logger.warning(f"Failed to pre-load ML models: {e}")
 
-        # 2. Resolve code path — handle zip extraction so the analyzer
-        #    always receives .py files (it only supports Python files).
+        # Resolve code path — handle zip extraction so the analyzer
+        # always receives .py files (it only supports Python files).
         _temp_extract_dir = None  # track for cleanup
         try:
             code_path_obj = Path(code_path)
-            if code_path_obj.suffix.lower() == ".zip":
+            if code_path_obj.suffix.lower() == ".zip" and zipfile.is_zipfile(code_path):
                 _temp_extract_dir = tempfile.mkdtemp(prefix="aspes_code_extract_")
                 py_files = self._extract_py_files(code_path, _temp_extract_dir)
                 if py_files:
                     _resolved_code_path = py_files[0]   # primary file for text-based analyses
                     _py_file_list = py_files
                 else:
-                    # No Python files inside the zip — fall back gracefully
                     _resolved_code_path = code_path
                     _py_file_list = []
             elif code_path_obj.suffix.lower() == ".py":
                 _resolved_code_path = code_path
                 _py_file_list = [code_path]
             else:
-                # Non-Python, non-zip upload (e.g. .js, .java) — analyzer will
-                # return a graceful error dict; score will be 0 for code quality
-                # but the rest of the pipeline continues normally.
                 _resolved_code_path = code_path
                 _py_file_list = []
         except Exception as _e:
@@ -325,13 +403,20 @@ class EnhancedProjectEvaluator:
             _resolved_code_path = code_path
             _py_file_list = []
 
-        # Re-read code_content if zip was extracted and we now have a real .py
-        if not code_content and _resolved_code_path != code_path:
-            try:
-                with open(_resolved_code_path, 'r', encoding='utf-8', errors='ignore') as f:
-                    code_content = f.read()
-            except Exception:
-                pass
+        # Read source code content cleanly (never raw zip bytes)
+        code_content = ""
+        if _py_file_list:
+            py_contents = []
+            for p in _py_file_list:
+                try:
+                    with open(p, 'r', encoding='utf-8', errors='ignore') as f:
+                        py_contents.append(f.read())
+                except Exception:
+                    pass
+            if py_contents:
+                code_content = "\n\n".join(py_contents)
+        if not code_content:
+            code_content = self.extract_code_from_path(code_path)
 
         # 3. Run Ensembles concurrently
         with concurrent.futures.ThreadPoolExecutor(max_workers=5) as executor:
@@ -342,9 +427,6 @@ class EnhancedProjectEvaluator:
             elif len(_py_file_list) == 1:
                 future_code = executor.submit(self.code_analyzer.analyze, _py_file_list[0])
             else:
-                # No Python files found — submit a dummy that returns a neutral result.
-                # All three Metric Breakdown keys must be present so the frontend
-                # never renders —/100.
                 future_code = executor.submit(lambda: {
                     'final_score': 50.0,
                     'grade': 'C',
@@ -356,7 +438,6 @@ class EnhancedProjectEvaluator:
                     'quality': 50.0,
                     'maintainability': 50.0,
                     'complexity': 50.0,
-                    # Frontend Metric Breakdown aliases
                     'clean_code_score':      50.0,
                     'maintainability_index': 50.0,
                     'complexity_score':      50.0,
@@ -372,6 +453,9 @@ class EnhancedProjectEvaluator:
             future_ai = executor.submit(self.ai_detector.analyze, code_content, _resolved_code_path)
             
             existing_projects = project_data.get('existing_projects', [])
+            if not existing_projects:
+                existing_projects = self._fetch_existing_projects_from_db(project_data.get('id'))
+
             future_plag = executor.submit(self.plagiarism_detector.detect, code_content, existing_projects)
 
             # Wait for document evaluation to finish so we can extract raw_text for alignment

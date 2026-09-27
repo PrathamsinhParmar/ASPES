@@ -37,32 +37,30 @@ celery_app.conf.update(
 
 async def _get_existing_projects(db, current_project_id: uuid.UUID) -> List[Dict[str, Any]]:
     """
-    Fetch existing evaluated projects for plagiarism detection comparison.
+    Fetch existing projects for plagiarism detection comparison.
     """
     stmt = select(Project).where(
         Project.id != current_project_id,
-        Project.status == ProjectStatus.EVALUATED
+        Project.code_file_path.isnot(None)
     )
     result = await db.execute(stmt)
     projects = result.scalars().all()
     
     existing_list = []
     for proj in projects:
-        if not proj.code_file_path or not os.path.exists(proj.code_file_path):
+        code_content = EnhancedProjectEvaluator.extract_code_from_path(proj.code_file_path)
+        if not code_content or not code_content.strip():
             continue
             
-        try:
-            with open(proj.code_file_path, 'r', encoding='utf-8', errors='ignore') as f:
-                code_content = f.read()
-                
-            # In a real app we might load student name from proj.owner
-            existing_list.append({
-                'id': str(proj.id),
-                'code': code_content,
-                'student_name': 'Student'
-            })
-        except Exception as e:
-            logger.warning(f"Failed to read project {proj.id} for comparison: {e}")
+        student_name = proj.title or "Student"
+        if proj.owner and getattr(proj.owner, "full_name", None):
+            student_name = proj.owner.full_name
+
+        existing_list.append({
+            'id': str(proj.id),
+            'code': code_content,
+            'student_name': student_name
+        })
             
     return existing_list
 

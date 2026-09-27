@@ -139,6 +139,23 @@ async def _run_evaluation_inline(project_id: str, evaluation_id: str):
             report_file_path = project.report_file_path
             project_title = project.title
 
+            # Fetch existing projects for plagiarism cross-comparison
+            existing_projects = []
+            other_stmt = select(Project).where(
+                Project.id != _uuid.UUID(project_id),
+                Project.code_file_path.isnot(None)
+            )
+            other_res = await db.execute(other_stmt)
+            for op in other_res.scalars().all():
+                pcode = EnhancedProjectEvaluator.extract_code_from_path(op.code_file_path)
+                if pcode and pcode.strip():
+                    student_name = op.title or "Student"
+                    existing_projects.append({
+                        "id": str(op.id),
+                        "code": pcode,
+                        "student_name": student_name,
+                    })
+
             evaluation.status = EvaluationStatus.PROCESSING
             project.status = ProjectStatus.UNDER_EVALUATION
             await db.commit()
@@ -150,7 +167,7 @@ async def _run_evaluation_inline(project_id: str, evaluation_id: str):
             "title": project_title,
             "code_file_path": code_file_path,
             "doc_file_path": report_file_path,
-            "existing_projects": [],
+            "existing_projects": existing_projects,
         }
 
         loop = asyncio.get_event_loop()

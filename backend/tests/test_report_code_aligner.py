@@ -78,7 +78,7 @@ class TestReportCodeAlignerExtraction:
         
         assert "fastapi" in features["mentioned_technologies"]
         assert "sqlalchemy" in features["mentioned_technologies"]
-        assert any("authentication" in f.lower() for f in features["mentioned_functions"])
+        # mentioned_functions was removed in v2; key_components and algorithms are used instead
         assert "binary search" in features["mentioned_algorithms"]
 
     def test_extract_code_features_python(self, aligner):
@@ -101,19 +101,27 @@ class TestReportCodeAlignerLogic:
     """Tests for alignment logic and sub-scores."""
 
     def test_check_feature_alignment(self, aligner):
-        report_features = {"mentioned_functions": ["user_authentication", "missing_func"]}
-        code_features = {"functions": [{"name": "user_authentication"}]}
-        
-        result = aligner._check_feature_alignment(report_features, code_features)
+        # New API: _check_feature_alignment takes a coverage_map list, not two dicts.
+        # Build a coverage_map the same way _build_coverage_map() does.
+        coverage_map = [
+            {"name": "user_authentication", "coverage": 1.0, "documented": True},
+            {"name": "missing_func",         "coverage": 0.0, "documented": False},
+        ]
+        result = aligner._check_feature_alignment(coverage_map)
         assert result["score"] == 0.5
         assert "user_authentication" in result["matched_features"]
         assert "missing_func" in result["unmatched_features"]
 
     def test_check_technology_stack(self, aligner):
+        # New API: _check_technology_stack(report_text, code_features_dict)
         report = "Uses redis and celery."
-        code = "import redis"
-        
-        result = aligner._check_technology_stack(report, code)
+        code_features = {
+            "technologies": ["redis"],   # celery is imported, redis is NOT
+            "functions": [],
+            "classes": [],
+            "imports": ["redis"],
+        }
+        result = aligner._check_technology_stack(report, code_features)
         assert "redis" in result["verified_technologies"]
         assert "celery" in result["unverified_technologies"]
         assert result["score"] == 0.5

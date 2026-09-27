@@ -6,14 +6,19 @@ import {
   ClipboardDocumentCheckIcon,
   ClockIcon,
   ExclamationCircleIcon,
-  CheckBadgeIcon
+  CheckBadgeIcon,
+  BellIcon
 } from '@heroicons/react/24/outline';
 import { useAuth } from '../../context/AuthContext';
+import { useNotifications } from '../../context/NotificationContext';
+import NotificationPanel from '../Notification/NotificationPanel';
 import { format } from 'date-fns';
 
 const FacultyDashboard = () => {
   const { user } = useAuth();
+  const { unreadCount } = useNotifications();
   const navigate = useNavigate();
+  const [facultyTab, setFacultyTab] = useState('queue'); // 'queue' | 'notifications'
   const [pendingEvaluations, setPendingEvaluations] = useState([]);
   const [recentEvaluations, setRecentEvaluations] = useState([]); // Placeholder for history
   const [loading, setLoading] = useState(true);
@@ -85,13 +90,48 @@ const FacultyDashboard = () => {
         />
       </div>
 
-      {/* Pending Evaluations Table */}
-      <div className="bg-white dark:bg-slate-900 shadow rounded-xl overflow-hidden border border-gray-100 dark:border-slate-800">
-        <div className="px-4 py-5 border-b border-gray-200 dark:border-slate-800 sm:px-6 flex justify-between items-center bg-white dark:bg-slate-900">
-          <h3 className="text-lg leading-6 font-semibold text-gray-900 dark:text-gray-100 flex items-center gap-2">
-            <ClockIcon className="h-5 w-5 text-indigo-500" /> Action Required Queue
-          </h3>
-        </div>
+      {/* Faculty Portal Tab Switcher */}
+      <div className="flex items-center gap-3 border-b border-slate-200 dark:border-slate-800 pb-2">
+        <button
+          onClick={() => setFacultyTab('queue')}
+          className={`flex items-center gap-2 px-5 py-2.5 rounded-xl text-xs sm:text-sm font-bold transition-all ${
+            facultyTab === 'queue'
+              ? 'bg-indigo-600 text-white shadow-md shadow-indigo-500/20'
+              : 'bg-white/60 dark:bg-slate-900/60 text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800'
+          }`}
+        >
+          <ClipboardDocumentCheckIcon className="w-4 h-4" />
+          <span>Action Required Queue ({pendingEvaluations.length})</span>
+        </button>
+
+        <button
+          onClick={() => setFacultyTab('notifications')}
+          className={`flex items-center gap-2 px-5 py-2.5 rounded-xl text-xs sm:text-sm font-bold transition-all ${
+            facultyTab === 'notifications'
+              ? 'bg-indigo-600 text-white shadow-md shadow-indigo-500/20'
+              : 'bg-white/60 dark:bg-slate-900/60 text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800'
+          }`}
+        >
+          <BellIcon className="w-4 h-4" />
+          <span>Submission Notifications & Updates</span>
+          {unreadCount > 0 && (
+            <span className="px-2 py-0.5 rounded-full text-[10px] font-extrabold bg-rose-500 text-white animate-pulse">
+              {unreadCount}
+            </span>
+          )}
+        </button>
+      </div>
+
+      {facultyTab === 'notifications' ? (
+        <NotificationPanel />
+      ) : (
+        /* Pending Evaluations Table */
+        <div className="bg-white dark:bg-slate-900 shadow rounded-xl overflow-hidden border border-gray-100 dark:border-slate-800">
+          <div className="px-4 py-5 border-b border-gray-200 dark:border-slate-800 sm:px-6 flex justify-between items-center bg-white dark:bg-slate-900">
+            <h3 className="text-lg leading-6 font-semibold text-gray-900 dark:text-gray-100 flex items-center gap-2">
+              <ClockIcon className="h-5 w-5 text-indigo-500" /> Action Required Queue
+            </h3>
+          </div>
 
         {pendingEvaluations.length === 0 ? (
           <div className="p-12 text-center text-gray-500">
@@ -156,6 +196,7 @@ const FacultyDashboard = () => {
           </div>
         )}
       </div>
+      )}
     </div>
   );
 };

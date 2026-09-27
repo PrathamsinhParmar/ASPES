@@ -12,7 +12,10 @@ import {
   SparklesIcon,
   MagnifyingGlassIcon,
   ArrowTopRightOnSquareIcon,
+  BellIcon,
 } from '@heroicons/react/24/outline';
+import { useNotifications } from '../context/NotificationContext';
+import NotificationPanel from '../components/Notification/NotificationPanel';
 
 const statusColorMap = {
   draft: 'bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-400',
@@ -25,7 +28,9 @@ const statusColorMap = {
 
 const AssignedProjectsPage = () => {
   const { user } = useAuth();
+  const { unreadCount } = useNotifications();
   const navigate = useNavigate();
+  const [activeTab, setActiveTab] = useState('projects'); // 'projects' | 'notifications'
   const [projects, setProjects] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
@@ -137,8 +142,42 @@ const AssignedProjectsPage = () => {
         ))}
       </div>
 
-      {/* Projects Table */}
-      {error ? (
+      {/* Faculty View Tab Switcher */}
+      <div className="flex items-center gap-3 border-b border-slate-200 dark:border-slate-800 pb-2">
+        <button
+          onClick={() => setActiveTab('projects')}
+          className={`flex items-center gap-2 px-5 py-2.5 rounded-xl text-xs sm:text-sm font-bold transition-all ${
+            activeTab === 'projects'
+              ? 'bg-indigo-600 text-white shadow-md shadow-indigo-500/20'
+              : 'bg-white/60 dark:bg-slate-900/60 text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800'
+          }`}
+        >
+          <InboxArrowDownIcon className="w-4 h-4" />
+          <span>Assigned Projects List ({projects.length})</span>
+        </button>
+
+        <button
+          onClick={() => setActiveTab('notifications')}
+          className={`flex items-center gap-2 px-5 py-2.5 rounded-xl text-xs sm:text-sm font-bold transition-all ${
+            activeTab === 'notifications'
+              ? 'bg-indigo-600 text-white shadow-md shadow-indigo-500/20'
+              : 'bg-white/60 dark:bg-slate-900/60 text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800'
+          }`}
+        >
+          <BellIcon className="w-4 h-4" />
+          <span>Submission Notifications & Admin Directives</span>
+          {unreadCount > 0 && (
+            <span className="px-2 py-0.5 rounded-full text-[10px] font-extrabold bg-rose-500 text-white animate-pulse">
+              {unreadCount}
+            </span>
+          )}
+        </button>
+      </div>
+
+      {/* Render either NotificationPanel or Projects Table */}
+      {activeTab === 'notifications' ? (
+        <NotificationPanel />
+      ) : error ? (
         <div className="text-center py-16 text-rose-500 font-semibold">{error}</div>
       ) : filtered.length === 0 ? (
         <div className="bg-white/80 dark:bg-slate-900/80 rounded-2xl border border-slate-200 dark:border-slate-800 p-16 text-center shadow-sm">

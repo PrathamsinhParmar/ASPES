@@ -10,8 +10,11 @@ import {
   ShieldCheckIcon,
   DocumentDuplicateIcon,
   UserPlusIcon,
-  UsersIcon
+  UsersIcon,
+  MegaphoneIcon,
+  ChartBarIcon
 } from '@heroicons/react/24/outline';
+import NotificationPanel from '../Notification/NotificationPanel';
 import { useAuth } from '../../context/AuthContext';
 import {
   BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer,
@@ -25,6 +28,7 @@ const AdminDashboard = () => {
   const { theme } = useTheme();
   const navigate = useNavigate();
   const isDark = theme === 'dark';
+  const [adminTab, setAdminTab] = useState('analytics'); // 'analytics' | 'notifications'
   const [stats, setStats] = useState(null);
   const [loading, setLoading] = useState(true);
 
@@ -84,6 +88,17 @@ const AdminDashboard = () => {
         {/* Admin Quick Actions */}
         <div className="flex items-center gap-3">
           <button
+            onClick={() => setAdminTab(adminTab === 'analytics' ? 'notifications' : 'analytics')}
+            className={`flex items-center gap-2 px-4 py-2 text-sm font-semibold rounded-xl border transition-all ${
+              adminTab === 'notifications'
+                ? 'bg-purple-600 text-white border-purple-500 shadow-md shadow-purple-500/20'
+                : 'text-purple-600 dark:text-purple-400 bg-purple-50 dark:bg-purple-900/20 hover:bg-purple-100 border-purple-200 dark:border-purple-700/50'
+            }`}
+          >
+            <MegaphoneIcon className="w-4 h-4" />
+            <span>{adminTab === 'notifications' ? 'View Analytics' : 'Manage Broadcasts'}</span>
+          </button>
+          <button
             id="admin-view-faculty-btn"
             onClick={() => navigate('/faculty')}
             className="flex items-center gap-2 px-4 py-2 text-sm font-semibold text-indigo-600 dark:text-indigo-400 bg-indigo-50 dark:bg-indigo-900/20 hover:bg-indigo-100 dark:hover:bg-indigo-900/30 border border-indigo-200 dark:border-indigo-700/50 rounded-xl transition-all"
@@ -101,6 +116,38 @@ const AdminDashboard = () => {
           </button>
         </div>
       </div>
+
+      {/* Admin Tab Switcher */}
+      <div className="flex items-center gap-3 border-b border-slate-200 dark:border-slate-800 pb-2">
+        <button
+          onClick={() => setAdminTab('analytics')}
+          className={`flex items-center gap-2 px-5 py-2.5 rounded-xl text-xs sm:text-sm font-bold transition-all ${
+            adminTab === 'analytics'
+              ? 'bg-indigo-600 text-white shadow-md shadow-indigo-500/20'
+              : 'bg-white/60 dark:bg-slate-900/60 text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800'
+          }`}
+        >
+          <ChartBarIcon className="w-4 h-4" />
+          <span>System Analytics & Pipeline</span>
+        </button>
+
+        <button
+          onClick={() => setAdminTab('notifications')}
+          className={`flex items-center gap-2 px-5 py-2.5 rounded-xl text-xs sm:text-sm font-bold transition-all ${
+            adminTab === 'notifications'
+              ? 'bg-indigo-600 text-white shadow-md shadow-indigo-500/20'
+              : 'bg-white/60 dark:bg-slate-900/60 text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800'
+          }`}
+        >
+          <MegaphoneIcon className="w-4 h-4" />
+          <span>Notification & Broadcast Management</span>
+        </button>
+      </div>
+
+      {adminTab === 'notifications' ? (
+        <NotificationPanel defaultTab="composer" />
+      ) : (
+        <>
 
       {/* Top Deck Stats */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
@@ -236,6 +283,8 @@ const AdminDashboard = () => {
         </div>
 
       </div>
+      </>
+      )}
     </div>
   );
 };

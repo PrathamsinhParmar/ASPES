@@ -198,7 +198,21 @@ async def finalize_evaluation(
     await db.commit()
     await db.refresh(evaluation)
     
-    # TODO: Send notification to student via email background task
+    # Send real-time notification to student
+    try:
+        from app.services.notification_service import notify_student_on_faculty_evaluation
+        await notify_student_on_faculty_evaluation(
+            db=db,
+            project=evaluation.project,
+            faculty=current_user,
+            status_label="approved and published" if finalize_data.is_finalized else "reviewed",
+            faculty_feedback=evaluation.professor_feedback,
+            faculty_score=evaluation.professor_score_override or evaluation.total_score,
+            evaluation_record=evaluation,
+        )
+        await db.commit()
+    except Exception as notif_err:
+        print(f"Failed to dispatch finalize notification: {notif_err}")
     
     validated = EvaluationResponse.model_validate(evaluation)
     if validated.project:

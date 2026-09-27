@@ -10,6 +10,10 @@ import ErrorBoundary from './components/Common/ErrorBoundary';
 // Theme Context
 import { ThemeProvider } from './context/ThemeContext';
 
+// Notification Context & Alert Modal
+import { NotificationProvider } from './context/NotificationContext';
+import EvaluationAlertModal from './components/Notification/EvaluationAlertModal';
+
 // Loading Component
 import LoadingSpinner from './components/Common/LoadingSpinner';
 
@@ -28,6 +32,8 @@ const FacultyDashboardViewPage = lazy(() => import('./pages/FacultyDashboardView
 const GroupsPage = lazy(() => import('./pages/GroupsPage'));
 const AssignedProjectsPage = lazy(() => import('./pages/AssignedProjectsPage'));
 const FacultyReviewPortal = lazy(() => import('./components/Dashboard/FacultyDashboard'));
+const NotificationsPage = lazy(() => import('./pages/NotificationsPage'));
+
 
 // AI Layer Pages (lazy-loaded)
 const AICodeDetectorPage    = lazy(() => import('./pages/ai-layers/AICodeDetectorPage'));
@@ -50,8 +56,10 @@ function PublicRoute({ children }) {
 function App() {
   return (
     <ThemeProvider>
-      <ErrorBoundary>
-        <Suspense fallback={<LoadingSpinner fullScreen />}>
+      <NotificationProvider>
+        <EvaluationAlertModal />
+        <ErrorBoundary>
+          <Suspense fallback={<LoadingSpinner fullScreen />}>
           <Routes>
             {/* Public Routes */}
             <Route path="/login" element={
@@ -79,6 +87,7 @@ function App() {
               <Route path="groups" element={<GroupsPage />} />
               <Route path="assigned" element={<AssignedProjectsPage />} />
               <Route path="review-portal" element={<FacultyReviewPortal />} />
+              <Route path="notifications" element={<NotificationsPage />} />
 
               {/* Evaluation Overview */}
               <Route path="evaluations/:id"    element={<EvaluationPage />} />
@@ -98,7 +107,8 @@ function App() {
           </Routes>
         </Suspense>
       </ErrorBoundary>
-    </ThemeProvider>
+    </NotificationProvider>
+  </ThemeProvider>
   );
 }
 

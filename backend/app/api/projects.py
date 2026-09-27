@@ -89,7 +89,16 @@ async def upload_project(
     await db.commit()
     await db.refresh(new_project)
     
-    # 4. Trigger inline evaluation asynchronously (no Celery needed in dev)
+    # 4. Real-time notification trigger to assigned faculty
+    if new_project.faculty_id:
+        try:
+            from app.services.notification_service import notify_faculty_on_project_submission
+            await notify_faculty_on_project_submission(db, new_project, current_user)
+            await db.commit()
+        except Exception as notif_err:
+            print(f"Failed to dispatch faculty submission notification: {notif_err}")
+
+    # 5. Trigger inline evaluation asynchronously (no Celery needed in dev)
     asyncio.create_task(_run_evaluation_inline(str(new_project.id), str(new_evaluation.id)))
     
     return new_project
@@ -361,6 +370,7 @@ async def evaluate_project_by_faculty(
     project_id: uuid.UUID,
     faculty_comments: str = Form(None),
     faculty_score: float = Form(None),
+    status_label: Optional[str] = Form("reviewed"),
     current_user: User = Depends(require_role(UserRole.PROFESSOR, UserRole.ADMIN)),
     db: AsyncSession = Depends(get_db)
 ):
@@ -403,6 +413,22 @@ async def evaluate_project_by_faculty(
     await db.commit()
     await db.refresh(project)
     
+    # Real-time notification trigger to student
+    try:
+        from app.services.notification_service import notify_student_on_faculty_evaluation
+        await notify_student_on_faculty_evaluation(
+            db=db,
+            project=project,
+            faculty=current_user,
+            status_label=status_label or "reviewed",
+            faculty_feedback=faculty_comments,
+            faculty_score=faculty_score,
+            evaluation_record=project.evaluation,
+        )
+        await db.commit()
+    except Exception as notif_err:
+        print(f"Failed to dispatch student evaluation notification: {notif_err}")
+
     from app.schemas.project import ProjectWithEvaluation
     
     validated = ProjectWithEvaluation.model_validate(project)

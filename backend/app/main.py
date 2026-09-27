@@ -13,7 +13,7 @@ from fastapi.responses import JSONResponse
 from fastapi.staticfiles import StaticFiles
 
 from app.config import settings
-from app.api import auth, projects, evaluations, users, groups, faculty, reports
+from app.api import auth, projects, evaluations, users, groups, faculty, reports, notifications
 from app.database.connection import engine, Base
 
 # Configure Logging
@@ -128,6 +128,7 @@ app.include_router(evaluations.router, prefix=f"{API_V1_STR}/evaluations", tags=
 app.include_router(groups.router,      prefix=f"{API_V1_STR}/groups",      tags=["Groups"])
 app.include_router(faculty.router,     prefix=f"{API_V1_STR}/faculty-list", tags=["Faculty"])
 app.include_router(reports.router,     prefix=f"{API_V1_STR}/projects",      tags=["Reports"])
+app.include_router(notifications.router, prefix=f"{API_V1_STR}/notifications", tags=["Notifications"])
 
 # ---------------------------------------------------------------------------
 # Health Check

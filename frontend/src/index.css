@@ -48,13 +48,28 @@
 
   /* Custom scrollbar */
   ::-webkit-scrollbar {
-    @apply w-1.5;
+    width: 6px;
+    height: 6px;
   }
   ::-webkit-scrollbar-track {
-    @apply bg-gray-900;
+    background: transparent;
   }
   ::-webkit-scrollbar-thumb {
-    @apply bg-primary-600 rounded-full;
+    @apply bg-slate-300 dark:bg-slate-700 rounded-full;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    @apply bg-slate-400 dark:bg-slate-600;
+  }
+
+  /* Hide scrollbar utilities */
+  .no-scrollbar::-webkit-scrollbar,
+  .scrollbar-none::-webkit-scrollbar {
+    display: none;
+  }
+  .no-scrollbar,
+  .scrollbar-none {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
   }
 
   /* Focus ring (Removed to fix thick dark borders on inputs in light mode) */

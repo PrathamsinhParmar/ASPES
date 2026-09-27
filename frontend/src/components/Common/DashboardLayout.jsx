@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Outlet, Link, useLocation } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
+import { useNotifications } from '../../context/NotificationContext';
 import api from '../../services/api';
 import ThemeToggle from './ThemeToggle';
 import {
@@ -15,14 +16,17 @@ import {
   ClipboardDocumentCheckIcon,
   ServerIcon,
   UserGroupIcon,
-  InboxArrowDownIcon
+  InboxArrowDownIcon,
+  BellIcon
 } from '@heroicons/react/24/outline';
+import NotificationBell from '../Notification/NotificationBell';
 
 const API_BASE_URL = api.defaults.baseURL?.replace('/api/v1', '') ?? '';
 
 const getNavItems = (role) => {
   const normRole = (role || '').toString().trim().toUpperCase();
   const common = [
+    { path: '/notifications', label: 'Notifications', icon: BellIcon },
     { path: '/profile', label: 'Profile', icon: UserIcon },
   ];
 
@@ -50,7 +54,7 @@ const getNavItems = (role) => {
   }
 };
 
-function SidebarLink({ path, label, icon: Icon }) {
+function SidebarLink({ path, label, icon: Icon, badge }) {
   const location = useLocation();
   const isActive = location.pathname === path || (location.pathname.startsWith(path + '/') && path !== '/dashboard');
 
@@ -64,13 +68,19 @@ function SidebarLink({ path, label, icon: Icon }) {
         }`}
     >
       <Icon className={`w-5 h-5 flex-shrink-0 ${isActive ? 'text-blue-700 dark:text-blue-400' : 'text-gray-400 dark:text-slate-500 group-hover:text-gray-500 dark:group-hover:text-gray-300'}`} />
-      {label}
+      <span className="flex-1">{label}</span>
+      {badge > 0 && (
+        <span className="flex items-center justify-center min-w-[20px] h-5 px-1.5 text-[10px] font-extrabold text-white bg-gradient-to-r from-red-500 to-rose-600 rounded-full shadow-sm">
+          {badge > 99 ? '99+' : badge}
+        </span>
+      )}
     </Link>
   );
 }
 
 function DashboardLayout() {
   const { user, logout } = useAuth();
+  const { unreadCount } = useNotifications();
   const [sidebarOpen, setSidebarOpen] = useState(true);
 
   const toggleSidebar = () => setSidebarOpen(!sidebarOpen);
@@ -117,7 +127,11 @@ function DashboardLayout() {
         {/* Navigation */}
         <nav className="flex-1 px-3 py-4 space-y-1">
           {navItems.map((item) => (
-            <SidebarLink key={item.path} {...item} />
+            <SidebarLink
+              key={item.path}
+              {...item}
+              badge={item.path === '/notifications' ? unreadCount : 0}
+            />
           ))}
         </nav>
 
@@ -160,15 +174,30 @@ function DashboardLayout() {
         flex-1 flex flex-col min-w-0 transition-all duration-500 ease-[cubic-bezier(0.4, 0, 0.2, 1)]
         ${sidebarOpen ? 'md:ml-72' : 'ml-0'}
       `}>
-        {/* Floating Sidebar Toggle (Only visible when sidebar is closed) */}
-        {!sidebarOpen && (
-          <button
-            onClick={toggleSidebar}
-            className="fixed top-5 right-5 md:right-auto md:left-5 z-50 p-2 bg-white/30 dark:bg-slate-900/40 backdrop-blur-md border border-white/50 dark:border-slate-700/50 rounded-xl shadow-lg shadow-black/5 dark:shadow-black/20 text-blue-600 dark:text-blue-400 hover:bg-white/50 dark:hover:bg-slate-800/60 hover:scale-110 active:scale-95 transition-all duration-200 group animate-in slide-in-from-left-4 fade-in"
-          >
-            <Bars3Icon className="w-4 h-4 group-hover:rotate-12 transition-transform" />
-          </button>
-        )}
+        {/* Top Navbar Header */}
+        <header className="sticky top-0 z-30 bg-white/70 dark:bg-slate-900/70 backdrop-blur-md border-b border-slate-200/80 dark:border-slate-800/80 px-4 sm:px-6 py-3 flex items-center justify-between gap-4 transition-colors">
+          <div className="flex items-center gap-3">
+            <button
+              onClick={toggleSidebar}
+              className="p-2 rounded-xl text-slate-500 hover:text-slate-800 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800/60 transition-colors"
+              title="Toggle Sidebar"
+            >
+              <Bars3Icon className="w-5 h-5" />
+            </button>
+            <div className="hidden sm:flex items-center gap-2">
+              <span className="text-xs font-bold uppercase tracking-wider px-2.5 py-1 rounded-lg bg-indigo-50 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400 border border-indigo-200/50 dark:border-indigo-800/50">
+                {user?.role === 'professor' ? 'Faculty Portal' : user?.role === 'admin' ? 'Admin Center' : 'Student Portal'}
+              </span>
+            </div>
+          </div>
+
+          {/* Right Header Utilities: Notification Bell, Theme, Profile */}
+          <div className="flex items-center gap-3">
+            <NotificationBell />
+            <div className="h-5 w-px bg-slate-200 dark:bg-slate-800" />
+            <ThemeToggle />
+          </div>
+        </header>
 
         {/* Page content */}
         <main className="flex-1 overflow-x-hidden overflow-y-auto bg-transparent dark:bg-slate-950">

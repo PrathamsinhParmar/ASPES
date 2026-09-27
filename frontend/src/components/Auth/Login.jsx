@@ -29,7 +29,7 @@ const Login = () => {
     try {
       setApiError('');
       await login(data.username, data.password);
-      navigate(from, { replace: true });
+      navigate('/dashboard', { replace: true });
     } catch (err) {
       setApiError(err.response?.data?.detail || 'Login failed. Please check your credentials.');
     }

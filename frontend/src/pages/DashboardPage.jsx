@@ -1,5 +1,4 @@
 import React from 'react';
-import { Navigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import StudentDashboard from '../components/Dashboard/StudentDashboard';
 import FacultyDashboard from '../components/Dashboard/FacultyDashboard';
@@ -18,7 +17,7 @@ const DashboardPage = () => {
       return <AdminDashboard />;
     case 'faculty':
     case 'professor':
-      return <Navigate to="/assigned" replace />;
+      return <FacultyDashboard />;
     case 'student':
     default:
       return <StudentDashboard />;

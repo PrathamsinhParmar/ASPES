@@ -38,6 +38,7 @@ const getNavItems = (role) => {
     ];
   } else if (normRole === 'FACULTY' || normRole === 'PROFESSOR') {
     return [
+      { path: '/dashboard', label: 'Faculty Dashboard', icon: HomeIcon },
       { path: '/assigned', label: 'Assigned Projects', icon: InboxArrowDownIcon },
       { path: '/review-portal', label: 'Review Portal', icon: ClipboardDocumentCheckIcon },
       { path: '/projects', label: 'All Projects', icon: FolderIcon },

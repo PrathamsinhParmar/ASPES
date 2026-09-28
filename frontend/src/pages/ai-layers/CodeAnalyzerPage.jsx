@@ -733,7 +733,7 @@ const CodeAnalyzerPage = () => {
                   <div className="flex items-center gap-3 bg-cyan-500/10 -mx-4 px-4 py-0.5 border-l-2 border-cyan-500">
                     <span className="w-6 text-right text-slate-500 select-none">5</span>
                     <span className="text-cyan-300">
-                      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span className="text-purple-400">raise</span> <span className="text-amber-400">ValidationError</span>(<span className="text-emerald-400">"Context precondition failed"</span>)
+                      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span className="text-purple-400">raise</span> <span className="text-amber-400">ValidationError</span>(<span className="text-emerald-400">&quot;Context precondition failed&quot;</span>)
                     </span>
                   </div>
                   <div className="flex items-center gap-3 text-slate-300">

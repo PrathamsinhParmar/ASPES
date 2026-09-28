@@ -641,7 +641,7 @@ const AICodeDetectorPage = () => {
                 <div className="p-4 space-y-1.5 text-[11.5px] leading-relaxed overflow-x-auto">
                   <div className="flex items-center gap-3 text-slate-500">
                     <span className="w-6 text-right select-none">1</span>
-                    <span className="text-slate-400">/**</span>
+                    <span className="text-slate-400">{'/**'}</span>
                   </div>
                   <div className="flex items-center gap-3 bg-amber-500/10 -mx-4 px-4 py-0.5 border-l-2 border-amber-500">
                     <span className="w-6 text-right text-slate-500 select-none">2</span>

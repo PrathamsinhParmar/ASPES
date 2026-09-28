@@ -534,7 +534,10 @@ const ProjectDetailPage = () => {
             return (
               <div className="relative overflow-hidden bg-white/95 dark:bg-slate-900/95 backdrop-blur-md p-4 sm:p-5 rounded-xl border border-slate-200/80 dark:border-slate-800/80 shadow-md dark:shadow-[0_1px_0_0_rgba(255,255,255,0.05)_inset,0_6px_24px_rgba(0,0,0,0.3)] space-y-3.5 sm:space-y-4">
                 {/* Decorative Top Accent Bar */}
-                <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-emerald-500 via-indigo-500 to-purple-600"></div>
+                <div 
+                  className="absolute top-0 left-0 right-0 h-1" 
+                  style={{ background: 'linear-gradient(to right, #1e3a8a, #ef4444, #eab308, #22c55e)' }}
+                ></div>
 
                 {/* Section Header with Tags */}
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 sm:gap-3 pb-3 border-b border-slate-100 dark:border-slate-800/80">

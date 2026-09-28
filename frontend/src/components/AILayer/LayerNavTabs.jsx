@@ -109,12 +109,12 @@ const LayerNavTabs = ({ evaluationId }) => {
   return (
     <div className="relative">
       {/* Fade-edge scroll indicators */}
-      <div className="absolute left-0 top-0 bottom-0 w-8 bg-gradient-to-r from-white dark:from-slate-950 to-transparent z-10 pointer-events-none rounded-l-2xl" />
-      <div className="absolute right-0 top-0 bottom-0 w-8 bg-gradient-to-l from-white dark:from-slate-950 to-transparent z-10 pointer-events-none rounded-r-2xl" />
+      <div className="absolute left-0 top-0 bottom-0 w-6 bg-gradient-to-r from-white dark:from-slate-900 to-transparent z-10 pointer-events-none rounded-l-xl" />
+      <div className="absolute right-0 top-0 bottom-0 w-6 bg-gradient-to-l from-white dark:from-slate-900 to-transparent z-10 pointer-events-none rounded-r-xl" />
 
       <div
         ref={scrollRef}
-        className="flex gap-2 overflow-x-auto scrollbar-hide px-6 py-3 bg-white dark:bg-slate-900 border border-gray-100 dark:border-slate-800 rounded-2xl shadow-sm"
+        className="flex gap-1.5 overflow-x-auto scrollbar-hide p-1.5 bg-white/90 dark:bg-slate-900/90 backdrop-blur-md border border-slate-200/80 dark:border-slate-800/80 rounded-xl shadow-xs dark:shadow-[0_1px_0_0_rgba(255,255,255,0.05)_inset,0_2px_8px_rgba(0,0,0,0.2)]"
         style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
       >
         {LAYERS.map((layer) => {
@@ -126,20 +126,19 @@ const LayerNavTabs = ({ evaluationId }) => {
               key={layer.segment}
               to={`/evaluations/${id}/${layer.segment}`}
               className={({ isActive }) =>
-                `flex items-center gap-2.5 px-4 py-2.5 rounded-xl text-sm font-semibold whitespace-nowrap transition-all duration-200 flex-shrink-0 ${
+                `flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-semibold whitespace-nowrap transition-all duration-150 flex-shrink-0 ${
                   isActive
-                    ? `${colors.active} shadow-lg scale-[1.02]`
-                    : 'text-gray-500 dark:text-slate-400 hover:text-gray-900 dark:hover:text-white hover:bg-gray-50/80 dark:hover:bg-slate-800/80'
+                    ? `${colors.active} shadow-sm`
+                    : 'text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100/80 dark:hover:bg-slate-800/80'
                 }`
               }
             >
               {({ isActive }) => (
                 <>
-                  <Icon className="w-4 h-4 flex-shrink-0" />
-                  <span className="hidden sm:inline">{layer.shortLabel}</span>
-                  <span className="sm:hidden">{layer.shortLabel}</span>
+                  <Icon className="w-3.5 h-3.5 flex-shrink-0" />
+                  <span>{layer.shortLabel}</span>
                   {isActive && (
-                    <span className={`w-1.5 h-1.5 rounded-full ${colors.dot} opacity-80`} />
+                    <span className={`w-1.5 h-1.5 rounded-full ${colors.dot} opacity-90`} />
                   )}
                 </>
               )}

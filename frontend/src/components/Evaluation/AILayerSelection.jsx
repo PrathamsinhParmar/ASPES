@@ -4,24 +4,70 @@ import { evaluationService } from '../../services/evaluationService';
 import { LAYERS } from '../AILayer/LayerNavTabs';
 import { ArrowLeftIcon, CpuChipIcon } from '@heroicons/react/24/outline';
 
-const colorStyles = {
-  violet: 'bg-violet-50 dark:bg-violet-900/10 border-violet-200 dark:border-violet-500/20 text-violet-600 dark:text-violet-400 group-hover:bg-violet-600 group-hover:border-violet-600 group-hover:text-white',
-  blue: 'bg-blue-50 dark:bg-blue-900/10 border-blue-200 dark:border-blue-500/20 text-blue-600 dark:text-blue-400 group-hover:bg-blue-600 group-hover:border-blue-600 group-hover:text-white',
-  indigo: 'bg-indigo-50 dark:bg-indigo-900/10 border-indigo-200 dark:border-indigo-500/20 text-indigo-600 dark:text-indigo-400 group-hover:bg-indigo-600 group-hover:border-indigo-600 group-hover:text-white',
-  emerald: 'bg-emerald-50 dark:bg-emerald-900/10 border-emerald-200 dark:border-emerald-500/20 text-emerald-600 dark:text-emerald-400 group-hover:bg-emerald-600 group-hover:border-emerald-600 group-hover:text-white',
-  amber: 'bg-amber-50 dark:bg-amber-900/10 border-amber-200 dark:border-amber-500/20 text-amber-600 dark:text-amber-400 group-hover:bg-amber-500 group-hover:border-amber-500 group-hover:text-white',
-  rose: 'bg-rose-50 dark:bg-rose-900/10 border-rose-200 dark:border-rose-500/20 text-rose-600 dark:text-rose-400 group-hover:bg-rose-600 group-hover:border-rose-600 group-hover:text-white',
-  cyan: 'bg-cyan-50 dark:bg-cyan-900/10 border-cyan-200 dark:border-cyan-500/20 text-cyan-600 dark:text-cyan-400 group-hover:bg-cyan-600 group-hover:border-cyan-600 group-hover:text-white'
-};
-
-const layerDescriptions = {
-  'code-detector': 'Detect AI-generated code snippets using probabilistic forensics.',
-  'code-analyzer': 'Evaluate code quality, modularity, and structural maintainability.',
-  'scorer': 'View comprehensive performance metrics and final automated grading.',
-  'doc-evaluator': 'Assess documentation coherence, technical completeness, and clarity.',
-  'feedback': 'Produce actionable, natural-language feedback and improvements.',
-  'plagiarism': 'Check cross-submission integrity to ensure full originality.',
-  'report-aligner': 'Verify that implementations strictly align with report objectives.',
+const LAYER_CONFIG = {
+  'code-detector': {
+    category: 'Forensics',
+    colorKey: 'violet',
+    iconStyle: 'bg-violet-500/10 text-violet-600 dark:text-violet-400 border-violet-500/20',
+    badgeStyle: 'bg-violet-500/10 text-violet-600 dark:text-violet-400 border-violet-500/20',
+    accentDot: 'bg-violet-500',
+    description: 'Detect AI-generated code snippets using probabilistic forensics and perplexity analysis.',
+    metricHint: 'Authorship Probability'
+  },
+  'code-analyzer': {
+    category: 'Architecture',
+    colorKey: 'blue',
+    iconStyle: 'bg-blue-500/10 text-blue-600 dark:text-blue-400 border-blue-500/20',
+    badgeStyle: 'bg-blue-500/10 text-blue-600 dark:text-blue-400 border-blue-500/20',
+    accentDot: 'bg-blue-500',
+    description: 'Evaluate code quality, modularity, cyclomatic complexity, and structural maintainability.',
+    metricHint: 'Code Quality & Structure'
+  },
+  'doc-evaluator': {
+    category: 'Documentation',
+    colorKey: 'emerald',
+    iconStyle: 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/20',
+    badgeStyle: 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/20',
+    accentDot: 'bg-emerald-500',
+    description: 'Assess report coherence, technical completeness, methodology rigor, and formatting clarity.',
+    metricHint: 'Report Rigor & Clarity'
+  },
+  'plagiarism': {
+    category: 'Integrity',
+    colorKey: 'rose',
+    iconStyle: 'bg-rose-500/10 text-rose-600 dark:text-rose-400 border-rose-500/20',
+    badgeStyle: 'bg-rose-500/10 text-rose-600 dark:text-rose-400 border-rose-500/20',
+    accentDot: 'bg-rose-500',
+    description: 'Check cross-submission integrity, semantic code vectors, and external repository similarity.',
+    metricHint: 'Originality & Citations'
+  },
+  'report-aligner': {
+    category: 'Alignment',
+    colorKey: 'cyan',
+    iconStyle: 'bg-cyan-500/10 text-cyan-600 dark:text-cyan-400 border-cyan-500/20',
+    badgeStyle: 'bg-cyan-500/10 text-cyan-600 dark:text-cyan-400 border-cyan-500/20',
+    accentDot: 'bg-cyan-500',
+    description: 'Verify that implementations strictly align with claimed report objectives and deliverables.',
+    metricHint: 'Spec vs Implementation'
+  },
+  'scorer': {
+    category: 'Grading Hub',
+    colorKey: 'indigo',
+    iconStyle: 'bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 border-indigo-500/20',
+    badgeStyle: 'bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 border-indigo-500/20',
+    accentDot: 'bg-indigo-500',
+    description: 'View comprehensive performance metrics, weighted aggregations, and final automated scoring.',
+    metricHint: 'Automated Scoring'
+  },
+  'feedback': {
+    category: 'Advisory',
+    colorKey: 'amber',
+    iconStyle: 'bg-amber-500/10 text-amber-600 dark:text-amber-400 border-amber-500/20',
+    badgeStyle: 'bg-amber-500/10 text-amber-600 dark:text-amber-400 border-amber-500/20',
+    accentDot: 'bg-amber-500',
+    description: 'Produce actionable, natural-language feedback, technical strengths, and improvement steps.',
+    metricHint: 'Actionable Insights'
+  },
 };
 
 const AILayerSelection = () => {
@@ -40,89 +86,110 @@ const AILayerSelection = () => {
   if (loading) {
     return (
       <div className="flex flex-col justify-center items-center h-[70vh] animate-pulse">
-        <CpuChipIcon className="w-12 h-12 text-indigo-500 mb-4 animate-bounce" />
-        <p className="mt-4 text-gray-500 dark:text-slate-400 font-medium text-xs">Initializing AI Engine Matrix...</p>
+        <CpuChipIcon className="w-10 h-10 text-indigo-500 mb-3 animate-bounce" />
+        <p className="text-slate-500 dark:text-slate-400 font-medium text-xs">Initializing AI Engine Matrix...</p>
       </div>
     );
   }
 
   if (!evaluation) {
-    return <div className="p-10 text-center text-rose-500 font-bold">Evaluation not found.</div>;
+    return <div className="p-8 text-center text-rose-500 font-bold text-sm">Evaluation not found.</div>;
   }
 
   return (
-    <div className="max-w-7xl mx-auto p-4 sm:p-6 lg:p-8 space-y-2 animate-fade-in pb-20">
-      
-      {/* Decorative Glow */}
-      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full max-w-4xl h-96 bg-indigo-500/10 rounded-full blur-[120px] pointer-events-none -z-10"></div>
+    <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-1.5 sm:pt-2.5 pb-20 space-y-5 animate-fade-in">
+      {/* Subtle Background Glow */}
+      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full max-w-5xl h-72 bg-gradient-to-b from-indigo-500/10 via-purple-500/5 to-transparent rounded-full blur-3xl pointer-events-none -z-10" />
 
       {/* Top Navigation Row */}
-      <div className="flex justify-between items-center mb-0 px-2 group">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-2">
         <button
           onClick={() => navigate(-1)}
-          className="flex items-center gap-2 text-sm font-medium text-slate-500 hover:text-slate-900 dark:hover:text-white transition-all transition-colors"
+          className="group inline-flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-semibold text-slate-600 dark:text-slate-300 bg-white/80 dark:bg-slate-900/80 hover:bg-slate-100 dark:hover:bg-slate-800 border border-slate-200/80 dark:border-slate-800/80 shadow-2xs hover:border-slate-300 dark:hover:border-slate-700 transition-all duration-200 w-fit"
         >
-          <ArrowLeftIcon className="w-4 h-4 transition-transform group-hover:-translate-x-1" />
+          <ArrowLeftIcon className="w-3.5 h-3.5 transition-transform duration-200 group-hover:-translate-x-1 text-slate-400 group-hover:text-indigo-600 dark:group-hover:text-indigo-400" />
           <span>Back to Overview</span>
         </button>
 
-        <div className="hidden sm:flex items-center gap-2">
-           <span className="text-xs font-medium text-slate-600 dark:text-slate-400">Target Project:</span>
-           <div className="px-4 py-1.5 bg-indigo-500/10 border border-indigo-500/20 rounded-xl">
-              <span className="text-xs font-bold text-indigo-600 dark:text-indigo-400 tracking-tight">
-                {evaluation.project?.title || 'Unknown Project'}
-              </span>
-           </div>
+        <div className="flex items-center gap-2.5">
+          <span className="text-xs font-medium text-slate-400 dark:text-slate-500 hidden sm:inline">Target Project:</span>
+          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 bg-indigo-500/10 border border-indigo-500/20 rounded-xl max-w-xs sm:max-w-md shadow-2xs">
+            <span className="w-1.5 h-1.5 rounded-full bg-indigo-500 animate-pulse flex-shrink-0"></span>
+            <span className="text-xs font-bold text-indigo-600 dark:text-indigo-400 truncate tracking-tight">
+              {evaluation.project?.title || 'Unknown Project'}
+            </span>
+          </div>
         </div>
       </div>
 
-      {/* Main Container */}
-      <div className="pt-2"> {/* Minimal padding to reduce margin as requested */}
-        {/* Header content centered below the navigation row */}
-        <div className="text-center max-w-3xl mx-auto space-y-4 mb-10">
-          <h1 className="text-4xl lg:text-5xl font-bold text-slate-900 dark:text-white tracking-tight">
-            Select AI <span className="text-indigo-600 dark:text-indigo-400">Analysis Layer</span>
-          </h1>
-          <p className="text-sm font-medium text-slate-500 dark:text-slate-400 leading-relaxed max-w-2xl mx-auto">
-            Choose a specific AI sub-engine below to visualize the results of the evaluation for 
-            <strong className="text-slate-900 dark:text-slate-200"> &quot;{evaluation.project?.title || 'this project'}&quot;</strong>.
-          </p>
-        </div>
+      {/* Main Header / Hero Section */}
+      <div className="text-center max-w-3xl mx-auto space-y-2.5 mb-8 sm:mb-9 mt-1">
+        <h1 className="text-2xl sm:text-3xl lg:text-4xl font-extrabold text-slate-900 dark:text-white tracking-tight">
+          Select AI <span className="bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 bg-clip-text text-transparent">Analysis Layer</span>
+        </h1>
+        <p className="text-sm sm:text-[15px] font-normal text-slate-500 dark:text-slate-400 leading-relaxed max-w-2xl mx-auto">
+          Choose a specific AI sub-engine below to visualize the results of the evaluation for{' '}
+          <strong className="text-slate-800 dark:text-slate-200 font-semibold">&quot;{evaluation.project?.title || 'this project'}&quot;</strong>.
+        </p>
+      </div>
 
-        {/* Grid of Layers */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 pt-4">
-          {LAYERS.map(layer => {
-            const Icon = layer.icon;
-            return (
-              <Link
-                key={layer.segment}
-                to={`/evaluations/${id}/${layer.segment}`}
-                className="group bg-white dark:bg-slate-900 border border-gray-100 dark:border-slate-800 rounded-3xl p-6 shadow-sm hover:shadow-xl hover:shadow-indigo-500/10 transition-all hover:-translate-y-1 flex flex-col justify-between min-h-[220px] overflow-hidden relative"
-              >
-                <div className="absolute inset-0 bg-gradient-to-br from-transparent to-black/5 dark:to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
-                <div>
-                  <div className={`w-14 h-14 rounded-2xl flex items-center justify-center border transition-colors duration-300 drop-shadow-sm mb-6 ${colorStyles[layer.color]}`}>
-                    <Icon className="w-7 h-7" />
+      {/* Grid of Layers */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5 sm:gap-6">
+        {LAYERS.map(layer => {
+          const Icon = layer.icon;
+          const cfg = LAYER_CONFIG[layer.segment] || {
+            category: 'Engine',
+            iconStyle: 'bg-indigo-500/10 text-indigo-600 border-indigo-500/25',
+            badgeStyle: 'bg-indigo-500/10 text-indigo-600 border-indigo-500/25',
+            accentDot: 'bg-indigo-500',
+            description: 'Inspect detailed analytics and insights generated by this engine.',
+            metricHint: 'Evaluation Data'
+          };
+
+          return (
+            <Link
+              key={layer.segment}
+              to={`/evaluations/${id}/${layer.segment}`}
+              className="group relative bg-white/95 dark:bg-slate-900/90 backdrop-blur-md border-y border-slate-200/80 dark:border-slate-800/80 hover:border-slate-300 dark:hover:border-slate-700 rounded-2xl p-5 sm:p-6 shadow-sm hover:shadow-xl dark:shadow-[0_4px_20px_rgba(0,0,0,0.3)] dark:hover:shadow-[0_16px_36px_rgba(0,0,0,0.55)] transition-all duration-300 ease-out hover:scale-[1.02] hover:-translate-y-1 flex flex-col justify-between min-h-[225px] sm:min-h-[235px]"
+            >
+              <div>
+                {/* Header: Icon + Category Badge */}
+                <div className="flex items-center justify-between gap-3 mb-4">
+                  <div className={`w-11 h-11 sm:w-12 sm:h-12 rounded-xl flex items-center justify-center border transition-transform duration-300 ease-out shadow-xs group-hover:scale-105 ${cfg.iconStyle}`}>
+                    <Icon className="w-5 h-5 sm:w-6 sm:h-6" />
                   </div>
-                  <h3 className="text-lg font-bold text-gray-900 dark:text-white group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors tracking-tight">
-                    {layer.label}
-                  </h3>
-                  <p className="mt-3 text-xs font-medium text-gray-500 dark:text-slate-400 leading-relaxed line-clamp-3">
-                    {layerDescriptions[layer.segment]}
-                  </p>
+                  <span className={`text-[10px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-md border ${cfg.badgeStyle}`}>
+                    {cfg.category}
+                  </span>
                 </div>
-                <div className="mt-6 flex items-center justify-between border-t border-gray-50 dark:border-slate-800/50 pt-4">
-                  <span className="text-xs font-medium text-slate-400">View Data</span>
-                  <div className="w-6 h-6 rounded-full bg-gray-50 dark:bg-slate-800 group-hover:bg-indigo-100 dark:group-hover:bg-indigo-900 flex items-center justify-center transition-colors">
-                    <svg className="w-3 h-3 text-gray-400 group-hover:text-indigo-600 dark:group-hover:text-indigo-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M9 5l7 7-7 7" />
-                    </svg>
-                  </div>
+
+                {/* Layer Title */}
+                <h3 className="text-base sm:text-lg font-bold text-slate-900 dark:text-white group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors duration-200 tracking-tight">
+                  {layer.label}
+                </h3>
+
+                {/* Layer Description */}
+                <p className="mt-2 text-xs sm:text-[13px] text-slate-500 dark:text-slate-400 leading-relaxed line-clamp-3">
+                  {cfg.description}
+                </p>
+              </div>
+
+              {/* Bottom Footer CTA */}
+              <div className="mt-6 pt-3.5 border-t border-slate-100 dark:border-slate-800/60 flex items-center justify-between">
+                <div className="flex items-center gap-1.5 text-xs font-medium text-slate-400 dark:text-slate-500">
+                  <span className={`w-1.5 h-1.5 rounded-full ${cfg.accentDot} opacity-70`}></span>
+                  <span className="truncate max-w-[130px]">{cfg.metricHint}</span>
                 </div>
-              </Link>
-            );
-          })}
-        </div>
+                <div className="flex items-center gap-1 text-xs font-semibold text-slate-600 dark:text-slate-300 group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors duration-200">
+                  <span>View Data</span>
+                  <svg className="w-3.5 h-3.5 transition-transform duration-200 group-hover:translate-x-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M9 5l7 7-7 7" />
+                  </svg>
+                </div>
+              </div>
+            </Link>
+          );
+        })}
       </div>
     </div>
   );

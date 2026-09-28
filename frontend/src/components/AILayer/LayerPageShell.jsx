@@ -33,42 +33,45 @@ const LayerPageShell = ({
   const navigate = useNavigate();
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-10 py-8 space-y-8 animate-fade-in mb-20">
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-1.5 sm:pt-2.5 pb-16 space-y-4 animate-fade-in">
 
       {/* ── HEADER ── */}
-      <div className="space-y-6">
+      <div className="space-y-4">
         {/* Breadcrumb row */}
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-2 border-b border-slate-200/60 dark:border-slate-800/60">
           <button
             onClick={() => navigate(`/evaluations/${evaluationId}`)}
-            className="group flex items-center text-sm font-medium text-slate-500 dark:text-slate-400 hover:text-blue-600 dark:hover:text-indigo-400 transition-all duration-200"
+            className="group inline-flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-semibold text-slate-600 dark:text-slate-300 bg-white/80 dark:bg-slate-900/80 hover:bg-slate-100 dark:hover:bg-slate-800 border border-slate-200/80 dark:border-slate-800/80 shadow-2xs hover:border-slate-300 dark:hover:border-slate-700 transition-all duration-150 w-fit"
           >
-            <ArrowLeftIcon className="w-4 h-4 mr-2 group-hover:-translate-x-1.5 transition-transform" />
-            Back to Overview
+            <ArrowLeftIcon className="w-3.5 h-3.5 transition-transform group-hover:-translate-x-1 text-slate-400 group-hover:text-indigo-600 dark:group-hover:text-indigo-400" />
+            <span>Back to Layers Overview</span>
           </button>
 
           {projectTitle && (
-            <div className="flex items-center gap-2.5">
-              <span className="text-sm font-medium text-slate-400 dark:text-slate-500">Target Project:</span>
-              <span className="text-sm font-medium text-blue-600 dark:text-indigo-400 bg-blue-50/30 dark:bg-indigo-950/30 px-4 py-1.5 rounded-xl border border-blue-100/50 dark:border-indigo-900/30">
-                {projectTitle}
-              </span>
+            <div className="flex items-center gap-2">
+              <span className="text-[11px] font-medium text-slate-400 dark:text-slate-500 hidden sm:inline">Target Project:</span>
+              <div className="inline-flex items-center gap-1.5 px-3 py-1 bg-indigo-500/10 border border-indigo-500/20 rounded-lg max-w-xs sm:max-w-md shadow-2xs">
+                <span className="w-1.5 h-1.5 rounded-full bg-indigo-500 animate-pulse flex-shrink-0"></span>
+                <span className="text-xs font-bold text-indigo-600 dark:text-indigo-400 truncate tracking-tight">
+                  {projectTitle}
+                </span>
+              </div>
             </div>
           )}
         </div>
 
         {/* Title row */}
-        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-          <div className="flex items-center gap-5">
-            <div className={`p-4 rounded-2xl ${iconColor} shadow-lg shadow-current/20`}>
-              {Icon && <Icon className="w-7 h-7 text-white" />}
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+          <div className="flex items-center gap-3.5">
+            <div className={`w-10 h-10 rounded-xl ${iconColor} shadow-md flex items-center justify-center flex-shrink-0`}>
+              {Icon && <Icon className="w-5 h-5 text-white" />}
             </div>
             <div>
-              <h1 className="text-3xl font-bold text-gray-900 dark:text-white tracking-tight leading-tight">
+              <h1 className="text-xl sm:text-2xl font-extrabold text-slate-900 dark:text-white tracking-tight">
                 {title}
               </h1>
               {subtitle && (
-                <p className="text-sm font-medium text-gray-400 dark:text-slate-500 mt-1">
+                <p className="text-xs font-normal text-slate-500 dark:text-slate-400 mt-0.5">
                   {subtitle}
                 </p>
               )}

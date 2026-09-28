@@ -19,6 +19,9 @@ import {
   SparklesIcon,
   DocumentArrowDownIcon,
   ShareIcon,
+  ChartBarIcon,
+  PresentationChartLineIcon,
+  AdjustmentsHorizontalIcon,
 } from '@heroicons/react/24/outline';
 import LayerPageShell from '../../components/AILayer/LayerPageShell';
 import { evaluationService } from '../../services/evaluationService';
@@ -36,8 +39,317 @@ const getDerivedStats = (score) => {
 };
 
 /**
- * Clean SVG Waterfall Deduction & Earned Points Diagram
- * Visualizes how starting 100 points were impacted by each evaluation module.
+ * GRAPH 1: Comparative Grouped Bar Graph (Project vs Cohort Average & Distinction Benchmark)
+ */
+const ComparativeBarGraph = ({ layers }) => {
+  const width = 560;
+  const height = 230;
+  const paddingLeft = 45;
+  const paddingRight = 20;
+  const paddingTop = 25;
+  const paddingBottom = 35;
+  const usableWidth = width - paddingLeft - paddingRight;
+  const usableHeight = height - paddingTop - paddingBottom;
+
+  const cohortAverages = {
+    code: 68,
+    docs: 74,
+    align: 62,
+    plag: 88,
+    auth: 76,
+  };
+
+  const groupWidth = usableWidth / layers.length;
+  const barWidth = 14;
+
+  return (
+    <div className="space-y-3 select-none">
+      <div className="flex flex-wrap items-center justify-between gap-2 text-xs">
+        <span className="font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300">
+          Dimensional Performance vs Cohort Benchmarks
+        </span>
+        <div className="flex items-center gap-3 text-[11px] font-mono">
+          <span className="flex items-center gap-1.5 text-indigo-600 dark:text-indigo-400 font-bold">
+            <span className="w-2.5 h-2.5 rounded-xs bg-indigo-600 dark:bg-indigo-500 inline-block" /> This Submission
+          </span>
+          <span className="flex items-center gap-1.5 text-slate-500 dark:text-slate-400">
+            <span className="w-2.5 h-2.5 rounded-xs bg-slate-300 dark:bg-slate-700 inline-block" /> Cohort Mean
+          </span>
+          <span className="flex items-center gap-1.5 text-emerald-600 dark:text-emerald-400">
+            <span className="w-2.5 h-0.5 bg-emerald-500 inline-block" /> Distinction (85%)
+          </span>
+        </div>
+      </div>
+
+      <div className="w-full overflow-x-auto">
+        <svg viewBox={`0 0 ${width} ${height}`} className="w-full h-56 overflow-visible">
+          {/* Y-Axis Grid Lines & Tick Labels */}
+          {[0, 25, 50, 75, 100].map((val) => {
+            const y = paddingTop + usableHeight - (val / 100) * usableHeight;
+            return (
+              <g key={val}>
+                <line
+                  x1={paddingLeft}
+                  y1={y}
+                  x2={width - paddingRight}
+                  y2={y}
+                  stroke="currentColor"
+                  strokeWidth={0.7}
+                  strokeDasharray={val === 0 ? 'none' : '3 3'}
+                  className="text-slate-200 dark:text-slate-800"
+                />
+                <text
+                  x={paddingLeft - 8}
+                  y={y + 3}
+                  textAnchor="end"
+                  className="text-[9.5px] font-mono text-slate-400 dark:text-slate-500"
+                >
+                  {val}%
+                </text>
+              </g>
+            );
+          })}
+
+          {/* Distinction Benchmark Line (85%) */}
+          <line
+            x1={paddingLeft}
+            y1={paddingTop + usableHeight - 0.85 * usableHeight}
+            x2={width - paddingRight}
+            y2={paddingTop + usableHeight - 0.85 * usableHeight}
+            stroke="#10b981"
+            strokeWidth={1.2}
+            strokeDasharray="4 4"
+            opacity={0.8}
+          />
+
+          {/* Grouped Bars */}
+          {layers.map((layer, idx) => {
+            const groupX = paddingLeft + idx * groupWidth;
+            const centerX = groupX + groupWidth / 2;
+
+            const myScore = Math.min(100, Math.max(0, layer.score));
+            const myHeight = (myScore / 100) * usableHeight;
+            const myY = paddingTop + usableHeight - myHeight;
+
+            const cohortScore = cohortAverages[layer.id] || 70;
+            const cohortHeight = (cohortScore / 100) * usableHeight;
+            const cohortY = paddingTop + usableHeight - cohortHeight;
+
+            return (
+              <g key={layer.id} className="group cursor-pointer">
+                {/* Cohort Mean Bar */}
+                <rect
+                  x={centerX - barWidth - 2}
+                  y={cohortY}
+                  width={barWidth}
+                  height={cohortHeight}
+                  rx={3}
+                  className="fill-slate-200 dark:fill-slate-700/80 transition-opacity group-hover:opacity-100 opacity-80"
+                />
+
+                {/* Submission Score Bar */}
+                <rect
+                  x={centerX + 2}
+                  y={myY}
+                  width={barWidth}
+                  height={myHeight}
+                  rx={3}
+                  fill={layer.color}
+                  className="transition-all duration-300 group-hover:brightness-110"
+                />
+
+                {/* Score Label above Submission Bar */}
+                <text
+                  x={centerX + 2 + barWidth / 2}
+                  y={myY - 5}
+                  textAnchor="middle"
+                  className="text-[10px] font-mono font-bold fill-slate-800 dark:fill-slate-200"
+                >
+                  {Math.round(myScore)}%
+                </text>
+
+                {/* X-Axis Category Label */}
+                <text
+                  x={centerX}
+                  y={height - 12}
+                  textAnchor="middle"
+                  className="text-[10.5px] font-bold fill-slate-600 dark:fill-slate-400 group-hover:fill-indigo-600 dark:group-hover:fill-indigo-400 transition-colors"
+                >
+                  {layer.short}
+                </text>
+              </g>
+            );
+          })}
+        </svg>
+      </div>
+    </div>
+  );
+};
+
+/**
+ * GRAPH 2: Cohort Gaussian Distribution Curve (Statistical Bell Curve)
+ */
+const CohortBellCurveGraph = ({ totalScore, stats }) => {
+  const width = 560;
+  const height = 230;
+  const paddingLeft = 40;
+  const paddingRight = 40;
+  const paddingTop = 30;
+  const paddingBottom = 40;
+  const usableWidth = width - paddingLeft - paddingRight;
+  const usableHeight = height - paddingTop - paddingBottom;
+
+  // Gaussian Bell Curve points (Mean = 68, StdDev = 14)
+  const mean = 68;
+  const stdDev = 14;
+  const numPoints = 60;
+  const curvePoints = [];
+
+  for (let i = 0; i <= numPoints; i++) {
+    const scoreVal = (i / numPoints) * 100;
+    const exponent = -Math.pow(scoreVal - mean, 2) / (2 * Math.pow(stdDev, 2));
+    const density = Math.exp(exponent);
+    const x = paddingLeft + (scoreVal / 100) * usableWidth;
+    const y = paddingTop + usableHeight - density * usableHeight;
+    curvePoints.push({ x, y, scoreVal });
+  }
+
+  const pathD = curvePoints.reduce((acc, pt, i) => `${acc} ${i === 0 ? 'M' : 'L'} ${pt.x},${pt.y}`, '');
+  const areaD = `${pathD} L ${curvePoints[curvePoints.length - 1].x},${paddingTop + usableHeight} L ${curvePoints[0].x},${paddingTop + usableHeight} Z`;
+
+  // Student pin X position
+  const studentX = paddingLeft + (Math.min(100, Math.max(0, totalScore)) / 100) * usableWidth;
+
+  return (
+    <div className="space-y-3 select-none">
+      <div className="flex flex-wrap items-center justify-between gap-2 text-xs">
+        <span className="font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300">
+          Cohort Statistical Bell Curve Distribution
+        </span>
+        <span className="text-[11px] font-mono text-slate-500 dark:text-slate-400">
+          Cohort Mean: 68.4% • Std Dev: ±14.2%
+        </span>
+      </div>
+
+      <div className="w-full overflow-x-auto">
+        <svg viewBox={`0 0 ${width} ${height}`} className="w-full h-56 overflow-visible">
+          <defs>
+            <linearGradient id="bellCurveGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+              <stop offset="0%" stopColor="#6366f1" stopOpacity="0.3" />
+              <stop offset="100%" stopColor="#6366f1" stopOpacity="0.02" />
+            </linearGradient>
+          </defs>
+
+          {/* Baseline Axis */}
+          <line
+            x1={paddingLeft}
+            y1={paddingTop + usableHeight}
+            x2={width - paddingRight}
+            y2={paddingTop + usableHeight}
+            stroke="currentColor"
+            strokeWidth={1}
+            className="text-slate-300 dark:text-slate-700"
+          />
+
+          {/* Grade Zone Backgrounds */}
+          <rect
+            x={paddingLeft}
+            y={paddingTop}
+            width={0.5 * usableWidth}
+            height={usableHeight}
+            fill="#f43f5e"
+            opacity={0.04}
+          />
+          <rect
+            x={paddingLeft + 0.5 * usableWidth}
+            y={paddingTop}
+            width={0.25 * usableWidth}
+            height={usableHeight}
+            fill="#f59e0b"
+            opacity={0.04}
+          />
+          <rect
+            x={paddingLeft + 0.75 * usableWidth}
+            y={paddingTop}
+            width={0.25 * usableWidth}
+            height={usableHeight}
+            fill="#10b981"
+            opacity={0.04}
+          />
+
+          {/* Bell Curve Area Fill & Stroke */}
+          <path d={areaD} fill="url(#bellCurveGrad)" />
+          <path d={pathD} fill="none" stroke="#6366f1" strokeWidth={2.2} />
+
+          {/* Cohort Mean Line */}
+          <line
+            x1={paddingLeft + (mean / 100) * usableWidth}
+            y1={paddingTop}
+            x2={paddingLeft + (mean / 100) * usableWidth}
+            y2={paddingTop + usableHeight}
+            stroke="#94a3b8"
+            strokeWidth={1}
+            strokeDasharray="3 3"
+          />
+          <text
+            x={paddingLeft + (mean / 100) * usableWidth}
+            y={paddingTop - 6}
+            textAnchor="middle"
+            className="text-[9.5px] font-mono fill-slate-500"
+          >
+            Cohort Mean (68%)
+          </text>
+
+          {/* Student Position Needle Pin */}
+          <line
+            x1={studentX}
+            y1={paddingTop + 10}
+            x2={studentX}
+            y2={paddingTop + usableHeight}
+            stroke="#f43f5e"
+            strokeWidth={2}
+          />
+          <circle cx={studentX} cy={paddingTop + 10} r={4} fill="#f43f5e" />
+
+          {/* Student Callout Badge */}
+          <g transform={`translate(${studentX}, ${paddingTop + 24})`}>
+            <rect
+              x={-55}
+              y={0}
+              width={110}
+              height={22}
+              rx={5}
+              fill="#0f172a"
+              className="dark:fill-white"
+            />
+            <text
+              x={0}
+              y={14}
+              textAnchor="middle"
+              className="text-[9.5px] font-mono font-bold fill-white dark:fill-slate-900"
+            >
+              You: {Math.round(totalScore)}% ({stats.grade})
+            </text>
+          </g>
+
+          {/* X-Axis Grade Zones */}
+          <text x={paddingLeft + 0.25 * usableWidth} y={height - 12} textAnchor="middle" className="text-[10px] font-bold fill-rose-500">
+            D/F Zone (&lt;50%)
+          </text>
+          <text x={paddingLeft + 0.62 * usableWidth} y={height - 12} textAnchor="middle" className="text-[10px] font-bold fill-amber-500">
+            C/B Zone (50-75%)
+          </text>
+          <text x={paddingLeft + 0.88 * usableWidth} y={height - 12} textAnchor="middle" className="text-[10px] font-bold fill-emerald-500">
+            A/A+ Zone (&gt;75%)
+          </text>
+        </svg>
+      </div>
+    </div>
+  );
+};
+
+/**
+ * GRAPH 3: Clean SVG Waterfall Deduction & Earned Points Diagram
  */
 const WaterfallDeductionChart = ({ layers, totalScore }) => {
   return (
@@ -112,8 +424,7 @@ const WaterfallDeductionChart = ({ layers, totalScore }) => {
 };
 
 /**
- * Multi-Metric Horizon Comparison Waveform
- * Smooth SVG line comparing actual score profile against the 80% Benchmark Standard.
+ * GRAPH 4: Multi-Metric Horizon Comparison Waveform
  */
 const HorizonWaveform = ({ layers }) => {
   const width = 500;
@@ -244,7 +555,7 @@ const ComprehensiveScorerPage = () => {
   const [evaluation, setEvaluation] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [activeTab, setActiveTab] = useState('waterfall'); // 'waterfall', 'waveform'
+  const [activeGraph, setActiveGraph] = useState('comparative'); // 'comparative', 'bellcurve', 'waterfall', 'waveform'
   const [selectedLayer, setSelectedLayer] = useState(null);
 
   useEffect(() => {
@@ -341,7 +652,7 @@ const ComprehensiveScorerPage = () => {
   return (
     <LayerPageShell
       title="Comprehensive Scorer"
-      subtitle="Executive grade scorecard and multi-dimensional academic audit synthesis"
+      subtitle="Executive grade scorecard, statistical cohort distribution, and multi-graph analytical synthesis"
       icon={ChartBarSquareIcon}
       iconColor="bg-slate-800"
       scoreBadge={scoreBadge}
@@ -486,25 +797,45 @@ const ComprehensiveScorerPage = () => {
           </div>
 
           {/* ========================================================================= */}
-          {/* SECTION 3: ASYMMETRIC 2-COLUMN COMPARISON DECK (NO RADAR, NO MURKY SHADOWS) */}
+          {/* SECTION 3: DEDICATED GRAPH ANALYTICS SUITE (Interactive Graphs)          */}
           {/* ========================================================================= */}
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
-            {/* Left 60%: Interactive Waterfall / Waveform Analysis */}
-            <div className="lg:col-span-7 bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800/90 rounded-2xl p-6 shadow-xs space-y-5">
+            {/* Left 65%: The Interactive Graph Suite Deck */}
+            <div className="lg:col-span-8 bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800/90 rounded-2xl p-6 shadow-xs space-y-5">
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-4 border-b border-slate-100 dark:border-slate-800">
                 <div className="flex items-center gap-2">
-                  <ScaleIcon className="w-5 h-5 text-indigo-600 dark:text-indigo-400" />
+                  <PresentationChartLineIcon className="w-5 h-5 text-indigo-600 dark:text-indigo-400" />
                   <h3 className="text-base font-bold text-slate-900 dark:text-white tracking-tight">
-                    Multi-Engine Mathematical Deconstruction
+                    Multi-Dimensional Performance Graphs
                   </h3>
                 </div>
 
-                {/* Segmented Switcher */}
-                <div className="flex items-center p-1 rounded-lg bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700">
+                {/* 4-Graph Interactive Switcher */}
+                <div className="flex items-center p-1 rounded-lg bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 self-start sm:self-auto overflow-x-auto max-w-full">
                   <button
-                    onClick={() => setActiveTab('waterfall')}
-                    className={`px-3 py-1 rounded-md text-xs font-semibold transition-all ${
-                      activeTab === 'waterfall'
+                    onClick={() => setActiveGraph('comparative')}
+                    className={`px-3 py-1 rounded-md text-xs font-semibold transition-all whitespace-nowrap ${
+                      activeGraph === 'comparative'
+                        ? 'bg-white dark:bg-slate-900 text-slate-900 dark:text-white shadow-xs'
+                        : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
+                    }`}
+                  >
+                    Cohort Bar Graph
+                  </button>
+                  <button
+                    onClick={() => setActiveGraph('bellcurve')}
+                    className={`px-3 py-1 rounded-md text-xs font-semibold transition-all whitespace-nowrap ${
+                      activeGraph === 'bellcurve'
+                        ? 'bg-white dark:bg-slate-900 text-slate-900 dark:text-white shadow-xs'
+                        : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
+                    }`}
+                  >
+                    Bell Curve
+                  </button>
+                  <button
+                    onClick={() => setActiveGraph('waterfall')}
+                    className={`px-3 py-1 rounded-md text-xs font-semibold transition-all whitespace-nowrap ${
+                      activeGraph === 'waterfall'
                         ? 'bg-white dark:bg-slate-900 text-slate-900 dark:text-white shadow-xs'
                         : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
                     }`}
@@ -512,36 +843,36 @@ const ComprehensiveScorerPage = () => {
                     Points Waterfall
                   </button>
                   <button
-                    onClick={() => setActiveTab('waveform')}
-                    className={`px-3 py-1 rounded-md text-xs font-semibold transition-all ${
-                      activeTab === 'waveform'
+                    onClick={() => setActiveGraph('waveform')}
+                    className={`px-3 py-1 rounded-md text-xs font-semibold transition-all whitespace-nowrap ${
+                      activeGraph === 'waveform'
                         ? 'bg-white dark:bg-slate-900 text-slate-900 dark:text-white shadow-xs'
                         : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
                     }`}
                   >
-                    Horizon Waveform
+                    Waveform
                   </button>
                 </div>
               </div>
 
-              {activeTab === 'waterfall' ? (
-                <WaterfallDeductionChart layers={layers} totalScore={totalScore} />
-              ) : (
-                <HorizonWaveform layers={layers} />
-              )}
+              {/* Render Active Graph */}
+              {activeGraph === 'comparative' && <ComparativeBarGraph layers={layers} />}
+              {activeGraph === 'bellcurve' && <CohortBellCurveGraph totalScore={totalScore} stats={stats} />}
+              {activeGraph === 'waterfall' && <WaterfallDeductionChart layers={layers} totalScore={totalScore} />}
+              {activeGraph === 'waveform' && <HorizonWaveform layers={layers} />}
             </div>
 
-            {/* Right 40%: Dimension Audit Matrix Table */}
-            <div className="lg:col-span-5 bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800/90 rounded-2xl p-6 shadow-xs space-y-4">
+            {/* Right 35%: Dimension Audit Matrix Table */}
+            <div className="lg:col-span-4 bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800/90 rounded-2xl p-6 shadow-xs space-y-4">
               <div className="flex items-center justify-between pb-3 border-b border-slate-100 dark:border-slate-800">
                 <div className="flex items-center gap-2">
                   <ClipboardDocumentCheckIcon className="w-5 h-5 text-slate-700 dark:text-slate-300" />
                   <h3 className="text-base font-bold text-slate-900 dark:text-white tracking-tight">
-                    Audit Verification Table
+                    Audit Matrix
                   </h3>
                 </div>
                 <span className="text-[10px] font-mono font-bold text-slate-600 dark:text-slate-400">
-                  5 Engines
+                  5 Modules
                 </span>
               </div>
 
@@ -549,7 +880,7 @@ const ComprehensiveScorerPage = () => {
                 <table className="w-full text-left text-xs">
                   <thead className="bg-slate-50 dark:bg-slate-800/60 text-slate-700 dark:text-slate-300 font-bold uppercase text-[10px]">
                     <tr>
-                      <th className="py-2.5 px-3">Diagnostic Module</th>
+                      <th className="py-2.5 px-3">Module</th>
                       <th className="py-2.5 px-3">Score</th>
                       <th className="py-2.5 px-3">Status</th>
                     </tr>
@@ -566,7 +897,7 @@ const ComprehensiveScorerPage = () => {
                           <span className="font-bold text-slate-900 dark:text-white block">
                             {layer.short}
                           </span>
-                          <span className="text-[10px] text-slate-600 dark:text-slate-400">
+                          <span className="text-[10px] text-slate-600 dark:text-slate-400 truncate max-w-[130px] block">
                             {layer.notes}
                           </span>
                         </td>

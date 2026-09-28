@@ -762,19 +762,19 @@ const ProjectDetailPage = () => {
                     Faculty Evaluation & Document Upload
                   </h2>
                 </div>
-                {project.status === 'evaluated' && (
-                  <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20">
-                    <CheckCircleIcon className="w-3.5 h-3.5" />
-                    Evaluated
+                {(project.status === 'evaluated' || project.evaluation?.professor_score_override != null || project.evaluation?.professor_feedback || project.evaluation?.status_label) && (
+                  <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/30 shadow-xs">
+                    <CheckCircleIcon className="w-4 h-4 text-emerald-500" />
+                    Already Evaluated
                   </span>
                 )}
               </div>
 
-              {project.status === 'evaluated' && (
-                <div className="p-3.5 rounded-lg bg-emerald-500/5 dark:bg-emerald-950/20 border border-emerald-500/20 text-xs text-emerald-700 dark:text-emerald-400 flex items-start gap-2.5">
-                  <CheckCircleIcon className="w-4 h-4 flex-shrink-0 mt-0.5" />
+              {(project.status === 'evaluated' || project.evaluation?.professor_score_override != null || project.evaluation?.professor_feedback || project.evaluation?.status_label) && (
+                <div className="p-3.5 rounded-xl bg-emerald-500/10 dark:bg-emerald-950/25 border border-emerald-500/25 text-xs text-emerald-800 dark:text-emerald-300 flex items-start gap-2.5">
+                  <CheckCircleIcon className="w-4 h-4 flex-shrink-0 mt-0.5 text-emerald-500" />
                   <div>
-                    <span className="font-semibold block">Evaluation Recorded</span>
+                    <span className="font-bold block text-emerald-900 dark:text-emerald-200">Already Evaluated by Faculty</span>
                     <span>You have previously submitted an evaluation. You may update your feedback, score, or attached review file below.</span>
                   </div>
                 </div>

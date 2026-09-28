@@ -54,9 +54,9 @@ const PriorityBadge = ({ priority }) => {
 
   return (
     <span
-      className={`inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-md text-[10px] font-mono font-bold uppercase tracking-wider border ${c.bg}`}
+      className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-md text-xs font-mono font-bold uppercase tracking-wider border ${c.bg}`}
     >
-      <span className={`w-1.5 h-1.5 rounded-full ${c.dot}`} />
+      <span className={`w-2 h-2 rounded-full ${c.dot}`} />
       {priority}
     </span>
   );
@@ -69,11 +69,11 @@ const PriorityBadge = ({ priority }) => {
  */
 const EffortImpactQuadrantChart = ({ actions, selectedActionIdx, onSelectAction }) => {
   const width = 860;
-  const height = 320;
-  const paddingLeft = 55;
-  const paddingRight = 40;
-  const paddingTop = 30;
-  const paddingBottom = 40;
+  const height = 330;
+  const paddingLeft = 65;
+  const paddingRight = 45;
+  const paddingTop = 32;
+  const paddingBottom = 45;
   const plotW = width - paddingLeft - paddingRight;
   const plotH = height - paddingTop - paddingBottom;
 
@@ -84,31 +84,31 @@ const EffortImpactQuadrantChart = ({ actions, selectedActionIdx, onSelectAction 
   const midY = paddingTop + plotH / 2;
 
   return (
-    <div className="space-y-3 w-full select-none">
-      <div className="flex flex-wrap items-center justify-between gap-3 text-xs">
+    <div className="space-y-3.5 w-full select-none">
+      <div className="flex flex-wrap items-center justify-between gap-3 text-xs sm:text-sm">
         <div className="flex items-center gap-2">
-          <span className="font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300">
+          <span className="font-extrabold uppercase tracking-wide text-slate-800 dark:text-slate-200 text-sm">
             Remediation ROI Quadrant (Effort vs. Score Yield)
           </span>
-          <span className="px-2 py-0.5 rounded text-[10px] font-mono bg-indigo-50 dark:bg-indigo-950/50 text-indigo-600 dark:text-indigo-400 border border-indigo-200 dark:border-indigo-800">
+          <span className="px-2.5 py-0.5 rounded text-xs font-mono font-bold bg-indigo-50 dark:bg-indigo-950/50 text-indigo-600 dark:text-indigo-400 border border-indigo-200 dark:border-indigo-800">
             Interactive
           </span>
         </div>
-        <div className="flex items-center gap-3 text-[11px] font-mono">
-          <span className="flex items-center gap-1.5 text-emerald-600 dark:text-emerald-400 font-semibold">
-            <span className="w-2.5 h-2.5 rounded-full bg-emerald-500" /> Quick Wins (Priority 1)
+        <div className="flex items-center gap-4 text-xs font-mono font-semibold">
+          <span className="flex items-center gap-1.5 text-emerald-600 dark:text-emerald-400">
+            <span className="w-3 h-3 rounded-full bg-emerald-500" /> Quick Wins (Priority 1)
           </span>
-          <span className="flex items-center gap-1.5 text-blue-600 dark:text-blue-400 font-semibold">
-            <span className="w-2.5 h-2.5 rounded-full bg-blue-500" /> Strategic Overhauls
+          <span className="flex items-center gap-1.5 text-blue-600 dark:text-blue-400">
+            <span className="w-3 h-3 rounded-full bg-blue-500" /> Strategic Overhauls
           </span>
-          <span className="flex items-center gap-1.5 text-slate-500 font-semibold">
-            <span className="w-2.5 h-2.5 rounded-full bg-slate-400" /> Polish / Minor
+          <span className="flex items-center gap-1.5 text-slate-500 dark:text-slate-400">
+            <span className="w-3 h-3 rounded-full bg-slate-400" /> Polish / Minor
           </span>
         </div>
       </div>
 
       <div className="w-full bg-slate-50/60 dark:bg-slate-900/60 rounded-xl border border-slate-200/80 dark:border-slate-800 p-2 overflow-hidden">
-        <svg viewBox={`0 0 ${width} ${height}`} className="w-full h-64 sm:h-72 overflow-visible">
+        <svg viewBox={`0 0 ${width} ${height}`} className="w-full h-64 sm:h-76 overflow-visible">
           {/* Quadrant Background Shading */}
           {/* Q1: Top-Left Quick Wins (Low Effort, High Impact) */}
           <rect
@@ -119,9 +119,9 @@ const EffortImpactQuadrantChart = ({ actions, selectedActionIdx, onSelectAction 
             className="fill-emerald-500/5 dark:fill-emerald-500/10"
           />
           <text
-            x={paddingLeft + 12}
-            y={paddingTop + 20}
-            className="text-[10px] font-mono font-bold fill-emerald-600 dark:fill-emerald-400 tracking-wider uppercase opacity-80"
+            x={paddingLeft + 14}
+            y={paddingTop + 22}
+            className="text-[12px] font-mono font-black fill-emerald-600 dark:fill-emerald-400 tracking-wider uppercase opacity-90"
           >
             ★ QUICK WINS (High Yield, Fast)
           </text>
@@ -135,10 +135,10 @@ const EffortImpactQuadrantChart = ({ actions, selectedActionIdx, onSelectAction 
             className="fill-blue-500/5 dark:fill-blue-500/10"
           />
           <text
-            x={width - paddingRight - 12}
-            y={paddingTop + 20}
+            x={width - paddingRight - 14}
+            y={paddingTop + 22}
             textAnchor="end"
-            className="text-[10px] font-mono font-bold fill-blue-600 dark:fill-blue-400 tracking-wider uppercase opacity-80"
+            className="text-[12px] font-mono font-black fill-blue-600 dark:fill-blue-400 tracking-wider uppercase opacity-90"
           >
             STRATEGIC OVERHAULS (High Yield, Heavy)
           </text>
@@ -152,9 +152,9 @@ const EffortImpactQuadrantChart = ({ actions, selectedActionIdx, onSelectAction 
             className="fill-slate-500/5 dark:fill-slate-500/5"
           />
           <text
-            x={paddingLeft + 12}
-            y={height - paddingBottom - 10}
-            className="text-[10px] font-mono font-bold fill-slate-500 dark:fill-slate-400 tracking-wider uppercase opacity-70"
+            x={paddingLeft + 14}
+            y={height - paddingBottom - 12}
+            className="text-[11px] font-mono font-bold fill-slate-500 dark:fill-slate-400 tracking-wider uppercase opacity-80"
           >
             POLISH & HYGIENE (Minor Fixes)
           </text>
@@ -168,10 +168,10 @@ const EffortImpactQuadrantChart = ({ actions, selectedActionIdx, onSelectAction 
             className="fill-rose-500/5 dark:fill-rose-500/5"
           />
           <text
-            x={width - paddingRight - 12}
-            y={height - paddingBottom - 10}
+            x={width - paddingRight - 14}
+            y={height - paddingBottom - 12}
             textAnchor="end"
-            className="text-[10px] font-mono font-bold fill-rose-500/80 dark:fill-rose-400/70 tracking-wider uppercase opacity-70"
+            className="text-[11px] font-mono font-bold fill-rose-500/80 dark:fill-rose-400/80 tracking-wider uppercase opacity-80"
           >
             RE-EVALUATE PRIORITY
           </text>
@@ -223,15 +223,15 @@ const EffortImpactQuadrantChart = ({ actions, selectedActionIdx, onSelectAction 
             x={paddingLeft - 10}
             y={paddingTop + 10}
             textAnchor="end"
-            className="text-[9px] font-mono font-bold fill-slate-500 uppercase"
+            className="text-[11px] font-mono font-bold fill-slate-600 dark:fill-slate-400 uppercase"
           >
             +20 pts
           </text>
           <text
             x={paddingLeft - 10}
-            y={midY + 3}
+            y={midY + 4}
             textAnchor="end"
-            className="text-[9px] font-mono fill-slate-400"
+            className="text-[11px] font-mono font-bold fill-slate-500 dark:fill-slate-400"
           >
             +10 pts
           </text>
@@ -239,31 +239,31 @@ const EffortImpactQuadrantChart = ({ actions, selectedActionIdx, onSelectAction 
             x={paddingLeft - 10}
             y={height - paddingBottom}
             textAnchor="end"
-            className="text-[9px] font-mono fill-slate-400"
+            className="text-[11px] font-mono font-bold fill-slate-500 dark:fill-slate-400"
           >
             +0 pts
           </text>
 
           <text
             x={paddingLeft}
-            y={height - paddingBottom + 18}
-            className="text-[9.5px] font-mono fill-slate-500 uppercase font-semibold"
+            y={height - paddingBottom + 20}
+            className="text-[11px] font-mono fill-slate-600 dark:fill-slate-400 uppercase font-bold"
           >
             0h (Quick)
           </text>
           <text
             x={midX}
-            y={height - paddingBottom + 18}
+            y={height - paddingBottom + 20}
             textAnchor="middle"
-            className="text-[9.5px] font-mono fill-slate-500 uppercase font-semibold"
+            className="text-[11px] font-mono fill-slate-600 dark:fill-slate-400 uppercase font-bold"
           >
             3h Dev Effort
           </text>
           <text
             x={width - paddingRight}
-            y={height - paddingBottom + 18}
+            y={height - paddingBottom + 20}
             textAnchor="end"
-            className="text-[9.5px] font-mono fill-slate-500 uppercase font-semibold"
+            className="text-[11px] font-mono fill-slate-600 dark:fill-slate-400 uppercase font-bold"
           >
             6h+ (Deep Work)
           </text>
@@ -291,9 +291,9 @@ const EffortImpactQuadrantChart = ({ actions, selectedActionIdx, onSelectAction 
                   <circle
                     cx={cx}
                     cy={cy}
-                    r={18}
+                    r={20}
                     fill={nodeColor}
-                    fillOpacity={0.2}
+                    fillOpacity={0.25}
                     className="animate-ping"
                   />
                 )}
@@ -302,19 +302,19 @@ const EffortImpactQuadrantChart = ({ actions, selectedActionIdx, onSelectAction 
                 <circle
                   cx={cx}
                   cy={cy}
-                  r={isSelected ? 14 : 10}
+                  r={isSelected ? 16 : 12}
                   fill={nodeColor}
-                  className="transition-all duration-300 drop-shadow-sm group-hover:scale-125"
+                  className="transition-all duration-300 drop-shadow-md group-hover:scale-125"
                   stroke="#ffffff"
-                  strokeWidth={2}
+                  strokeWidth={2.5}
                 />
 
                 {/* Node Numeric Index */}
                 <text
                   x={cx}
-                  y={cy + 3.5}
+                  y={cy + 4}
                   textAnchor="middle"
-                  className="text-[9px] font-mono font-black fill-white pointer-events-none"
+                  className="text-[11px] font-mono font-black fill-white pointer-events-none"
                 >
                   {idx + 1}
                 </text>
@@ -322,18 +322,18 @@ const EffortImpactQuadrantChart = ({ actions, selectedActionIdx, onSelectAction 
                 {/* Hover / Active Badge Text */}
                 <g className={isSelected ? 'block' : 'hidden group-hover:block pointer-events-none'}>
                   <rect
-                    x={Math.min(width - paddingRight - 150, Math.max(paddingLeft, cx - 75))}
-                    y={cy - 34}
-                    width={150}
-                    height={24}
-                    rx={6}
-                    className="fill-slate-900/90 dark:fill-slate-100/95"
+                    x={Math.min(width - paddingRight - 165, Math.max(paddingLeft, cx - 82))}
+                    y={cy - 38}
+                    width={165}
+                    height={28}
+                    rx={7}
+                    className="fill-slate-900/95 dark:fill-slate-100/95"
                   />
                   <text
-                    x={Math.min(width - paddingRight - 75, Math.max(paddingLeft + 75, cx))}
-                    y={cy - 18}
+                    x={Math.min(width - paddingRight - 82, Math.max(paddingLeft + 82, cx))}
+                    y={cy - 20}
                     textAnchor="middle"
-                    className="text-[9.5px] font-mono font-bold fill-white dark:fill-slate-900"
+                    className="text-[11.5px] font-mono font-bold fill-white dark:fill-slate-900"
                   >
                     #{idx + 1}: +{impactVal} pts (~{hours}h)
                   </text>
@@ -353,16 +353,15 @@ const EffortImpactQuadrantChart = ({ actions, selectedActionIdx, onSelectAction 
  */
 const RecoveryTrajectoryChart = ({ baselineScore, milestones, resolvedTasks }) => {
   const width = 860;
-  const height = 240;
-  const paddingLeft = 55;
-  const paddingRight = 45;
-  const paddingTop = 25;
-  const paddingBottom = 40;
+  const height = 250;
+  const paddingLeft = 65;
+  const paddingRight = 50;
+  const paddingTop = 28;
+  const paddingBottom = 45;
   const plotW = width - paddingLeft - paddingRight;
   const plotH = height - paddingTop - paddingBottom;
 
   // Build points array
-  // Point 0 = Baseline
   let accumulated = baselineScore;
   const trajectoryPoints = [
     { label: 'Baseline', score: baselineScore, solved: true, stepName: 'Current State' },
@@ -394,13 +393,13 @@ const RecoveryTrajectoryChart = ({ baselineScore, milestones, resolvedTasks }) =
   const areaD = `${pathD} L ${lastX} ${bottomY} L ${firstX} ${bottomY} Z`;
 
   return (
-    <div className="space-y-3 w-full select-none">
-      <div className="flex flex-wrap items-center justify-between gap-3 text-xs">
-        <span className="font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300">
-          Remediation Recovery Trajectory (Projected Resubmission Grade Horizon)
+    <div className="space-y-3.5 w-full select-none">
+      <div className="flex flex-wrap items-center justify-between gap-3 text-xs sm:text-sm">
+        <span className="font-extrabold uppercase tracking-wide text-slate-800 dark:text-slate-200 text-sm">
+          Remediation Recovery Trajectory (Grade Horizon)
         </span>
-        <div className="flex items-center gap-3 text-[11px] font-mono">
-          <span className="text-slate-500 font-semibold">
+        <div className="flex items-center gap-3 text-xs font-mono font-semibold">
+          <span className="text-slate-600 dark:text-slate-400">
             Baseline: <strong className="text-slate-900 dark:text-white">{Math.round(baselineScore)}%</strong>
           </span>
           <span className="text-indigo-600 dark:text-indigo-400 font-bold">
@@ -410,12 +409,12 @@ const RecoveryTrajectoryChart = ({ baselineScore, milestones, resolvedTasks }) =
       </div>
 
       <div className="w-full bg-slate-50/60 dark:bg-slate-900/60 rounded-xl border border-slate-200/80 dark:border-slate-800 p-2 overflow-hidden">
-        <svg viewBox={`0 0 ${width} ${height}`} className="w-full h-56 sm:h-64 overflow-visible">
+        <svg viewBox={`0 0 ${width} ${height}`} className="w-full h-56 sm:h-68 overflow-visible">
           <defs>
             <linearGradient id="trajectoryGrad" x1="0%" y1="0%" x2="100%" y2="0%">
-              <stop offset="0%" stopColor="#f59e0b" stopOpacity="0.4" />
-              <stop offset="60%" stopColor="#6366f1" stopOpacity="0.4" />
-              <stop offset="100%" stopColor="#10b981" stopOpacity="0.5" />
+              <stop offset="0%" stopColor="#f59e0b" stopOpacity="0.5" />
+              <stop offset="60%" stopColor="#6366f1" stopOpacity="0.5" />
+              <stop offset="100%" stopColor="#10b981" stopOpacity="0.6" />
             </linearGradient>
             <linearGradient id="areaGrad" x1="0%" y1="0%" x2="0%" y2="100%">
               <stop offset="0%" stopColor="#6366f1" stopOpacity="0.25" />
@@ -438,15 +437,15 @@ const RecoveryTrajectoryChart = ({ baselineScore, milestones, resolvedTasks }) =
                   x2={width - paddingRight}
                   y2={y}
                   stroke={band.color}
-                  strokeWidth={0.8}
+                  strokeWidth={1}
                   strokeDasharray="4 4"
-                  opacity={0.4}
+                  opacity={0.45}
                 />
                 <text
                   x={width - paddingRight}
-                  y={y - 4}
+                  y={y - 5}
                   textAnchor="end"
-                  className="text-[9px] font-mono font-bold"
+                  className="text-[11px] font-mono font-bold"
                   fill={band.color}
                 >
                   {band.label} [{band.min}%]
@@ -463,7 +462,7 @@ const RecoveryTrajectoryChart = ({ baselineScore, milestones, resolvedTasks }) =
             d={pathD}
             fill="none"
             stroke="url(#trajectoryGrad)"
-            strokeWidth={3}
+            strokeWidth={3.5}
             strokeLinecap="round"
             strokeLinejoin="round"
           />
@@ -480,14 +479,14 @@ const RecoveryTrajectoryChart = ({ baselineScore, milestones, resolvedTasks }) =
                 <circle
                   cx={cx}
                   cy={cy}
-                  r={isTarget ? 10 : 7}
+                  r={isTarget ? 12 : 8.5}
                   fill={isTarget ? '#10b981' : '#6366f1'}
-                  fillOpacity={0.2}
+                  fillOpacity={0.25}
                 />
                 <circle
                   cx={cx}
                   cy={cy}
-                  r={isTarget ? 6 : 4.5}
+                  r={isTarget ? 7 : 5.5}
                   fill={isTarget ? '#10b981' : '#6366f1'}
                   stroke="#ffffff"
                   strokeWidth={2}
@@ -496,10 +495,10 @@ const RecoveryTrajectoryChart = ({ baselineScore, milestones, resolvedTasks }) =
                 {/* Score Tag */}
                 <text
                   x={cx}
-                  y={cy - 12}
+                  y={cy - 14}
                   textAnchor="middle"
-                  className={`text-[10px] font-mono font-bold ${
-                    isTarget ? 'fill-emerald-600 dark:fill-emerald-400 text-xs' : 'fill-slate-900 dark:fill-slate-100'
+                  className={`text-[12px] font-mono font-black ${
+                    isTarget ? 'fill-emerald-600 dark:fill-emerald-400 text-sm' : 'fill-slate-900 dark:fill-slate-100'
                   }`}
                 >
                   {Math.round(pt.score)}%
@@ -508,19 +507,19 @@ const RecoveryTrajectoryChart = ({ baselineScore, milestones, resolvedTasks }) =
                 {/* X Axis Label */}
                 <text
                   x={cx}
-                  y={height - paddingBottom + 16}
+                  y={height - paddingBottom + 18}
                   textAnchor="middle"
-                  className="text-[9.5px] font-mono font-semibold fill-slate-600 dark:fill-slate-400"
+                  className="text-[11px] font-mono font-bold fill-slate-700 dark:text-slate-300"
                 >
                   {pt.label}
                 </text>
                 <text
                   x={cx}
-                  y={height - paddingBottom + 28}
+                  y={height - paddingBottom + 32}
                   textAnchor="middle"
-                  className="text-[8.5px] font-sans fill-slate-400 dark:fill-slate-500 max-w-[80px] truncate"
+                  className="text-[10px] font-sans font-medium fill-slate-500 dark:fill-slate-400 max-w-[90px] truncate"
                 >
-                  {pt.stepName.slice(0, 14)}
+                  {pt.stepName.slice(0, 15)}
                 </text>
               </g>
             );
@@ -762,14 +761,14 @@ const FeedbackGeneratorPage = () => {
             <div className="flex flex-col xl:flex-row xl:items-center justify-between gap-8">
               {/* Left Column: Executive Assessment & Verdict */}
               <div className="space-y-4 max-w-2xl">
-                <div className="flex flex-wrap items-center gap-2">
+                <div className="flex flex-wrap items-center gap-2.5">
                   <div className="p-1.5 rounded-lg bg-amber-50 dark:bg-amber-950/60 border border-amber-200/80 dark:border-amber-800 text-amber-600 dark:text-amber-400">
                     <SparklesIcon className="w-4 h-4" />
                   </div>
-                  <span className="text-[11px] font-bold uppercase tracking-wider text-slate-600 dark:text-slate-400">
+                  <span className="text-xs sm:text-sm font-bold uppercase tracking-wider text-slate-600 dark:text-slate-400">
                     Departmental Remediation Synthesis
                   </span>
-                  <span className="px-2 py-0.5 rounded-md text-[10px] font-mono font-bold bg-amber-100 dark:bg-amber-950/80 text-amber-800 dark:text-amber-300 border border-amber-200 dark:border-amber-800">
+                  <span className="px-2.5 py-1 rounded-md text-xs font-mono font-bold bg-amber-100 dark:bg-amber-950/80 text-amber-800 dark:text-amber-300 border border-amber-200 dark:border-amber-800">
                     Advisory Grade: {suggestedGrade}
                   </span>
                 </div>
@@ -778,38 +777,38 @@ const FeedbackGeneratorPage = () => {
                   <h2 className="text-xl sm:text-2xl font-black text-slate-900 dark:text-white tracking-tight">
                     Executive Diagnostic Verdict
                   </h2>
-                  <p className="mt-1 text-sm font-semibold text-amber-600 dark:text-amber-400">
+                  <p className="mt-1.5 text-base sm:text-lg font-bold text-amber-600 dark:text-amber-400 leading-snug">
                     "{verdict}"
                   </p>
                 </div>
 
-                <p className="text-sm text-slate-600 dark:text-slate-300 leading-relaxed font-medium">
+                <p className="text-sm sm:text-base text-slate-600 dark:text-slate-300 leading-relaxed font-medium">
                   {execSummary}
                 </p>
 
                 {/* Pillar Telemetry Pills */}
-                <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 pt-2">
-                  <div className="p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200/80 dark:border-slate-800">
-                    <span className="text-[9.5px] font-mono font-bold uppercase text-slate-500 block">Code Health</span>
-                    <span className="text-sm font-black font-mono text-slate-900 dark:text-white">
+                <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5 pt-2">
+                  <div className="p-3 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200/80 dark:border-slate-800">
+                    <span className="text-xs font-mono font-bold uppercase text-slate-500 dark:text-slate-400 block">Code Health</span>
+                    <span className="text-base sm:text-lg font-black font-mono text-slate-900 dark:text-white">
                       {Math.round(scoresBlock.code_quality || 62)}%
                     </span>
                   </div>
-                  <div className="p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200/80 dark:border-slate-800">
-                    <span className="text-[9.5px] font-mono font-bold uppercase text-slate-500 block">Doc Completeness</span>
-                    <span className="text-sm font-black font-mono text-slate-900 dark:text-white">
+                  <div className="p-3 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200/80 dark:border-slate-800">
+                    <span className="text-xs font-mono font-bold uppercase text-slate-500 dark:text-slate-400 block">Doc Completeness</span>
+                    <span className="text-base sm:text-lg font-black font-mono text-slate-900 dark:text-white">
                       {Math.round(docFb.completeness_percent || 45)}%
                     </span>
                   </div>
-                  <div className="p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200/80 dark:border-slate-800">
-                    <span className="text-[9.5px] font-mono font-bold uppercase text-slate-500 block">Alignment</span>
-                    <span className="text-sm font-black font-mono text-slate-900 dark:text-white">
+                  <div className="p-3 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200/80 dark:border-slate-800">
+                    <span className="text-xs font-mono font-bold uppercase text-slate-500 dark:text-slate-400 block">Alignment</span>
+                    <span className="text-base sm:text-lg font-black font-mono text-slate-900 dark:text-white">
                       {Math.round(alignFb.alignment_score || 64)}%
                     </span>
                   </div>
-                  <div className="p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200/80 dark:border-slate-800">
-                    <span className="text-[9.5px] font-mono font-bold uppercase text-slate-500 block">Originality</span>
-                    <span className="text-sm font-black font-mono text-emerald-600 dark:text-emerald-400">
+                  <div className="p-3 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200/80 dark:border-slate-800">
+                    <span className="text-xs font-mono font-bold uppercase text-slate-500 dark:text-slate-400 block">Originality</span>
+                    <span className="text-base sm:text-lg font-black font-mono text-emerald-600 dark:text-emerald-400">
                       {originFb.risk_level === 'LOW' ? '96% Clean' : 'Review'}
                     </span>
                   </div>
@@ -817,15 +816,15 @@ const FeedbackGeneratorPage = () => {
               </div>
 
               {/* Right Column: Live Interactive Score Recovery Gauge */}
-              <div className="p-5 rounded-2xl bg-slate-50/80 dark:bg-slate-800/50 border border-slate-200/90 dark:border-slate-800 flex flex-col justify-between gap-5 min-w-[320px]">
+              <div className="p-5 sm:p-6 rounded-2xl bg-slate-50/80 dark:bg-slate-800/50 border border-slate-200/90 dark:border-slate-800 flex flex-col justify-between gap-5 min-w-[320px]">
                 <div className="flex items-center justify-between pb-3 border-b border-slate-200/80 dark:border-slate-700/80">
                   <div className="flex items-center gap-2">
                     <ArrowTrendingUpIcon className="w-4 h-4 text-emerald-500" />
-                    <span className="text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300">
+                    <span className="text-xs sm:text-sm font-extrabold uppercase tracking-wide text-slate-800 dark:text-slate-200">
                       Live Remediation Horizon
                     </span>
                   </div>
-                  <span className="px-2 py-0.5 rounded text-[10px] font-mono font-bold bg-emerald-50 dark:bg-emerald-950/60 text-emerald-600 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-800">
+                  <span className="px-3 py-1 rounded-md text-xs font-mono font-bold bg-emerald-50 dark:bg-emerald-950/60 text-emerald-600 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-800">
                     +{pointsRecovered} pts Recovered
                   </span>
                 </div>
@@ -833,39 +832,39 @@ const FeedbackGeneratorPage = () => {
                 {/* Score Comparison Display */}
                 <div className="flex items-center justify-around text-center py-1">
                   <div>
-                    <span className="text-[10px] font-mono uppercase text-slate-500 block">Baseline Score</span>
-                    <span className="text-2xl sm:text-3xl font-black font-mono text-slate-700 dark:text-slate-300">
+                    <span className="text-xs font-mono uppercase font-bold text-slate-500 block">Baseline Score</span>
+                    <span className="text-3xl sm:text-4xl font-black font-mono text-slate-700 dark:text-slate-300">
                       {Math.round(baselineScore)}
                     </span>
-                    <span className="text-[10px] font-mono text-slate-400 block mt-0.5">Grade {suggestedGrade}</span>
+                    <span className="text-xs font-mono font-semibold text-slate-500 dark:text-slate-400 block mt-1">Grade {suggestedGrade}</span>
                   </div>
 
                   <div className="text-slate-400 dark:text-slate-600">
-                    <ArrowPathIcon className="w-5 h-5 mx-auto animate-spin-slow" />
+                    <ArrowPathIcon className="w-6 h-6 mx-auto animate-spin-slow" />
                   </div>
 
                   <div>
-                    <span className="text-[10px] font-mono uppercase text-emerald-600 dark:text-emerald-400 font-bold block">
+                    <span className="text-xs font-mono uppercase text-emerald-600 dark:text-emerald-400 font-bold block">
                       Target Projected
                     </span>
                     <span className="text-3xl sm:text-4xl font-black font-mono text-emerald-600 dark:text-emerald-400 transition-all duration-300">
                       {liveSimulatedScore}
                     </span>
-                    <span className="text-[10px] font-mono text-emerald-600 dark:text-emerald-400 font-bold block mt-0.5">
+                    <span className="text-xs font-mono text-emerald-600 dark:text-emerald-400 font-bold block mt-1">
                       {liveSimulatedScore >= 85 ? 'Grade A (Distinction)' : liveSimulatedScore >= 70 ? 'Grade B (Proficient)' : 'Grade C (Passing)'}
                     </span>
                   </div>
                 </div>
 
                 {/* Progress Bar */}
-                <div className="space-y-1.5">
-                  <div className="flex justify-between text-xs font-mono">
-                    <span className="text-slate-600 dark:text-slate-400">Action Plan Resolution</span>
+                <div className="space-y-2">
+                  <div className="flex justify-between text-xs sm:text-sm font-mono font-semibold">
+                    <span className="text-slate-600 dark:text-slate-300">Action Plan Resolution</span>
                     <span className="font-bold text-slate-900 dark:text-white">
                       {resolvedCount} of {rawActions.length} Completed
                     </span>
                   </div>
-                  <div className="h-2.5 w-full rounded-full bg-slate-200 dark:bg-slate-700 overflow-hidden">
+                  <div className="h-3 w-full rounded-full bg-slate-200 dark:bg-slate-700 overflow-hidden">
                     <div
                       className="h-full rounded-full bg-gradient-to-r from-amber-500 to-emerald-500 transition-all duration-500"
                       style={{
@@ -876,9 +875,9 @@ const FeedbackGeneratorPage = () => {
                 </div>
 
                 {/* Summary Metadata */}
-                <div className="flex items-center justify-between text-[11px] font-mono text-slate-500 dark:text-slate-400 pt-2 border-t border-slate-200/80 dark:border-slate-700/80">
+                <div className="flex items-center justify-between text-xs sm:text-sm font-mono font-semibold text-slate-600 dark:text-slate-300 pt-2.5 border-t border-slate-200/80 dark:border-slate-700/80">
                   <span>Est. Dev Effort: ~{totalEffortHours}h</span>
-                  <span>Max Recovery: +{totalPotentialUplift} pts</span>
+                  <span className="text-emerald-600 dark:text-emerald-400 font-bold">Max Recovery: +{totalPotentialUplift} pts</span>
                 </div>
               </div>
             </div>
@@ -912,41 +911,42 @@ const FeedbackGeneratorPage = () => {
 
           {/* ========================================================================= */}
           {/* SECTION 3: STRATEGIC BALANCE: CORE STRENGTHS VS REMEDIATION DEFICITS      */}
+          {/* Enhanced font sizes for effortless legibility                             */}
           {/* ========================================================================= */}
           <div className="animate-fluid-enter animate-fluid-delay-2 grid grid-cols-1 lg:grid-cols-2 gap-6">
             {/* Validated Strengths */}
-            <div className="bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800/90 rounded-2xl p-6 shadow-xs space-y-4">
-              <div className="flex items-center justify-between pb-3 border-b border-slate-100 dark:border-slate-800">
-                <div className="flex items-center gap-2.5">
-                  <div className="p-1.5 rounded-lg bg-emerald-50 dark:bg-emerald-950/60 text-emerald-600 dark:text-emerald-400 border border-emerald-200/80 dark:border-emerald-800/60">
-                    <CheckCircleIcon className="w-4 h-4" />
+            <div className="bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800/90 rounded-2xl p-6 sm:p-7 shadow-xs space-y-4">
+              <div className="flex items-center justify-between pb-3.5 border-b border-slate-100 dark:border-slate-800">
+                <div className="flex items-center gap-3">
+                  <div className="p-2 rounded-xl bg-emerald-50 dark:bg-emerald-950/60 text-emerald-600 dark:text-emerald-400 border border-emerald-200/80 dark:border-emerald-800/60">
+                    <CheckCircleIcon className="w-5 h-5" />
                   </div>
                   <div>
-                    <h3 className="text-sm font-bold uppercase tracking-wider text-slate-900 dark:text-white">
+                    <h3 className="text-base sm:text-lg font-black uppercase tracking-wide text-slate-900 dark:text-white">
                       Validated Implementation Strengths
                     </h3>
-                    <p className="text-[11px] text-slate-600 dark:text-slate-400">
+                    <p className="text-xs sm:text-sm font-medium text-slate-600 dark:text-slate-300">
                       High-performing architectural aspects to protect during revision
                     </p>
                   </div>
                 </div>
-                <span className="text-[10px] font-mono font-bold px-2 py-0.5 rounded bg-emerald-50 dark:bg-emerald-950/60 text-emerald-600 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-800">
+                <span className="text-xs font-mono font-bold px-3 py-1 rounded-lg bg-emerald-50 dark:bg-emerald-950/60 text-emerald-600 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-800">
                   {strengths.length} Confirmed
                 </span>
               </div>
 
-              <div className="space-y-3">
+              <div className="space-y-3.5">
                 {strengths.map((str, idx) => (
                   <div
                     key={idx}
-                    className="p-3.5 rounded-xl bg-emerald-50/40 dark:bg-emerald-950/20 border border-emerald-200/80 dark:border-emerald-800/40 flex items-start gap-3 transition-colors hover:border-emerald-400"
+                    className="p-4 rounded-xl bg-emerald-50/40 dark:bg-emerald-950/20 border border-emerald-200/80 dark:border-emerald-800/40 flex items-start gap-3.5 transition-colors hover:border-emerald-400"
                   >
-                    <CheckCircleIcon className="w-5 h-5 text-emerald-500 flex-shrink-0 mt-0.5" />
-                    <div>
-                      <span className="text-xs font-semibold text-slate-800 dark:text-slate-200 leading-relaxed block">
+                    <CheckCircleIcon className="w-6 h-6 text-emerald-500 flex-shrink-0 mt-0.5" />
+                    <div className="space-y-1">
+                      <span className="text-sm sm:text-base font-bold text-slate-900 dark:text-white leading-relaxed block">
                         {str}
                       </span>
-                      <span className="text-[10px] font-mono text-emerald-600 dark:text-emerald-400 mt-1 block">
+                      <span className="text-xs sm:text-sm font-mono font-semibold text-emerald-600 dark:text-emerald-400 block">
                         ✓ Preserves +{(idx + 1) * 6} pts in rubric baseline
                       </span>
                     </div>
@@ -956,38 +956,38 @@ const FeedbackGeneratorPage = () => {
             </div>
 
             {/* Priority Deficits */}
-            <div className="bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800/90 rounded-2xl p-6 shadow-xs space-y-4">
-              <div className="flex items-center justify-between pb-3 border-b border-slate-100 dark:border-slate-800">
-                <div className="flex items-center gap-2.5">
-                  <div className="p-1.5 rounded-lg bg-amber-50 dark:bg-amber-950/60 text-amber-600 dark:text-amber-400 border border-amber-200/80 dark:border-amber-800/60">
-                    <LightBulbIcon className="w-4 h-4" />
+            <div className="bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800/90 rounded-2xl p-6 sm:p-7 shadow-xs space-y-4">
+              <div className="flex items-center justify-between pb-3.5 border-b border-slate-100 dark:border-slate-800">
+                <div className="flex items-center gap-3">
+                  <div className="p-2 rounded-xl bg-amber-50 dark:bg-amber-950/60 text-amber-600 dark:text-amber-400 border border-amber-200/80 dark:border-amber-800/60">
+                    <LightBulbIcon className="w-5 h-5" />
                   </div>
                   <div>
-                    <h3 className="text-sm font-bold uppercase tracking-wider text-slate-900 dark:text-white">
+                    <h3 className="text-base sm:text-lg font-black uppercase tracking-wide text-slate-900 dark:text-white">
                       Identified Growth Deficits
                     </h3>
-                    <p className="text-[11px] text-slate-600 dark:text-slate-400">
+                    <p className="text-xs sm:text-sm font-medium text-slate-600 dark:text-slate-300">
                       Root causes contributing directly to rubric point deductions
                     </p>
                   </div>
                 </div>
-                <span className="text-[10px] font-mono font-bold px-2 py-0.5 rounded bg-amber-50 dark:bg-amber-950/60 text-amber-600 dark:text-amber-400 border border-amber-200 dark:border-amber-800">
+                <span className="text-xs font-mono font-bold px-3 py-1 rounded-lg bg-amber-50 dark:bg-amber-950/60 text-amber-600 dark:text-amber-400 border border-amber-200 dark:border-amber-800">
                   {improvements.length} Gaps
                 </span>
               </div>
 
-              <div className="space-y-3">
+              <div className="space-y-3.5">
                 {improvements.map((imp, idx) => (
                   <div
                     key={idx}
-                    className="p-3.5 rounded-xl bg-amber-50/40 dark:bg-amber-950/20 border border-amber-200/80 dark:border-amber-800/40 flex items-start gap-3 transition-colors hover:border-amber-400"
+                    className="p-4 rounded-xl bg-amber-50/40 dark:bg-amber-950/20 border border-amber-200/80 dark:border-amber-800/40 flex items-start gap-3.5 transition-colors hover:border-amber-400"
                   >
-                    <ExclamationCircleIcon className="w-5 h-5 text-amber-500 flex-shrink-0 mt-0.5" />
-                    <div>
-                      <span className="text-xs font-semibold text-slate-800 dark:text-slate-200 leading-relaxed block">
+                    <ExclamationCircleIcon className="w-6 h-6 text-amber-500 flex-shrink-0 mt-0.5" />
+                    <div className="space-y-1">
+                      <span className="text-sm sm:text-base font-bold text-slate-900 dark:text-white leading-relaxed block">
                         {imp}
                       </span>
-                      <span className="text-[10px] font-mono text-amber-600 dark:text-amber-400 mt-1 block">
+                      <span className="text-xs sm:text-sm font-mono font-semibold text-amber-600 dark:text-amber-400 block">
                         ⚠ Potential deduction: -{(idx + 1) * 7} pts if unresolved
                       </span>
                     </div>
@@ -1000,45 +1000,45 @@ const FeedbackGeneratorPage = () => {
           {/* ========================================================================= */}
           {/* SECTION 4: TABBED ACTION & DIAGNOSTIC NAVIGATION                          */}
           {/* ========================================================================= */}
-          <div className="flex border-b border-slate-200 dark:border-slate-800 gap-4 text-sm font-bold">
+          <div className="flex border-b border-slate-200 dark:border-slate-800 gap-6 text-sm sm:text-base font-bold">
             <button
               onClick={() => setActiveTab('ACTION_PLAN')}
-              className={`pb-3 transition-colors border-b-2 flex items-center gap-2 ${
+              className={`pb-3.5 transition-colors border-b-2 flex items-center gap-2.5 ${
                 activeTab === 'ACTION_PLAN'
                   ? 'border-amber-500 text-amber-600 dark:text-amber-400'
                   : 'border-transparent text-slate-500 hover:text-slate-800 dark:hover:text-slate-200'
               }`}
             >
-              <BoltIcon className="w-4 h-4" />
+              <BoltIcon className="w-5 h-5" />
               <span>Interactive Action Checklist</span>
-              <span className="px-1.5 py-0.2 rounded text-[10px] font-mono bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300">
+              <span className="px-2 py-0.5 rounded-full text-xs font-mono font-bold bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300">
                 {rawActions.length}
               </span>
             </button>
 
             <button
               onClick={() => setActiveTab('DEEP_DIVE')}
-              className={`pb-3 transition-colors border-b-2 flex items-center gap-2 ${
+              className={`pb-3.5 transition-colors border-b-2 flex items-center gap-2.5 ${
                 activeTab === 'DEEP_DIVE'
                   ? 'border-amber-500 text-amber-600 dark:text-amber-400'
                   : 'border-transparent text-slate-500 hover:text-slate-800 dark:hover:text-slate-200'
               }`}
             >
-              <CubeIcon className="w-4 h-4" />
+              <CubeIcon className="w-5 h-5" />
               <span>4-Pillar Deep-Dive Diagnostics</span>
             </button>
 
             <button
               onClick={() => setActiveTab('LEARNING_RESOURCES')}
-              className={`pb-3 transition-colors border-b-2 flex items-center gap-2 ${
+              className={`pb-3.5 transition-colors border-b-2 flex items-center gap-2.5 ${
                 activeTab === 'LEARNING_RESOURCES'
                   ? 'border-amber-500 text-amber-600 dark:text-amber-400'
                   : 'border-transparent text-slate-500 hover:text-slate-800 dark:hover:text-slate-200'
               }`}
             >
-              <BookOpenIcon className="w-4 h-4" />
+              <BookOpenIcon className="w-5 h-5" />
               <span>Curated Learning Curricula</span>
-              <span className="px-1.5 py-0.2 rounded text-[10px] font-mono bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300">
+              <span className="px-2 py-0.5 rounded-full text-xs font-mono font-bold bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300">
                 {learningResources.length}
               </span>
             </button>
@@ -1049,10 +1049,10 @@ const FeedbackGeneratorPage = () => {
             <div className="animate-fluid-enter bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800/90 rounded-2xl p-6 sm:p-7 shadow-xs space-y-5">
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-slate-100 dark:border-slate-800">
                 <div>
-                  <h3 className="text-base font-bold text-slate-900 dark:text-white tracking-tight">
+                  <h3 className="text-base sm:text-lg font-bold text-slate-900 dark:text-white tracking-tight">
                     Prioritized Remediation Checklist
                   </h3>
-                  <p className="text-xs text-slate-500 dark:text-slate-400">
+                  <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400">
                     Check off tasks to dynamically simulate grade recovery in real time
                   </p>
                 </div>
@@ -1063,7 +1063,7 @@ const FeedbackGeneratorPage = () => {
                     <button
                       key={f}
                       onClick={() => setActiveFilter(f)}
-                      className={`px-3 py-1 rounded-lg text-xs font-semibold transition-all whitespace-nowrap ${
+                      className={`px-3.5 py-1.5 rounded-lg text-xs sm:text-sm font-bold transition-all whitespace-nowrap ${
                         activeFilter === f
                           ? 'bg-white dark:bg-slate-900 text-slate-900 dark:text-white shadow-xs'
                           : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
@@ -1076,20 +1076,20 @@ const FeedbackGeneratorPage = () => {
               </div>
 
               {/* Checklist Items */}
-              <div className="space-y-3">
+              <div className="space-y-3.5">
                 {filteredActions.map((item, idx) => {
                   const isResolved = resolvedTasks[idx];
 
                   return (
                     <div
                       key={idx}
-                      className={`p-4 rounded-xl border transition-all duration-300 flex flex-col sm:flex-row sm:items-center justify-between gap-4 ${
+                      className={`p-4 sm:p-5 rounded-xl border transition-all duration-300 flex flex-col sm:flex-row sm:items-center justify-between gap-4 ${
                         isResolved
                           ? 'bg-emerald-50/20 dark:bg-emerald-950/10 border-emerald-300 dark:border-emerald-900/50 opacity-75'
                           : 'bg-slate-50/80 dark:bg-slate-800/40 border-slate-200/80 dark:border-slate-800 hover:border-slate-300 dark:hover:border-slate-700'
                       }`}
                     >
-                      <div className="flex items-start gap-3.5">
+                      <div className="flex items-start gap-4">
                         <button
                           onClick={() => toggleTask(idx)}
                           className={`mt-0.5 w-6 h-6 rounded-lg border flex items-center justify-center transition-all ${
@@ -1101,14 +1101,14 @@ const FeedbackGeneratorPage = () => {
                           {isResolved && <CheckCircleIcon className="w-4 h-4 stroke-[3]" />}
                         </button>
 
-                        <div className="space-y-1">
-                          <div className="flex flex-wrap items-center gap-2">
+                        <div className="space-y-1.5">
+                          <div className="flex flex-wrap items-center gap-2.5">
                             <PriorityBadge priority={item.priority || 'MEDIUM'} />
-                            <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-300">
+                            <span className="text-xs font-mono font-semibold px-2.5 py-1 rounded bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-300">
                               {item.category}
                             </span>
                             <span
-                              className={`text-sm font-bold ${
+                              className={`text-base font-bold ${
                                 isResolved
                                   ? 'line-through text-slate-400 dark:text-slate-500'
                                   : 'text-slate-900 dark:text-white'
@@ -1119,21 +1119,21 @@ const FeedbackGeneratorPage = () => {
                           </div>
 
                           {item.rationale && (
-                            <p className="text-xs text-slate-600 dark:text-slate-400 leading-relaxed">
+                            <p className="text-sm text-slate-600 dark:text-slate-300 leading-relaxed font-medium">
                               {item.rationale}
                             </p>
                           )}
                         </div>
                       </div>
 
-                      <div className="flex items-center gap-3 text-xs font-mono self-end sm:self-auto flex-shrink-0">
+                      <div className="flex items-center gap-3.5 text-xs sm:text-sm font-mono self-end sm:self-auto flex-shrink-0">
                         {item.impact && (
-                          <span className="px-2.5 py-1 rounded-md text-[11px] font-bold text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800/60">
+                          <span className="px-3 py-1 rounded-md text-xs font-mono font-bold text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800/60">
                             {item.impact}
                           </span>
                         )}
-                        <span className="flex items-center gap-1 text-slate-500 dark:text-slate-400">
-                          <ClockIcon className="w-3.5 h-3.5" />
+                        <span className="flex items-center gap-1.5 text-slate-600 dark:text-slate-400 font-semibold">
+                          <ClockIcon className="w-4 h-4" />
                           <span>~{item.estimated_hours}h</span>
                         </span>
                       </div>
@@ -1150,49 +1150,49 @@ const FeedbackGeneratorPage = () => {
               {/* Top Row: Code Quality & Docs */}
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                 {/* Code Quality Card */}
-                <div className="bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800/90 rounded-2xl p-6 shadow-xs space-y-4">
-                  <div className="flex items-center justify-between pb-3 border-b border-slate-100 dark:border-slate-800">
-                    <div className="flex items-center gap-2 text-blue-600 dark:text-blue-400 font-bold text-xs uppercase tracking-wider">
-                      <CodeBracketIcon className="w-4 h-4" />
+                <div className="bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800/90 rounded-2xl p-6 sm:p-7 shadow-xs space-y-4">
+                  <div className="flex items-center justify-between pb-3.5 border-b border-slate-100 dark:border-slate-800">
+                    <div className="flex items-center gap-2 text-blue-600 dark:text-blue-400 font-extrabold text-sm uppercase tracking-wide">
+                      <CodeBracketIcon className="w-5 h-5" />
                       <span>Code Quality & AST Defect Telemetry</span>
                     </div>
-                    <span className="text-xs font-mono font-bold text-blue-600">
+                    <span className="text-sm font-mono font-bold text-blue-600 dark:text-blue-400">
                       Score: {Math.round(scoresBlock.code_quality || 62)}%
                     </span>
                   </div>
 
-                  <p className="text-xs text-slate-700 dark:text-slate-300 leading-relaxed font-medium">
+                  <p className="text-sm text-slate-700 dark:text-slate-200 leading-relaxed font-medium">
                     {codeQualityFb.summary}
                   </p>
 
                   {/* Notes Grid */}
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs">
-                    <div className="p-2.5 rounded-lg bg-slate-50 dark:bg-slate-800/40 border border-slate-200/80 dark:border-slate-800">
-                      <strong className="text-[10px] font-mono text-slate-500 uppercase block">Complexity</strong>
-                      <span className="text-slate-700 dark:text-slate-300">{codeQualityFb.complexity_notes || 'Cyclomatic complexity within bounds'}</span>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs sm:text-sm">
+                    <div className="p-3 rounded-lg bg-slate-50 dark:bg-slate-800/40 border border-slate-200/80 dark:border-slate-800">
+                      <strong className="text-xs font-mono font-bold text-slate-500 uppercase block mb-1">Complexity</strong>
+                      <span className="text-slate-700 dark:text-slate-300 font-medium">{codeQualityFb.complexity_notes || 'Cyclomatic complexity within bounds'}</span>
                     </div>
-                    <div className="p-2.5 rounded-lg bg-slate-50 dark:bg-slate-800/40 border border-slate-200/80 dark:border-slate-800">
-                      <strong className="text-[10px] font-mono text-slate-500 uppercase block">Maintainability</strong>
-                      <span className="text-slate-700 dark:text-slate-300">{codeQualityFb.maintainability_notes || 'Module decoupling recommended'}</span>
+                    <div className="p-3 rounded-lg bg-slate-50 dark:bg-slate-800/40 border border-slate-200/80 dark:border-slate-800">
+                      <strong className="text-xs font-mono font-bold text-slate-500 uppercase block mb-1">Maintainability</strong>
+                      <span className="text-slate-700 dark:text-slate-300 font-medium">{codeQualityFb.maintainability_notes || 'Module decoupling recommended'}</span>
                     </div>
                   </div>
 
                   {/* Code Issues List */}
                   {Array.isArray(codeQualityFb.issues) && codeQualityFb.issues.length > 0 && (
-                    <div className="space-y-2 pt-2 border-t border-slate-100 dark:border-slate-800">
-                      <span className="text-[10px] font-mono uppercase font-bold text-slate-500 block">
+                    <div className="space-y-2.5 pt-2 border-t border-slate-100 dark:border-slate-800">
+                      <span className="text-xs font-mono uppercase font-bold text-slate-500 block">
                         Specific AST Defect Findings:
                       </span>
                       {codeQualityFb.issues.slice(0, 3).map((issue, idx) => (
                         <div
                           key={idx}
-                          className="p-3 rounded-lg bg-rose-50/30 dark:bg-rose-950/20 border border-rose-200/60 dark:border-rose-900/40 text-xs space-y-1"
+                          className="p-3.5 rounded-lg bg-rose-50/30 dark:bg-rose-950/20 border border-rose-200/60 dark:border-rose-900/40 text-xs sm:text-sm space-y-1.5"
                         >
-                          <div className="flex items-center justify-between font-mono text-[10px]">
+                          <div className="flex items-center justify-between font-mono text-xs">
                             <span className="font-bold text-rose-600 dark:text-rose-400">
                               {issue.file || 'File'} : Line {issue.line || 0}
                             </span>
-                            <span className="px-1.5 py-0.5 rounded bg-rose-100 dark:bg-rose-900/50 text-rose-800 dark:text-rose-300 uppercase">
+                            <span className="px-2 py-0.5 rounded bg-rose-100 dark:bg-rose-900/50 text-rose-800 dark:text-rose-300 uppercase font-bold text-[11px]">
                               {issue.severity}
                             </span>
                           </div>
@@ -1200,7 +1200,7 @@ const FeedbackGeneratorPage = () => {
                             {issue.description}
                           </p>
                           {issue.suggestion && (
-                            <p className="text-emerald-700 dark:text-emerald-400 text-[11px] font-mono">
+                            <p className="text-emerald-700 dark:text-emerald-400 text-xs sm:text-sm font-mono font-semibold">
                               💡 Solution: {issue.suggestion}
                             </p>
                           )}
@@ -1211,30 +1211,30 @@ const FeedbackGeneratorPage = () => {
                 </div>
 
                 {/* Documentation Card */}
-                <div className="bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800/90 rounded-2xl p-6 shadow-xs space-y-4">
-                  <div className="flex items-center justify-between pb-3 border-b border-slate-100 dark:border-slate-800">
-                    <div className="flex items-center gap-2 text-emerald-600 dark:text-emerald-400 font-bold text-xs uppercase tracking-wider">
-                      <DocumentTextIcon className="w-4 h-4" />
+                <div className="bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800/90 rounded-2xl p-6 sm:p-7 shadow-xs space-y-4">
+                  <div className="flex items-center justify-between pb-3.5 border-b border-slate-100 dark:border-slate-800">
+                    <div className="flex items-center gap-2 text-emerald-600 dark:text-emerald-400 font-extrabold text-sm uppercase tracking-wide">
+                      <DocumentTextIcon className="w-5 h-5" />
                       <span>Documentation Completeness Audit</span>
                     </div>
-                    <span className="text-xs font-mono font-bold text-emerald-600">
+                    <span className="text-sm font-mono font-bold text-emerald-600 dark:text-emerald-400">
                       {Math.round(docFb.completeness_percent || 45)}% Complete
                     </span>
                   </div>
 
-                  <p className="text-xs text-slate-700 dark:text-slate-300 leading-relaxed font-medium">
+                  <p className="text-sm text-slate-700 dark:text-slate-200 leading-relaxed font-medium">
                     {docFb.summary}
                   </p>
 
                   {/* Completeness Bar */}
-                  <div className="space-y-1.5">
-                    <div className="flex justify-between text-[11px] font-mono">
+                  <div className="space-y-2">
+                    <div className="flex justify-between text-xs sm:text-sm font-mono font-semibold">
                       <span className="text-slate-500">IEEE Standard Compliance</span>
                       <span className="font-bold text-slate-900 dark:text-white">
                         {Math.round(docFb.completeness_percent || 45)}%
                       </span>
                     </div>
-                    <div className="h-2 w-full rounded-full bg-slate-200 dark:bg-slate-700 overflow-hidden">
+                    <div className="h-2.5 w-full rounded-full bg-slate-200 dark:bg-slate-700 overflow-hidden">
                       <div
                         className="h-full rounded-full bg-emerald-500"
                         style={{ width: `${Math.round(docFb.completeness_percent || 45)}%` }}
@@ -1244,15 +1244,15 @@ const FeedbackGeneratorPage = () => {
 
                   {/* Missing Sections */}
                   {Array.isArray(docFb.missing_sections) && docFb.missing_sections.length > 0 && (
-                    <div className="pt-2 border-t border-slate-100 dark:border-slate-800 space-y-2">
-                      <span className="text-[10px] font-mono uppercase font-bold text-slate-500 block">
+                    <div className="pt-2 border-t border-slate-100 dark:border-slate-800 space-y-2.5">
+                      <span className="text-xs font-mono uppercase font-bold text-slate-500 block">
                         Mandatory Missing Sections to Add:
                       </span>
-                      <div className="flex flex-wrap gap-1.5">
+                      <div className="flex flex-wrap gap-2">
                         {docFb.missing_sections.map((sec, i) => (
                           <span
                             key={i}
-                            className="px-2.5 py-1 text-xs font-mono font-bold bg-amber-50 dark:bg-amber-950/40 text-amber-700 dark:text-amber-400 rounded-md border border-amber-200 dark:border-amber-800"
+                            className="px-3 py-1.5 text-xs sm:text-sm font-mono font-bold bg-amber-50 dark:bg-amber-950/40 text-amber-700 dark:text-amber-400 rounded-md border border-amber-200 dark:border-amber-800"
                           >
                             + {sec}
                           </span>
@@ -1262,7 +1262,7 @@ const FeedbackGeneratorPage = () => {
                   )}
 
                   {docFb.clarity_notes && (
-                    <p className="text-xs text-slate-500 dark:text-slate-400 italic pt-1">
+                    <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 italic pt-1 font-medium">
                       {docFb.clarity_notes}
                     </p>
                   )}
@@ -1272,28 +1272,28 @@ const FeedbackGeneratorPage = () => {
               {/* Bottom Row: Alignment & Originality */}
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                 {/* Alignment Card */}
-                <div className="bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800/90 rounded-2xl p-6 shadow-xs space-y-4">
-                  <div className="flex items-center justify-between pb-3 border-b border-slate-100 dark:border-slate-800">
-                    <div className="flex items-center gap-2 text-indigo-600 dark:text-indigo-400 font-bold text-xs uppercase tracking-wider">
-                      <ScaleIcon className="w-4 h-4" />
+                <div className="bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800/90 rounded-2xl p-6 sm:p-7 shadow-xs space-y-4">
+                  <div className="flex items-center justify-between pb-3.5 border-b border-slate-100 dark:border-slate-800">
+                    <div className="flex items-center gap-2 text-indigo-600 dark:text-indigo-400 font-extrabold text-sm uppercase tracking-wide">
+                      <ScaleIcon className="w-5 h-5" />
                       <span>Code-to-Report Alignment Discrepancies</span>
                     </div>
-                    <span className="text-xs font-mono font-bold text-indigo-600">
+                    <span className="text-sm font-mono font-bold text-indigo-600 dark:text-indigo-400">
                       Score: {Math.round(alignFb.alignment_score || 64)}%
                     </span>
                   </div>
 
-                  <p className="text-xs text-slate-700 dark:text-slate-300 leading-relaxed font-medium">
+                  <p className="text-sm text-slate-700 dark:text-slate-200 leading-relaxed font-medium">
                     {alignFb.summary}
                   </p>
 
                   <div className="space-y-3">
                     {alignFb.features_claimed_not_implemented?.length > 0 && (
-                      <div className="p-3 rounded-xl bg-rose-50/40 dark:bg-rose-950/20 border border-rose-200/80 dark:border-rose-900/40 text-xs">
-                        <strong className="text-rose-700 dark:text-rose-400 font-mono text-[10px] uppercase block mb-1">
+                      <div className="p-3.5 rounded-xl bg-rose-50/40 dark:bg-rose-950/20 border border-rose-200/80 dark:border-rose-900/40 text-xs sm:text-sm">
+                        <strong className="text-rose-700 dark:text-rose-400 font-mono text-xs uppercase block mb-1.5 font-bold">
                           Claimed in Report but Missing in Code (Phantom Features):
                         </strong>
-                        <ul className="list-disc pl-4 space-y-0.5 text-slate-700 dark:text-slate-300">
+                        <ul className="list-disc pl-5 space-y-1 text-slate-700 dark:text-slate-300 font-medium">
                           {alignFb.features_claimed_not_implemented.map((f, i) => (
                             <li key={i}>{f}</li>
                           ))}
@@ -1302,11 +1302,11 @@ const FeedbackGeneratorPage = () => {
                     )}
 
                     {alignFb.features_implemented_not_documented?.length > 0 && (
-                      <div className="p-3 rounded-xl bg-blue-50/40 dark:bg-blue-950/20 border border-blue-200/80 dark:border-blue-900/40 text-xs">
-                        <strong className="text-blue-700 dark:text-blue-400 font-mono text-[10px] uppercase block mb-1">
+                      <div className="p-3.5 rounded-xl bg-blue-50/40 dark:bg-blue-950/20 border border-blue-200/80 dark:border-blue-900/40 text-xs sm:text-sm">
+                        <strong className="text-blue-700 dark:text-blue-400 font-mono text-xs uppercase block mb-1.5 font-bold">
                           Implemented in Code but Undocumented:
                         </strong>
-                        <ul className="list-disc pl-4 space-y-0.5 text-slate-700 dark:text-slate-300">
+                        <ul className="list-disc pl-5 space-y-1 text-slate-700 dark:text-slate-300 font-medium">
                           {alignFb.features_implemented_not_documented.map((f, i) => (
                             <li key={i}>{f}</li>
                           ))}
@@ -1317,37 +1317,37 @@ const FeedbackGeneratorPage = () => {
                 </div>
 
                 {/* Originality Card */}
-                <div className="bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800/90 rounded-2xl p-6 shadow-xs space-y-4">
-                  <div className="flex items-center justify-between pb-3 border-b border-slate-100 dark:border-slate-800">
-                    <div className="flex items-center gap-2 text-purple-600 dark:text-purple-400 font-bold text-xs uppercase tracking-wider">
-                      <FingerPrintIcon className="w-4 h-4" />
+                <div className="bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800/90 rounded-2xl p-6 sm:p-7 shadow-xs space-y-4">
+                  <div className="flex items-center justify-between pb-3.5 border-b border-slate-100 dark:border-slate-800">
+                    <div className="flex items-center gap-2 text-purple-600 dark:text-purple-400 font-extrabold text-sm uppercase tracking-wide">
+                      <FingerPrintIcon className="w-5 h-5" />
                       <span>Originality & Academic Integrity</span>
                     </div>
-                    <span className="text-xs font-mono font-bold text-purple-600">
+                    <span className="text-sm font-mono font-bold text-purple-600 dark:text-purple-400">
                       Risk Level: {originFb.risk_level}
                     </span>
                   </div>
 
-                  <p className="text-xs text-slate-700 dark:text-slate-300 leading-relaxed font-medium">
+                  <p className="text-sm text-slate-700 dark:text-slate-200 leading-relaxed font-medium">
                     {originFb.summary}
                   </p>
 
-                  <div className="grid grid-cols-2 gap-3 text-xs">
-                    <div className="p-3 rounded-xl bg-slate-50 dark:bg-slate-800/40 border border-slate-200/80 dark:border-slate-800">
-                      <span className="text-[10px] font-mono text-slate-500 uppercase block">AI Likelihood</span>
-                      <span className="text-lg font-black font-mono text-slate-900 dark:text-white">
+                  <div className="grid grid-cols-2 gap-3.5 text-xs sm:text-sm">
+                    <div className="p-3.5 rounded-xl bg-slate-50 dark:bg-slate-800/40 border border-slate-200/80 dark:border-slate-800">
+                      <span className="text-xs font-mono text-slate-500 uppercase block font-bold">AI Likelihood</span>
+                      <span className="text-xl font-black font-mono text-slate-900 dark:text-white">
                         {Math.round(originFb.ai_detection_probability_percent || 8)}%
                       </span>
                     </div>
-                    <div className="p-3 rounded-xl bg-slate-50 dark:bg-slate-800/40 border border-slate-200/80 dark:border-slate-800">
-                      <span className="text-[10px] font-mono text-slate-500 uppercase block">Corpus Overlap</span>
-                      <span className="text-lg font-black font-mono text-slate-900 dark:text-white">
+                    <div className="p-3.5 rounded-xl bg-slate-50 dark:bg-slate-800/40 border border-slate-200/80 dark:border-slate-800">
+                      <span className="text-xs font-mono text-slate-500 uppercase block font-bold">Corpus Overlap</span>
+                      <span className="text-xl font-black font-mono text-slate-900 dark:text-white">
                         {Math.round(originFb.plagiarism_similarity_percent || 4)}%
                       </span>
                     </div>
                   </div>
 
-                  <div className="p-2.5 rounded-lg bg-emerald-50/50 dark:bg-emerald-950/20 border border-emerald-200/80 dark:border-emerald-900/40 text-[11px] text-emerald-800 dark:text-emerald-300 font-mono">
+                  <div className="p-3 rounded-lg bg-emerald-50/50 dark:bg-emerald-950/20 border border-emerald-200/80 dark:border-emerald-900/40 text-xs sm:text-sm text-emerald-800 dark:text-emerald-300 font-mono font-semibold">
                     ✓ Verified: No disciplinary review required. Authentic student implementation.
                   </div>
                 </div>
@@ -1358,11 +1358,11 @@ const FeedbackGeneratorPage = () => {
           {/* TAB CONTENT: LEARNING CURRICULA */}
           {activeTab === 'LEARNING_RESOURCES' && (
             <div className="animate-fluid-enter bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800/90 rounded-2xl p-6 sm:p-7 shadow-xs space-y-4">
-              <div className="pb-3 border-b border-slate-100 dark:border-slate-800">
-                <h3 className="text-base font-bold text-slate-900 dark:text-white tracking-tight">
+              <div className="pb-3.5 border-b border-slate-100 dark:border-slate-800">
+                <h3 className="text-base sm:text-lg font-bold text-slate-900 dark:text-white tracking-tight">
                   Curated Engineering Learning Modules
                 </h3>
-                <p className="text-xs text-slate-500 dark:text-slate-400">
+                <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400">
                   Targeted academic concepts to review based on detected implementation gaps
                 </p>
               </div>
@@ -1371,7 +1371,7 @@ const FeedbackGeneratorPage = () => {
                 {learningResources.map((res, idx) => (
                   <div
                     key={idx}
-                    className="p-4 rounded-xl bg-slate-50/80 dark:bg-slate-800/40 border border-slate-200/80 dark:border-slate-800 space-y-2 hover:border-amber-400 transition-colors"
+                    className="p-4 sm:p-5 rounded-xl bg-slate-50/80 dark:bg-slate-800/40 border border-slate-200/80 dark:border-slate-800 space-y-2 hover:border-amber-400 transition-colors"
                   >
                     <div className="flex items-center gap-2 text-amber-600 dark:text-amber-400">
                       <AcademicCapIcon className="w-5 h-5 flex-shrink-0" />
@@ -1379,10 +1379,10 @@ const FeedbackGeneratorPage = () => {
                         Topic {idx + 1}
                       </span>
                     </div>
-                    <h4 className="text-xs font-bold text-slate-900 dark:text-white">
+                    <h4 className="text-sm sm:text-base font-bold text-slate-900 dark:text-white">
                       {res.topic}
                     </h4>
-                    <p className="text-[11.5px] text-slate-600 dark:text-slate-300 leading-relaxed font-medium">
+                    <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-300 leading-relaxed font-medium">
                       {res.suggestion}
                     </p>
                   </div>
@@ -1403,12 +1403,12 @@ const FeedbackGeneratorPage = () => {
                     Instructor Notes & Diagnostic Output
                   </h3>
                 </div>
-                <span className="text-[10px] font-mono text-slate-500">
+                <span className="text-xs font-mono font-bold text-slate-500">
                   SYSTEM_AUDIT_LOG
                 </span>
               </div>
 
-              <div className="p-3.5 rounded-xl bg-amber-50/40 dark:bg-amber-950/20 border border-amber-200/80 dark:border-amber-800/40 font-mono text-xs text-amber-900 dark:text-amber-300">
+              <div className="p-4 rounded-xl bg-amber-50/40 dark:bg-amber-950/20 border border-amber-200/80 dark:border-amber-800/40 font-mono text-xs sm:text-sm text-amber-900 dark:text-amber-300 font-medium leading-relaxed">
                 {typeof instructorNotes === 'string'
                   ? instructorNotes
                   : instructorNotes.summary || JSON.stringify(instructorNotes)}
@@ -1418,8 +1418,8 @@ const FeedbackGeneratorPage = () => {
 
           {/* ACTION FOOTER */}
           <div className="p-5 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800/90 shadow-xs flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-            <div className="flex items-center gap-2 text-xs text-slate-600 dark:text-slate-400">
-              <ClipboardDocumentCheckIcon className="w-4 h-4 text-emerald-500" />
+            <div className="flex items-center gap-2 text-xs sm:text-sm text-slate-600 dark:text-slate-400 font-medium">
+              <ClipboardDocumentCheckIcon className="w-4 h-4 text-emerald-500 flex-shrink-0" />
               <span>
                 Export complete remediation plan with simulated target uplift to departmental records
               </span>
@@ -1432,7 +1432,7 @@ const FeedbackGeneratorPage = () => {
                   navigator.clipboard?.writeText(text);
                   alert('Remediation action plan copied to clipboard!');
                 }}
-                className="py-2 px-4 rounded-xl text-xs font-bold bg-amber-600 text-white hover:bg-amber-700 transition-colors shadow-xs flex items-center gap-2"
+                className="py-2.5 px-5 rounded-xl text-xs sm:text-sm font-bold bg-amber-600 text-white hover:bg-amber-700 transition-colors shadow-xs flex items-center gap-2"
               >
                 <ClipboardDocumentCheckIcon className="w-4 h-4" />
                 <span>Copy Full Action Plan</span>

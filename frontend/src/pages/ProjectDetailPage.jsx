@@ -417,6 +417,7 @@ const ProjectDetailPage = () => {
                 tag: 'Revision Requested',
                 badgeClass: 'bg-amber-500/10 text-amber-700 dark:text-amber-400 border-amber-500/30 ring-1 ring-amber-500/20',
                 dotClass: 'bg-amber-500',
+                iconColor: 'text-amber-500',
                 bannerClass: 'bg-amber-50/80 dark:bg-amber-950/25 border-amber-200/80 dark:border-amber-900/40 text-amber-900 dark:text-amber-200',
                 title: 'Action Required: Revision Requested',
                 description: 'The faculty evaluator has completed their review and requested specific revisions or updates. Please review the detailed comments and attached review document below.',
@@ -427,6 +428,7 @@ const ProjectDetailPage = () => {
                 tag: 'Approved & Finalized',
                 badgeClass: 'bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 border-emerald-500/30 ring-1 ring-emerald-500/20',
                 dotClass: 'bg-emerald-500',
+                iconColor: 'text-emerald-500',
                 bannerClass: 'bg-emerald-50/80 dark:bg-emerald-950/25 border-emerald-200/80 dark:border-emerald-900/40 text-emerald-900 dark:text-emerald-200',
                 title: 'Project Approved & Finalized',
                 description: 'Congratulations! Your academic project evaluation has been reviewed, graded, and officially marked as approved.',
@@ -437,6 +439,7 @@ const ProjectDetailPage = () => {
                 tag: 'Revision Required / Rejected',
                 badgeClass: 'bg-rose-500/10 text-rose-700 dark:text-rose-400 border-rose-500/30 ring-1 ring-rose-500/20',
                 dotClass: 'bg-rose-500',
+                iconColor: 'text-rose-500',
                 bannerClass: 'bg-rose-50/80 dark:bg-rose-950/25 border-rose-200/80 dark:border-rose-900/40 text-rose-900 dark:text-rose-200',
                 title: 'Submission Requires Resubmission',
                 description: 'The current submission does not meet passing criteria. Please examine the feedback below and coordinate with your faculty advisor.',
@@ -447,6 +450,7 @@ const ProjectDetailPage = () => {
                 tag: 'Feedback Provided',
                 badgeClass: 'bg-sky-500/10 text-sky-700 dark:text-sky-400 border-sky-500/30 ring-1 ring-sky-500/20',
                 dotClass: 'bg-sky-500',
+                iconColor: 'text-sky-500',
                 bannerClass: 'bg-sky-50/80 dark:bg-sky-950/25 border-sky-200/80 dark:border-sky-900/40 text-sky-900 dark:text-sky-200',
                 title: 'Detailed Feedback Provided',
                 description: 'Faculty remarks, academic grading, and advisory suggestions have been recorded for your project.',
@@ -457,6 +461,7 @@ const ProjectDetailPage = () => {
                 tag: rawLabel || 'Evaluation Completed',
                 badgeClass: 'bg-indigo-500/10 text-indigo-700 dark:text-indigo-400 border-indigo-500/30 ring-1 ring-indigo-500/20',
                 dotClass: 'bg-indigo-500',
+                iconColor: 'text-indigo-500',
                 bannerClass: 'bg-indigo-50/80 dark:bg-indigo-950/25 border-indigo-200/80 dark:border-indigo-900/40 text-indigo-900 dark:text-indigo-200',
                 title: 'Official Evaluation Recorded',
                 description: 'Your project has been evaluated and official marks with remarks are recorded in your project record.',
@@ -527,26 +532,26 @@ const ProjectDetailPage = () => {
             const StatusIcon = statusConfig.icon;
 
             return (
-              <div className="relative overflow-hidden bg-white/95 dark:bg-slate-900/95 backdrop-blur-md p-5 sm:p-7 rounded-2xl border border-slate-200/90 dark:border-slate-800/90 shadow-xl dark:shadow-[0_1px_0_0_rgba(255,255,255,0.06)_inset,0_8px_32px_rgba(0,0,0,0.4)] space-y-6">
+              <div className="relative overflow-hidden bg-white/95 dark:bg-slate-900/95 backdrop-blur-md p-4 sm:p-5 rounded-xl border border-slate-200/80 dark:border-slate-800/80 shadow-md dark:shadow-[0_1px_0_0_rgba(255,255,255,0.05)_inset,0_6px_24px_rgba(0,0,0,0.3)] space-y-3.5 sm:space-y-4">
                 {/* Decorative Top Accent Bar */}
-                <div className="absolute top-0 left-0 right-0 h-1.5 bg-gradient-to-r from-emerald-500 via-indigo-500 to-purple-600"></div>
+                <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-emerald-500 via-indigo-500 to-purple-600"></div>
 
                 {/* Section Header with Tags */}
-                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-slate-100 dark:border-slate-800/80">
-                  <div className="flex items-start sm:items-center gap-3">
-                    <div className="w-11 h-11 rounded-xl bg-gradient-to-br from-indigo-500/15 via-purple-500/15 to-emerald-500/15 border border-indigo-500/25 text-indigo-600 dark:text-indigo-400 flex items-center justify-center shadow-xs flex-shrink-0">
-                      <ClipboardDocumentCheckIcon className="w-6 h-6" />
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 sm:gap-3 pb-3 border-b border-slate-100 dark:border-slate-800/80">
+                  <div className="flex items-start sm:items-center gap-2.5 sm:gap-3">
+                    <div className="w-8.5 h-8.5 rounded-lg bg-gradient-to-br from-indigo-500/15 via-purple-500/15 to-emerald-500/15 border border-indigo-500/25 text-indigo-600 dark:text-indigo-400 flex items-center justify-center shadow-2xs flex-shrink-0">
+                      <ClipboardDocumentCheckIcon className="w-4.5 h-4.5" />
                     </div>
                     <div>
                       <div className="flex items-center gap-2 flex-wrap">
-                        <h2 className="text-base sm:text-lg font-bold text-slate-900 dark:text-white tracking-tight">
+                        <h2 className="text-sm sm:text-base font-bold text-slate-900 dark:text-white tracking-tight">
                           Faculty Evaluation & Academic Review
                         </h2>
-                        <span className="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-md bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 border border-slate-200/60 dark:border-slate-700/60">
+                        <span className="text-[9px] font-bold uppercase tracking-wider px-1.5 py-0.5 rounded bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400 border border-slate-200/60 dark:border-slate-700/60">
                           Official
                         </span>
                       </div>
-                      <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
+                      <p className="text-[11px] sm:text-xs text-slate-500 dark:text-slate-400 mt-0.5">
                         Verified academic evaluation, given marks, remarks, and official feedback attachments
                       </p>
                     </div>
@@ -555,16 +560,16 @@ const ProjectDetailPage = () => {
                   {/* Top Status & Timestamp TAGS */}
                   <div className="flex items-center gap-2 flex-wrap sm:flex-nowrap">
                     {/* Evaluation Status Tag */}
-                    <span className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold border shadow-2xs ${statusConfig.badgeClass}`}>
-                      <span className={`w-2 h-2 rounded-full ${statusConfig.dotClass} animate-pulse`}></span>
-                      <StatusIcon className="w-4 h-4 flex-shrink-0" />
+                    <span className={`inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[11px] font-semibold border shadow-2xs ${statusConfig.badgeClass}`}>
+                      <span className={`w-1.5 h-1.5 rounded-full ${statusConfig.dotClass} animate-pulse`}></span>
+                      <StatusIcon className="w-3.5 h-3.5 flex-shrink-0" />
                       <span>{statusConfig.tag}</span>
                     </span>
 
                     {/* Timestamp Tag */}
                     {project.evaluation?.completed_at && (
-                      <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-medium bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 border border-slate-200/60 dark:border-slate-700/60">
-                        <ClockIcon className="w-3.5 h-3.5 text-slate-400" />
+                      <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10.5px] font-medium bg-slate-100/80 dark:bg-slate-800/80 text-slate-500 dark:text-slate-400 border border-slate-200/50 dark:border-slate-700/50">
+                        <ClockIcon className="w-3 h-3 text-slate-400" />
                         <span>{format(new Date(project.evaluation.completed_at), 'dd MMM yyyy')}</span>
                       </span>
                     )}
@@ -572,99 +577,99 @@ const ProjectDetailPage = () => {
                 </div>
 
                 {/* Status Notice Banner */}
-                <div className={`p-4 rounded-xl border flex items-start gap-3 text-xs leading-relaxed transition-all ${statusConfig.bannerClass}`}>
-                  <StatusIcon className="w-5 h-5 flex-shrink-0 mt-0.5 opacity-90" />
-                  <div className="space-y-0.5">
-                    <p className="font-bold text-sm tracking-tight">{statusConfig.title}</p>
-                    <p className="opacity-90">{statusConfig.description}</p>
+                <div className={`py-2.5 px-3.5 rounded-lg border flex items-start gap-2.5 text-xs transition-all ${statusConfig.bannerClass}`}>
+                  <StatusIcon className="w-4 h-4 flex-shrink-0 mt-0.5 opacity-90" />
+                  <div className="space-y-0.5 min-w-0">
+                    <p className="font-bold text-xs sm:text-[13px] tracking-tight">{statusConfig.title}</p>
+                    <p className="text-[11px] sm:text-xs opacity-90 leading-relaxed">{statusConfig.description}</p>
                   </div>
                 </div>
 
                 {/* Key Metrics Grid: Given Marks, Decision, Reviewer Details */}
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3.5 sm:gap-4">
-                  {/* Card 1: Given Marks (Optional / Highlighted) */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2.5 sm:gap-3">
+                  {/* Card 1: Given Marks */}
                   {hasMarks ? (
-                    <div className="p-4 sm:p-4.5 rounded-xl border border-slate-200/80 dark:border-slate-800 bg-slate-50/70 dark:bg-slate-800/60 backdrop-blur-sm relative overflow-hidden flex flex-col justify-between">
+                    <div className="p-3 sm:p-3.5 rounded-xl border border-slate-200/80 dark:border-slate-800 bg-slate-50/70 dark:bg-slate-800/50 backdrop-blur-xs relative overflow-hidden flex flex-col justify-between hover:border-slate-300 dark:hover:border-slate-700 transition-colors">
                       <div>
-                        <div className="flex items-center justify-between gap-2 mb-2">
-                          <span className="text-[11px] font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 flex items-center gap-1.5">
-                            <SparklesIcon className="w-3.5 h-3.5 text-indigo-500" />
+                        <div className="flex items-center justify-between gap-2 mb-1.5">
+                          <span className="text-[10px] font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 flex items-center gap-1">
+                            <SparklesIcon className="w-3 h-3 text-indigo-500" />
                             Given Marks
                           </span>
-                          <span className={`text-[10px] font-extrabold uppercase px-2 py-0.5 rounded-md ${scoreTier.badgeClass}`}>
+                          <span className={`text-[9px] font-extrabold uppercase px-1.5 py-0.5 rounded ${scoreTier.badgeClass}`}>
                             {scoreTier.label}
                           </span>
                         </div>
-                        <div className="flex items-baseline gap-1.5">
-                          <span className="text-3xl sm:text-4xl font-black text-slate-900 dark:text-white tracking-tight">
+                        <div className="flex items-baseline gap-1">
+                          <span className="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-white tracking-tight">
                             {numericMarks.toFixed(2).replace(/\.00$/, '')}
                           </span>
-                          <span className="text-sm font-semibold text-slate-400 dark:text-slate-500">/ 100</span>
+                          <span className="text-xs font-semibold text-slate-400 dark:text-slate-500">/ 100</span>
                         </div>
                       </div>
 
                       {/* Progress Bar */}
-                      <div className="mt-3.5 space-y-1">
-                        <div className="w-full bg-slate-200/80 dark:bg-slate-700/80 h-2 rounded-full overflow-hidden">
+                      <div className="mt-2.5 space-y-1">
+                        <div className="w-full bg-slate-200/80 dark:bg-slate-700/80 h-1.5 rounded-full overflow-hidden">
                           <div 
                             className={`h-full rounded-full bg-gradient-to-r ${scoreTier.progressGradient} transition-all duration-700`}
                             style={{ width: `${Math.min(Math.max(numericMarks, 0), 100)}%` }}
                           ></div>
                         </div>
-                        <div className="flex justify-between text-[10px] text-slate-400 font-medium">
+                        <div className="flex justify-between text-[9.5px] text-slate-400 font-medium">
                           <span>Grade Percentage</span>
                           <span>{Math.min(Math.max(numericMarks, 0), 100).toFixed(1)}%</span>
                         </div>
                       </div>
                     </div>
                   ) : (
-                    <div className="p-4 sm:p-4.5 rounded-xl border border-slate-200/80 dark:border-slate-800 bg-slate-50/70 dark:bg-slate-800/60 flex flex-col justify-between">
+                    <div className="p-3 sm:p-3.5 rounded-xl border border-slate-200/80 dark:border-slate-800 bg-slate-50/70 dark:bg-slate-800/50 flex flex-col justify-between hover:border-slate-300 dark:hover:border-slate-700 transition-colors">
                       <div>
-                        <span className="text-[11px] font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 block mb-1">
+                        <span className="text-[10px] font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 block mb-1">
                           Given Marks
                         </span>
-                        <span className="text-lg font-bold text-slate-700 dark:text-slate-300">Marks Pending</span>
-                        <p className="text-xs text-slate-400 mt-1">Numerical score will appear once finalized by faculty.</p>
+                        <span className="text-base font-bold text-slate-700 dark:text-slate-300">Marks Pending</span>
+                        <p className="text-[11px] text-slate-400 mt-1">Numerical score will appear once finalized by faculty.</p>
                       </div>
                     </div>
                   )}
 
                   {/* Card 2: Academic Status Tag Highlight */}
-                  <div className="p-4 sm:p-4.5 rounded-xl border border-slate-200/80 dark:border-slate-800 bg-slate-50/70 dark:bg-slate-800/60 flex flex-col justify-between">
+                  <div className="p-3 sm:p-3.5 rounded-xl border border-slate-200/80 dark:border-slate-800 bg-slate-50/70 dark:bg-slate-800/50 flex flex-col justify-between hover:border-slate-300 dark:hover:border-slate-700 transition-colors">
                     <div>
-                      <span className="text-[11px] font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 block mb-2">
+                      <span className="text-[10px] font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 block mb-1.5">
                         Evaluation Tag
                       </span>
-                      <div className="flex items-center gap-2">
-                        <StatusIcon className="w-5 h-5 text-indigo-500" />
-                        <span className="text-base sm:text-lg font-bold text-slate-900 dark:text-white">
+                      <div className="flex items-center gap-1.5">
+                        <StatusIcon className={`w-4 h-4 flex-shrink-0 ${statusConfig.iconColor}`} />
+                        <span className="text-sm sm:text-base font-bold text-slate-900 dark:text-white truncate">
                           {statusConfig.tag}
                         </span>
                       </div>
                     </div>
-                    <p className="text-xs text-slate-500 dark:text-slate-400 mt-3 pt-2 border-t border-slate-200/60 dark:border-slate-800/80">
+                    <p className="text-[10.5px] text-slate-500 dark:text-slate-400 mt-2.5 pt-2 border-t border-slate-200/60 dark:border-slate-800/80">
                       Official standing assigned by faculty committee
                     </p>
                   </div>
 
                   {/* Card 3: Evaluator Reference */}
-                  <div className="p-4 sm:p-4.5 rounded-xl border border-slate-200/80 dark:border-slate-800 bg-slate-50/70 dark:bg-slate-800/60 sm:col-span-2 lg:col-span-1 flex flex-col justify-between">
+                  <div className="p-3 sm:p-3.5 rounded-xl border border-slate-200/80 dark:border-slate-800 bg-slate-50/70 dark:bg-slate-800/50 sm:col-span-2 lg:col-span-1 flex flex-col justify-between hover:border-slate-300 dark:hover:border-slate-700 transition-colors">
                     <div>
-                      <span className="text-[11px] font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 block mb-2">
+                      <span className="text-[10px] font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 block mb-1.5">
                         Evaluator & Release
                       </span>
-                      <div className="flex items-center gap-2.5">
-                        <div className="w-8 h-8 rounded-lg bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 flex items-center justify-center font-bold text-xs flex-shrink-0">
-                          <AcademicCapIcon className="w-4 h-4" />
+                      <div className="flex items-center gap-2">
+                        <div className="w-7 h-7 rounded-lg bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 flex items-center justify-center font-bold text-xs flex-shrink-0">
+                          <AcademicCapIcon className="w-3.5 h-3.5" />
                         </div>
                         <div className="min-w-0">
                           <p className="text-xs font-bold text-slate-900 dark:text-white truncate">Faculty Reviewer</p>
-                          <p className="text-[11px] text-slate-400">Academic Project Committee</p>
+                          <p className="text-[10.5px] text-slate-400 truncate">Academic Project Committee</p>
                         </div>
                       </div>
                     </div>
-                    <p className="text-xs text-slate-500 dark:text-slate-400 mt-3 pt-2 border-t border-slate-200/60 dark:border-slate-800/80 flex items-center gap-1.5">
-                      <ClockIcon className="w-3.5 h-3.5 text-slate-400" />
+                    <p className="text-[10.5px] text-slate-500 dark:text-slate-400 mt-2.5 pt-2 border-t border-slate-200/60 dark:border-slate-800/80 flex items-center gap-1">
+                      <ClockIcon className="w-3 h-3 text-slate-400" />
                       {project.evaluation?.completed_at 
                         ? format(new Date(project.evaluation.completed_at), 'dd MMM yyyy, hh:mm a') 
                         : 'Evaluation recorded'}
@@ -673,19 +678,19 @@ const ProjectDetailPage = () => {
                 </div>
 
                 {/* Actual Message: Evaluator Remarks & Feedback */}
-                <div className="p-5 rounded-xl bg-slate-50/80 dark:bg-slate-800/40 border border-slate-200/80 dark:border-slate-800/80 space-y-3">
-                  <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300">
-                    <ChatBubbleBottomCenterTextIcon className="w-4 h-4 text-indigo-500" />
+                <div className="p-3 sm:p-3.5 rounded-xl bg-slate-50/70 dark:bg-slate-800/40 border border-slate-200/80 dark:border-slate-800/80 space-y-2">
+                  <div className="flex items-center gap-1.5 text-[10.5px] font-bold uppercase tracking-wider text-slate-600 dark:text-slate-300">
+                    <ChatBubbleBottomCenterTextIcon className="w-3.5 h-3.5 text-indigo-500" />
                     <span>Evaluator Notes & Feedback Message</span>
                   </div>
                   {project.evaluation?.professor_feedback ? (
-                    <div className="relative pl-3.5 border-l-2 border-indigo-500/60 py-0.5">
-                      <p className="text-sm text-slate-800 dark:text-slate-200 leading-relaxed font-normal whitespace-pre-wrap">
+                    <div className="relative pl-3 border-l-2 border-indigo-500/70 py-0.5">
+                      <p className="text-xs sm:text-[13px] text-slate-800 dark:text-slate-200 leading-relaxed font-normal whitespace-pre-wrap">
                         {project.evaluation.professor_feedback}
                       </p>
                     </div>
                   ) : (
-                    <p className="text-xs text-slate-400 italic">
+                    <p className="text-[11px] text-slate-400 italic">
                       No written evaluator comments were provided.
                     </p>
                   )}
@@ -693,21 +698,21 @@ const ProjectDetailPage = () => {
 
                 {/* Uploaded Evaluation Document Card */}
                 {project.evaluation?.evaluation_file_url && (
-                  <div className="p-4 sm:p-5 bg-gradient-to-r from-indigo-50/80 via-purple-50/40 to-indigo-50/80 dark:from-indigo-950/40 dark:via-purple-950/25 dark:to-indigo-950/40 border border-indigo-200/80 dark:border-indigo-800/60 rounded-xl shadow-xs flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-                    <div className="flex items-start sm:items-center gap-3.5 min-w-0">
-                      <div className={`w-11 h-11 rounded-xl flex items-center justify-center flex-shrink-0 shadow-sm ${fileConfig.iconBg}`}>
-                        <PaperClipIcon className="w-5 h-5" />
+                  <div className="p-2.5 sm:py-2.5 sm:px-3.5 bg-gradient-to-r from-indigo-50/70 via-purple-50/30 to-indigo-50/70 dark:from-indigo-950/30 dark:via-purple-950/20 dark:to-indigo-950/30 border border-indigo-200/70 dark:border-indigo-800/50 rounded-xl shadow-xs flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                    <div className="flex items-center gap-3 min-w-0">
+                      <div className={`w-8.5 h-8.5 rounded-lg flex items-center justify-center flex-shrink-0 shadow-xs ${fileConfig.iconBg}`}>
+                        <PaperClipIcon className="w-4 h-4" />
                       </div>
-                      <div className="min-w-0 space-y-1">
-                        <div className="flex items-center gap-2 flex-wrap">
-                          <p className="text-sm font-bold text-slate-900 dark:text-white truncate">
+                      <div className="min-w-0 space-y-0.5">
+                        <div className="flex items-center gap-1.5 flex-wrap">
+                          <p className="text-xs sm:text-[13px] font-bold text-slate-900 dark:text-white truncate max-w-[200px] sm:max-w-xs md:max-w-md">
                             {project.evaluation.evaluation_file_name || 'Evaluation_Review_File'}
                           </p>
-                          <span className={`px-2 py-0.5 rounded text-[10px] font-extrabold uppercase border ${fileConfig.chipClass}`}>
+                          <span className={`px-1.5 py-0.5 rounded text-[9px] font-extrabold uppercase border ${fileConfig.chipClass}`}>
                             {fileConfig.extLabel}
                           </span>
                         </div>
-                        <p className="text-xs text-slate-600 dark:text-slate-400">
+                        <p className="text-[11px] text-slate-600 dark:text-slate-400 truncate">
                           Official marked report & rubric document uploaded by faculty evaluator
                         </p>
                       </div>
@@ -718,10 +723,10 @@ const ProjectDetailPage = () => {
                       <button
                         type="button"
                         onClick={() => window.open(getUploadUrl(project.evaluation.evaluation_file_url), '_blank')}
-                        className="inline-flex items-center gap-1.5 px-3 py-2 text-xs font-semibold text-slate-700 dark:text-slate-200 bg-white dark:bg-slate-800 hover:bg-slate-100 dark:hover:bg-slate-700 border border-slate-200 dark:border-slate-700 rounded-lg shadow-2xs transition-colors"
+                        className="inline-flex items-center gap-1 px-2.5 py-1.5 text-[11px] font-semibold text-slate-700 dark:text-slate-200 bg-white/90 dark:bg-slate-800/90 hover:bg-slate-100 dark:hover:bg-slate-700 border border-slate-200/80 dark:border-slate-700/80 rounded-lg shadow-2xs hover:shadow-xs transition-all"
                         title="Open in new browser tab"
                       >
-                        <ArrowTopRightOnSquareIcon className="w-3.5 h-3.5 text-slate-500" />
+                        <ArrowTopRightOnSquareIcon className="w-3 h-3 text-slate-500" />
                         <span>Open</span>
                       </button>
 
@@ -730,16 +735,16 @@ const ProjectDetailPage = () => {
                         type="button"
                         onClick={handleDownloadEvaluationFile}
                         disabled={downloadingEvaluationDoc}
-                        className="inline-flex items-center gap-2 px-4 py-2 text-xs font-bold text-white bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-500 hover:to-purple-500 active:from-indigo-700 active:to-purple-700 rounded-lg shadow-sm hover:shadow-indigo-500/25 hover:-translate-y-0.5 active:translate-y-0 transition-all duration-150 disabled:opacity-60"
+                        className="inline-flex items-center gap-1.5 px-3 py-1.5 text-[11px] font-bold text-white bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-500 hover:to-purple-500 active:from-indigo-700 active:to-purple-700 rounded-lg shadow-xs hover:shadow-indigo-500/20 hover:-translate-y-0.5 active:translate-y-0 transition-all duration-150 disabled:opacity-60"
                       >
                         {downloadingEvaluationDoc ? (
                           <>
-                            <ArrowPathIcon className="w-3.5 h-3.5 animate-spin" />
+                            <ArrowPathIcon className="w-3 h-3 animate-spin" />
                             <span>Downloading...</span>
                           </>
                         ) : (
                           <>
-                            <ArrowDownTrayIcon className="w-3.5 h-3.5" />
+                            <ArrowDownTrayIcon className="w-3 h-3" />
                             <span>Download File</span>
                           </>
                         )}

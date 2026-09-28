@@ -183,7 +183,17 @@ const ReportModal = ({ projectId, projectTitle, isOpen, onClose }) => {
       await reportService.downloadReportPdf(projectId, fileName);
       toast.success('Report downloaded successfully!');
     } catch (err) {
-      toast.error('Failed to download report. Please try again.');
+      let errMsg = 'Failed to download report. Please try again.';
+      if (err.response?.data instanceof Blob) {
+        try {
+          const text = await err.response.data.text();
+          const json = JSON.parse(text);
+          if (json.detail) errMsg = json.detail;
+        } catch (_) {}
+      } else if (err.response?.data?.detail) {
+        errMsg = err.response.data.detail;
+      }
+      toast.error(errMsg);
     } finally {
       setDownloading(false);
     }

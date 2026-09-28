@@ -462,18 +462,25 @@ def _generate_pdf(data: dict) -> bytes:
         [Paragraph("Category", LABEL), Paragraph("Score Contribution", LABEL), Paragraph("Points", LABEL)]
     ]
     for cat, pts in breakdown.items():
-        bar_w = max(1, int((pts / 35) * (W * 0.55)))  # normalize to widest bar
+        val = float(pts or 0)
+        bar_w = max(4, int((val / 35.0) * (W * 0.50))) if val > 0 else 4
+        bar_color = score_color(val * (100.0 / 35.0)) if val > 0 else colors.HexColor("#CBD5E1")
         bar_cell = Table(
-            [[Paragraph("", BODY)]],
+            [[""]],
             colWidths=[bar_w],
-            rowHeights=[10],
+            rowHeights=[8],
         )
-        bar_color = score_color(pts * 3)  # rough mapping
-        bar_cell.setStyle(TableStyle([("BACKGROUND", (0, 0), (0, 0), bar_color), ("TOPPADDING", (0, 0), (-1, -1), 0), ("BOTTOMPADDING", (0, 0), (-1, -1), 0)]))
+        bar_cell.setStyle(TableStyle([
+            ("BACKGROUND", (0, 0), (0, 0), bar_color),
+            ("TOPPADDING", (0, 0), (-1, -1), 0),
+            ("BOTTOMPADDING", (0, 0), (-1, -1), 0),
+            ("LEFTPADDING", (0, 0), (-1, -1), 0),
+            ("RIGHTPADDING", (0, 0), (-1, -1), 0),
+        ]))
         bar_rows.append([
             Paragraph(cat, BODY),
             bar_cell,
-            Paragraph(f"{pts}", style("Pts", fontSize=9, fontName="Helvetica-Bold", textColor=SLATE, leading=11, alignment=TA_RIGHT)),
+            Paragraph(f"{val:.1f}", style("Pts", fontSize=9, fontName="Helvetica-Bold", textColor=SLATE, leading=11, alignment=TA_RIGHT)),
         ])
 
     bar_table = Table(bar_rows, colWidths=[W * 0.38, W * 0.5, W * 0.12])

@@ -281,7 +281,9 @@ async def get_my_projects(
             "github_repo_link": p.github_repo_link,
             "created_at": p.created_at,
             "has_evaluation": p.evaluation is not None,
-            "total_score": p.evaluation.total_score if p.evaluation else None
+            "total_score": p.evaluation.total_score if p.evaluation else None,
+            "evaluation_verdict": (p.evaluation.status_label if p.evaluation and p.evaluation.status_label else ("reviewed" if p.status == ProjectStatus.EVALUATED else None)),
+            "status_label": (p.evaluation.status_label if p.evaluation and p.evaluation.status_label else ("reviewed" if p.status == ProjectStatus.EVALUATED else None)),
         } for p in projects
     ]
 
@@ -324,7 +326,9 @@ async def get_assigned_projects(
             "github_repo_link": p.github_repo_link,
             "created_at": p.created_at,
             "has_evaluation": p.evaluation is not None,
-            "total_score": p.evaluation.total_score if p.evaluation else None
+            "total_score": p.evaluation.total_score if p.evaluation else None,
+            "evaluation_verdict": (p.evaluation.status_label if p.evaluation and p.evaluation.status_label else ("reviewed" if p.status == ProjectStatus.EVALUATED else None)),
+            "status_label": (p.evaluation.status_label if p.evaluation and p.evaluation.status_label else ("reviewed" if p.status == ProjectStatus.EVALUATED else None)),
         } for p in projects
     ]
 

@@ -32,6 +32,7 @@ import { format } from 'date-fns';
 import { toast } from 'react-toastify';
 import ReportModal from '../components/Report/ReportModal';
 import { formatLanguageName, formatStatus } from '../utils/languageFormatter';
+import { getVerdictTagConfig } from '../components/Dashboard/FacultyDashboard';
 
 const POLL_INTERVAL_MS = 3000; // Poll every 3 seconds
 
@@ -762,23 +763,37 @@ const ProjectDetailPage = () => {
                     Faculty Evaluation & Document Upload
                   </h2>
                 </div>
-                {(project.status === 'evaluated' || project.evaluation?.professor_score_override != null || project.evaluation?.professor_feedback || project.evaluation?.status_label) && (
-                  <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/30 shadow-xs">
-                    <CheckCircleIcon className="w-4 h-4 text-emerald-500" />
-                    Already Evaluated
-                  </span>
-                )}
+                {(project.status === 'evaluated' || project.evaluation?.professor_score_override != null || project.evaluation?.professor_feedback || project.evaluation?.status_label) && (() => {
+                  const verdictConfig = getVerdictTagConfig(project.evaluation?.status_label || evalStatus || project.status_label);
+                  const TagIcon = verdictConfig.icon;
+                  return (
+                    <span className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold border shadow-xs transition-colors duration-200 ${verdictConfig.badgeClass}`}>
+                      <span className={`w-1.5 h-1.5 rounded-full ${verdictConfig.dotClass} animate-pulse`}></span>
+                      <TagIcon className={`w-4 h-4 ${verdictConfig.iconColor}`} />
+                      <span>Already Evaluated • {verdictConfig.label}</span>
+                    </span>
+                  );
+                })()}
               </div>
 
-              {(project.status === 'evaluated' || project.evaluation?.professor_score_override != null || project.evaluation?.professor_feedback || project.evaluation?.status_label) && (
-                <div className="p-3.5 rounded-xl bg-emerald-500/10 dark:bg-emerald-950/25 border border-emerald-500/25 text-xs text-emerald-800 dark:text-emerald-300 flex items-start gap-2.5">
-                  <CheckCircleIcon className="w-4 h-4 flex-shrink-0 mt-0.5 text-emerald-500" />
-                  <div>
-                    <span className="font-bold block text-emerald-900 dark:text-emerald-200">Already Evaluated by Faculty</span>
-                    <span>You have previously submitted an evaluation. You may update your feedback, score, or attached review file below.</span>
+              {(project.status === 'evaluated' || project.evaluation?.professor_score_override != null || project.evaluation?.professor_feedback || project.evaluation?.status_label) && (() => {
+                const verdictConfig = getVerdictTagConfig(project.evaluation?.status_label || evalStatus || project.status_label);
+                const NoticeIcon = verdictConfig.icon;
+                return (
+                  <div className={`p-3.5 rounded-xl border text-xs flex items-start gap-2.5 transition-colors duration-200 ${verdictConfig.badgeClass}`}>
+                    <NoticeIcon className={`w-4 h-4 flex-shrink-0 mt-0.5 ${verdictConfig.iconColor}`} />
+                    <div>
+                      <div className="flex items-center gap-2">
+                        <span className="font-bold text-sm">Already Evaluated by Faculty</span>
+                        <span className="px-2 py-0.5 text-[10px] font-bold uppercase rounded bg-black/10 dark:bg-white/10">
+                          {verdictConfig.label}
+                        </span>
+                      </div>
+                      <span className="opacity-90 block mt-0.5">You have previously submitted an evaluation with verdict &quot;{verdictConfig.label}&quot;. You may update your feedback, score, or attached review file below.</span>
+                    </div>
                   </div>
-                </div>
-              )}
+                );
+              })()}
 
               {/* Status and Score inputs */}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1">

@@ -64,6 +64,8 @@ class ProjectListResponse(BaseModel):
     created_at: datetime
     has_evaluation: bool = False
     total_score: Optional[float] = None
+    evaluation_verdict: Optional[str] = None
+    status_label: Optional[str] = None
 
     model_config = {"from_attributes": True}
 

@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { evaluationService } from '../../services/evaluationService';
 import { projectService } from '../../services/projectService';
 import StatCard from './StatCard';
@@ -16,13 +16,74 @@ import {
   SparklesIcon,
   CheckCircleIcon,
   ArrowTopRightOnSquareIcon,
-  DocumentTextIcon,
+  XCircleIcon,
+  ArrowPathIcon,
+  ChatBubbleBottomCenterTextIcon,
 } from '@heroicons/react/24/outline';
 import { useAuth } from '../../context/AuthContext';
 import { useNotifications } from '../../context/NotificationContext';
 import NotificationPanel from '../Notification/NotificationPanel';
 import { format } from 'date-fns';
 import toast from 'react-hot-toast';
+
+// Helper to determine badge colors and icons based on Faculty Evaluation Verdict
+export const getVerdictTagConfig = (verdictRaw) => {
+  const verdict = (verdictRaw || '').toLowerCase().trim();
+
+  if (verdict.includes('approv')) {
+    return {
+      key: 'approved',
+      label: 'Approved',
+      badgeClass: 'bg-emerald-50 dark:bg-emerald-950/70 text-emerald-700 dark:text-emerald-300 border-emerald-300/80 dark:border-emerald-700/70 shadow-2xs',
+      dotClass: 'bg-emerald-500',
+      iconColor: 'text-emerald-600 dark:text-emerald-400',
+      icon: CheckCircleIcon,
+    };
+  }
+
+  if (verdict.includes('revision')) {
+    return {
+      key: 'revision',
+      label: 'Revision Requested',
+      badgeClass: 'bg-amber-50 dark:bg-amber-950/70 text-amber-700 dark:text-amber-300 border-amber-300/80 dark:border-amber-700/70 shadow-2xs',
+      dotClass: 'bg-amber-500',
+      iconColor: 'text-amber-600 dark:text-amber-400',
+      icon: ArrowPathIcon,
+    };
+  }
+
+  if (verdict.includes('reject')) {
+    return {
+      key: 'rejected',
+      label: 'Rejected',
+      badgeClass: 'bg-rose-50 dark:bg-rose-950/70 text-rose-700 dark:text-rose-300 border-rose-300/80 dark:border-rose-700/70 shadow-2xs',
+      dotClass: 'bg-rose-500',
+      iconColor: 'text-rose-600 dark:text-rose-400',
+      icon: XCircleIcon,
+    };
+  }
+
+  if (verdict.includes('feedback')) {
+    return {
+      key: 'feedback',
+      label: 'Feedback Provided',
+      badgeClass: 'bg-purple-50 dark:bg-purple-950/70 text-purple-700 dark:text-purple-300 border-purple-300/80 dark:border-purple-700/70 shadow-2xs',
+      dotClass: 'bg-purple-500',
+      iconColor: 'text-purple-600 dark:text-purple-400',
+      icon: ChatBubbleBottomCenterTextIcon,
+    };
+  }
+
+  // Default: 'reviewed' (Reviewed)
+  return {
+    key: 'reviewed',
+    label: 'Reviewed',
+    badgeClass: 'bg-sky-50 dark:bg-sky-950/70 text-sky-700 dark:text-sky-300 border-sky-300/80 dark:border-sky-700/70 shadow-2xs',
+    dotClass: 'bg-sky-500',
+    iconColor: 'text-sky-600 dark:text-sky-400',
+    icon: ClipboardDocumentCheckIcon,
+  };
+};
 
 const FacultyDashboard = () => {
   const { user } = useAuth();
@@ -426,7 +487,7 @@ const FacultyDashboard = () => {
             <div className="p-8 sm:p-10 text-center text-slate-500">
               <CheckBadgeIcon className="mx-auto h-10 w-10 text-slate-300 dark:text-slate-700 mb-2.5" />
               <p className="text-sm font-medium text-slate-900 dark:text-white">No evaluated projects yet</p>
-              <p className="text-xs mt-0.5 text-slate-400">When you evaluate submissions from your Action Required Queue, they will appear here marked with the "Already Evaluated" tag.</p>
+              <p className="text-xs mt-0.5 text-slate-400">When you evaluate submissions from your Action Required Queue, they will appear here marked with the &quot;Already Evaluated&quot; tag.</p>
             </div>
           ) : (
             <div className="overflow-x-auto">
@@ -448,11 +509,19 @@ const FacultyDashboard = () => {
                         <div className="text-[11px] text-slate-400 dark:text-slate-500 font-mono mt-0.5">ID: {project.id?.substring(0, 8)}...</div>
                       </td>
                       <td className="px-4 py-3 whitespace-nowrap">
-                        {/* Prominent "Already Evaluated" Tag */}
-                        <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-bold bg-emerald-50 dark:bg-emerald-950/70 text-emerald-700 dark:text-emerald-300 border border-emerald-200/80 dark:border-emerald-800/80 shadow-2xs">
-                          <CheckCircleIcon className="w-3.5 h-3.5 text-emerald-500" />
-                          Already Evaluated
-                        </span>
+                        {/* Dynamic Verdict Color "Already Evaluated" Tag */}
+                        {(() => {
+                          const verdictConfig = getVerdictTagConfig(project.evaluation_verdict || project.status_label);
+                          const VerdictIcon = verdictConfig.icon;
+                          return (
+                            <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-bold border ${verdictConfig.badgeClass}`}>
+                              <VerdictIcon className={`w-3.5 h-3.5 ${verdictConfig.iconColor}`} />
+                              <span>Already Evaluated</span>
+                              <span className="opacity-40">•</span>
+                              <span>{verdictConfig.label}</span>
+                            </span>
+                          );
+                        })()}
                       </td>
                       <td className="px-4 py-3 whitespace-nowrap">
                         <span className="px-2.5 py-1 inline-flex text-xs leading-4 font-bold rounded-md bg-emerald-50 dark:bg-emerald-950/50 text-emerald-700 dark:text-emerald-400 border border-emerald-200/60 dark:border-emerald-800/40">
@@ -567,11 +636,16 @@ const FacultyDashboard = () => {
                         </td>
                         <td className="px-4 py-3 whitespace-nowrap">
                           <div className="flex flex-wrap gap-1.5 items-center">
-                            {rowIsEvaluated && (
-                              <span className="inline-flex items-center gap-1 px-2 py-0.5 text-[11px] font-bold rounded-md bg-emerald-50 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-300 border border-emerald-300 dark:border-emerald-700/60">
-                                <CheckCircleIcon className="w-3 h-3 text-emerald-500" /> Already Evaluated
-                              </span>
-                            )}
+                            {rowIsEvaluated && (() => {
+                              const queueVerdictConfig = getVerdictTagConfig(evaluation.status_label || evaluation.project?.status_label || evaluation.project?.evaluation_verdict);
+                              const QueueIcon = queueVerdictConfig.icon;
+                              return (
+                                <span className={`inline-flex items-center gap-1 px-2 py-0.5 text-[11px] font-bold rounded-md border ${queueVerdictConfig.badgeClass}`}>
+                                  <QueueIcon className={`w-3 h-3 ${queueVerdictConfig.iconColor}`} />
+                                  <span>Already Evaluated • {queueVerdictConfig.label}</span>
+                                </span>
+                              );
+                            })()}
                             {evaluation.ai_code_detected && (
                               <span className="px-1.5 py-0.5 text-[11px] font-semibold rounded-md bg-rose-50 dark:bg-rose-950/50 text-rose-700 dark:text-rose-400 border border-rose-200/60 dark:border-rose-800/40" title="High AI Generation Probability">AI FLAG</span>
                             )}
@@ -633,14 +707,19 @@ const FacultyDashboard = () => {
                     <h3 className="text-base font-bold text-slate-900 dark:text-white tracking-tight">
                       Faculty Evaluation & Document Upload
                     </h3>
-                    {/* Explicit "Already Evaluated" TAG in Modal Header */}
-                    {isAlreadyEvaluated && (
-                      <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-emerald-100 dark:bg-emerald-950/80 text-emerald-800 dark:text-emerald-300 border border-emerald-300 dark:border-emerald-700/60 shadow-xs">
-                        <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
-                        <CheckCircleIcon className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400" />
-                        Already Evaluated
-                      </span>
-                    )}
+                    {/* Dynamic Color "Already Evaluated" TAG based on Verdict */}
+                    {isAlreadyEvaluated && (() => {
+                      const currentVerdict = evalStatus || evaluatingRecord?.evaluation_verdict || evaluatingRecord?.status_label || evaluatingRecord?.evaluation?.status_label;
+                      const config = getVerdictTagConfig(currentVerdict);
+                      const ModalTagIcon = config.icon;
+                      return (
+                        <span className={`inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[11px] font-bold border transition-colors duration-200 ${config.badgeClass}`}>
+                          <span className={`w-1.5 h-1.5 rounded-full ${config.dotClass} animate-pulse`}></span>
+                          <ModalTagIcon className={`w-3.5 h-3.5 ${config.iconColor}`} />
+                          <span>Already Evaluated • {config.label}</span>
+                        </span>
+                      );
+                    })()}
                   </div>
                   <p className="text-xs text-slate-500 dark:text-slate-400">
                     Evaluating: <span className="font-semibold text-slate-700 dark:text-slate-300">{evaluatingRecord.project?.title || evaluatingRecord.title || 'Selected Project'}</span>
@@ -660,25 +739,30 @@ const FacultyDashboard = () => {
             {/* Modal Body / Scrollable Form */}
             <form onSubmit={handleSubmitEvaluation} className="p-6 space-y-5 overflow-y-auto">
               
-              {/* "Already Evaluated by Faculty" Guidance Banner */}
-              {isAlreadyEvaluated && (
-                <div className="p-3.5 bg-emerald-50/80 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800/60 rounded-xl flex items-start gap-3 text-xs text-emerald-900 dark:text-emerald-200 shadow-2xs">
-                  <CheckCircleIcon className="w-5 h-5 text-emerald-600 dark:text-emerald-400 flex-shrink-0 mt-0.5" />
-                  <div className="flex-1 min-w-0">
-                    <div className="flex items-center gap-2">
-                      <span className="font-bold text-emerald-800 dark:text-emerald-300 text-sm">
-                        Already Evaluated by Faculty
-                      </span>
-                      <span className="px-2 py-0.5 text-[10px] font-bold uppercase rounded bg-emerald-200/80 dark:bg-emerald-900/80 text-emerald-800 dark:text-emerald-200">
-                        Saved Record
-                      </span>
+              {/* Dynamic Color "Already Evaluated by Faculty" Guidance Banner */}
+              {isAlreadyEvaluated && (() => {
+                const currentVerdict = evalStatus || evaluatingRecord?.evaluation_verdict || evaluatingRecord?.status_label || evaluatingRecord?.evaluation?.status_label;
+                const config = getVerdictTagConfig(currentVerdict);
+                const BannerIcon = config.icon;
+                return (
+                  <div className={`p-3.5 rounded-xl border flex items-start gap-3 text-xs shadow-2xs transition-colors duration-200 ${config.badgeClass}`}>
+                    <BannerIcon className={`w-5 h-5 flex-shrink-0 mt-0.5 ${config.iconColor}`} />
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center gap-2">
+                        <span className="font-bold text-sm">
+                          Already Evaluated by Faculty
+                        </span>
+                        <span className="px-2 py-0.5 text-[10px] font-bold uppercase rounded bg-black/10 dark:bg-white/10">
+                          {config.label}
+                        </span>
+                      </div>
+                      <p className="text-xs mt-1 opacity-90 leading-relaxed">
+                        This project has already been evaluated with verdict &quot;{config.label}&quot;. Your previous marks, comments, and uploaded files are loaded below. You can make adjustments and re-submit updates if necessary.
+                      </p>
                     </div>
-                    <p className="text-xs mt-1 text-emerald-700 dark:text-emerald-300/90 leading-relaxed">
-                      This project has already been evaluated. Your previous marks, comments, and uploaded files are loaded below. You can make adjustments and re-submit updates if necessary.
-                    </p>
                   </div>
-                </div>
-              )}
+                );
+              })()}
 
               {/* Project Quick Overview Banner */}
               <div className="p-3.5 bg-indigo-50/60 dark:bg-indigo-950/30 border border-indigo-100 dark:border-indigo-900/40 rounded-xl flex flex-wrap items-center justify-between gap-3 text-xs">

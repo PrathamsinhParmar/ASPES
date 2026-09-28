@@ -41,6 +41,9 @@ class EvaluationResponse(BaseModel):
     structured_feedback: Optional[Dict[str, Any]] = None
     professor_feedback: Optional[str] = None
     professor_score_override: Optional[float] = None
+    status_label: Optional[str] = None
+    evaluation_file_url: Optional[str] = None
+    evaluation_file_name: Optional[str] = None
 
     is_finalized: bool = False
     finalized_at: Optional[datetime] = None

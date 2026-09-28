@@ -5,12 +5,14 @@ import uuid
 import asyncio
 from typing import List, Optional
 from datetime import datetime, timezone
+from pathlib import Path
 
 from fastapi import APIRouter, Depends, File, Form, HTTPException, UploadFile, status, Query
 from sqlalchemy import select, desc
 from sqlalchemy.orm import selectinload
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from app.config import settings
 from app.database.connection import get_db
 from app.models.user import User, UserRole
 from app.models.project import Project, ProjectStatus
@@ -368,14 +370,16 @@ async def get_project_details(
 @router.put("/{project_id}/evaluate", response_model=ProjectWithEvaluation)
 async def evaluate_project_by_faculty(
     project_id: uuid.UUID,
-    faculty_comments: str = Form(None),
-    faculty_score: float = Form(None),
+    faculty_comments: Optional[str] = Form(None),
+    faculty_score: Optional[float] = Form(None),
     status_label: Optional[str] = Form("reviewed"),
+    evaluation_file: Optional[UploadFile] = File(None),
     current_user: User = Depends(require_role(UserRole.PROFESSOR, UserRole.ADMIN)),
     db: AsyncSession = Depends(get_db)
 ):
     """
-    Faculty marks a project as Evaluated.
+    Faculty marks a project as Evaluated with optional comments, score override,
+    and attached evaluation file (e.g. annotated report, feedback rubric, grade sheet).
     """
     stmt = select(Project).options(selectinload(Project.evaluation)).where(Project.id == project_id)
     result = await db.execute(stmt)
@@ -383,9 +387,13 @@ async def evaluate_project_by_faculty(
     
     if not project:
         raise HTTPException(status_code=404, detail="Project not found")
-        
-    if project.faculty_id != current_user.id and current_user.role != UserRole.ADMIN:
+
+    if current_user.role not in (UserRole.PROFESSOR, UserRole.ADMIN):
         raise HTTPException(status_code=403, detail="Not authorized to evaluate this project")
+
+    # If project was unassigned, assign it to the evaluating professor
+    if not project.faculty_id and current_user.role == UserRole.PROFESSOR:
+        project.faculty_id = current_user.id
         
     # Update project status
     project.status = ProjectStatus.EVALUATED
@@ -402,10 +410,34 @@ async def evaluate_project_by_faculty(
         
     # Store data
     project.evaluation.evaluator_id = current_user.id
-    project.evaluation.professor_feedback = faculty_comments
+    if faculty_comments is not None:
+        project.evaluation.professor_feedback = faculty_comments
     if faculty_score is not None:
         project.evaluation.professor_score_override = faculty_score
         project.evaluation.total_score = faculty_score
+    if status_label:
+        project.evaluation.status_label = status_label
+
+    # Handle evaluation file upload if attached
+    saved_file_url = None
+    saved_file_name = None
+    if evaluation_file and evaluation_file.filename:
+        fs = FileService()
+        try:
+            saved_path_str = await fs.save_file(evaluation_file, subfolder="evaluation_files")
+            posix_path = Path(saved_path_str).as_posix()
+            project.evaluation.evaluation_file_url = posix_path
+            project.evaluation.evaluation_file_name = evaluation_file.filename
+            saved_file_url = posix_path
+            saved_file_name = evaluation_file.filename
+        except Exception as upload_err:
+            raise HTTPException(
+                status_code=500,
+                detail=f"Failed to save evaluation attachment: {upload_err}"
+            )
+    elif project.evaluation.evaluation_file_url:
+        saved_file_url = project.evaluation.evaluation_file_url
+        saved_file_name = project.evaluation.evaluation_file_name
         
     # We can use the existing `completed_at` to mark evaluation time
     project.evaluation.completed_at = datetime.now(timezone.utc)
@@ -413,7 +445,7 @@ async def evaluate_project_by_faculty(
     await db.commit()
     await db.refresh(project)
     
-    # Real-time notification trigger to student
+    # Real-time notification trigger to student (with evaluation file attachment)
     try:
         from app.services.notification_service import notify_student_on_faculty_evaluation
         await notify_student_on_faculty_evaluation(
@@ -421,9 +453,11 @@ async def evaluate_project_by_faculty(
             project=project,
             faculty=current_user,
             status_label=status_label or "reviewed",
-            faculty_feedback=faculty_comments,
-            faculty_score=faculty_score,
+            faculty_feedback=project.evaluation.professor_feedback,
+            faculty_score=project.evaluation.total_score,
             evaluation_record=project.evaluation,
+            evaluation_file_url=saved_file_url,
+            evaluation_file_name=saved_file_name,
         )
         await db.commit()
     except Exception as notif_err:
@@ -435,6 +469,48 @@ async def evaluate_project_by_faculty(
     if validated.evaluation:
         validated.evaluation.project = None
     return validated
+
+
+@router.get("/{project_id}/evaluation/download")
+async def download_evaluation_file(
+    project_id: uuid.UUID,
+    current_user: User = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db)
+):
+    """
+    Download the file uploaded by faculty during project evaluation.
+    Accessible to project student owner, faculty, and administrators.
+    """
+    stmt = select(Project).options(selectinload(Project.evaluation)).where(Project.id == project_id)
+    result = await db.execute(stmt)
+    project = result.scalar_one_or_none()
+    
+    if not project:
+        raise HTTPException(status_code=404, detail="Project not found")
+
+    is_owner = project.owner_id == current_user.id
+    is_faculty = project.faculty_id == current_user.id or current_user.role in (UserRole.PROFESSOR, UserRole.ADMIN)
+    if not (is_owner or is_faculty):
+        raise HTTPException(status_code=403, detail="Not authorized to access this evaluation document")
+
+    if not project.evaluation or not project.evaluation.evaluation_file_url:
+        raise HTTPException(status_code=404, detail="No evaluation file attached to this project")
+
+    file_path = Path(project.evaluation.evaluation_file_url)
+    if not file_path.exists():
+        # Check relative to base upload folder
+        fallback_path = Path(settings.UPLOAD_DIR) / "evaluation_files" / file_path.name
+        if fallback_path.exists():
+            file_path = fallback_path
+        else:
+            raise HTTPException(status_code=404, detail="Evaluation file not found on disk")
+
+    from fastapi.responses import FileResponse
+    return FileResponse(
+        path=str(file_path),
+        filename=project.evaluation.evaluation_file_name or file_path.name,
+        media_type="application/octet-stream"
+    )
 
 @router.put("/{project_id}", response_model=ProjectResponse)
 async def update_project_metadata(

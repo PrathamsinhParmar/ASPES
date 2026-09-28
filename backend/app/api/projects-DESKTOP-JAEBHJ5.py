@@ -357,8 +357,11 @@ async def evaluate_project_by_faculty(
     if not project:
         raise HTTPException(status_code=404, detail="Project not found")
         
-    if project.faculty_id != current_user.id and current_user.role != UserRole.ADMIN:
+    if current_user.role not in (UserRole.PROFESSOR, UserRole.ADMIN):
         raise HTTPException(status_code=403, detail="Not authorized to evaluate this project")
+        
+    if not project.faculty_id and current_user.role == UserRole.PROFESSOR:
+        project.faculty_id = current_user.id
         
     # Update project status
     project.status = ProjectStatus.EVALUATED

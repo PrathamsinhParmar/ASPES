@@ -317,6 +317,8 @@ async def notify_student_on_faculty_evaluation(
     faculty_feedback: Optional[str] = None,
     faculty_score: Optional[float] = None,
     evaluation_record: Optional[Any] = None,
+    evaluation_file_url: Optional[str] = None,
+    evaluation_file_name: Optional[str] = None,
 ):
     """
     Triggered when assigned faculty reviews, evaluates, approves, rejects, or requests revision on a project.
@@ -346,6 +348,10 @@ async def notify_student_on_faculty_evaluation(
         doc_score = evaluation_record.documentation_score
         plag_score = evaluation_record.plagiarism_score
         align_score = evaluation_record.report_alignment_score
+        if not evaluation_file_url:
+            evaluation_file_url = getattr(evaluation_record, "evaluation_file_url", None)
+        if not evaluation_file_name:
+            evaluation_file_name = getattr(evaluation_record, "evaluation_file_name", None)
 
     metadata = {
         "project_id": str(project.id),
@@ -355,6 +361,8 @@ async def notify_student_on_faculty_evaluation(
         "evaluation_status": norm_status,
         "feedback": faculty_feedback or "No detailed remarks provided.",
         "score": round(float(total_score), 2) if total_score is not None else None,
+        "attachment_url": evaluation_file_url,
+        "attachment_name": evaluation_file_name,
         "metrics": {
             "total_score": round(float(total_score), 2) if total_score is not None else None,
             "code_quality": round(float(code_score), 2) if code_score is not None else None,
@@ -378,6 +386,8 @@ async def notify_student_on_faculty_evaluation(
         + (f"Score: {total_score}/100. " if total_score is not None else "")
         + f"Feedback: \"{(faculty_feedback[:120] + '...') if faculty_feedback and len(faculty_feedback) > 120 else (faculty_feedback or 'See details.')}\""
     )
+    if evaluation_file_name:
+        message += f" [File Attached: {evaluation_file_name}]"
 
     await create_single_notification(
         db=db,
@@ -391,6 +401,8 @@ async def notify_student_on_faculty_evaluation(
         recipient_role=UserRole.STUDENT.value,
         priority=priority,
         related_project_id=project.id,
+        attachment_url=evaluation_file_url,
+        attachment_name=evaluation_file_name,
         metadata_json=metadata,
         actor=faculty,
     )

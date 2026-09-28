@@ -52,5 +52,12 @@ export const projectService = {
       }
     });
     return response.data;
+  },
+
+  downloadEvaluationFile: async (id) => {
+    const response = await api.get(`/projects/${id}/evaluation/download`, {
+      responseType: 'blob'
+    });
+    return response.data;
   }
 };

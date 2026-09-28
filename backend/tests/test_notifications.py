@@ -21,7 +21,7 @@ from app.services.notification_service import (
     notify_student_on_faculty_evaluation,
     dispatch_admin_broadcast,
 )
-from app.utils.security import create_access_token, hash_password
+from app.utils.security import create_access_token, get_password_hash as hash_password
 
 
 @pytest.mark.asyncio
@@ -168,3 +168,85 @@ async def test_admin_broadcast_and_read_receipts():
         assert audit is not None
         assert audit.action == "ADMIN_BROADCAST_DISPATCHED"
         assert audit.actor_id == admin.id
+
+
+@pytest.mark.asyncio
+async def test_faculty_evaluation_with_uploaded_file():
+    async with AsyncSessionLocal() as db:
+        # Create student and faculty
+        uid_stu = uuid.uuid4()
+        uid_fac = uuid.uuid4()
+        student = User(
+            id=uid_stu,
+            email=f"stu_eval_{uid_stu.hex[:6]}@example.com",
+            username=f"stu_eval_{uid_stu.hex[:6]}",
+            full_name="Eva Student",
+            hashed_password=hash_password("stupass123"),
+            role=UserRole.STUDENT,
+            is_active=True,
+        )
+        faculty = User(
+            id=uid_fac,
+            email=f"prof_eval_{uid_fac.hex[:6]}@example.com",
+            username=f"prof_eval_{uid_fac.hex[:6]}",
+            full_name="Dr. Alan Turing",
+            hashed_password=hash_password("profpass123"),
+            role=UserRole.PROFESSOR,
+            is_active=True,
+        )
+        db.add_all([student, faculty])
+        await db.commit()
+
+        project = Project(
+            id=uuid.uuid4(),
+            title="Distributed Database System",
+            description="High-performance raft implementation",
+            course_name="Computer Science",
+            owner_id=student.id,
+            faculty_id=faculty.id,
+            status=ProjectStatus.SUBMITTED,
+        )
+        db.add(project)
+        await db.commit()
+
+        evaluation = Evaluation(
+            id=uuid.uuid4(),
+            project_id=project.id,
+            evaluator_id=faculty.id,
+            status=EvaluationStatus.COMPLETED,
+            total_score=91.0,
+            professor_feedback="Great work, detailed annotations are attached in the review file.",
+            evaluation_file_url="uploads/evaluation_files/turing_review.pdf",
+            evaluation_file_name="Turing_Evaluation_Annotated.pdf",
+        )
+        db.add(evaluation)
+        await db.commit()
+
+        await notify_student_on_faculty_evaluation(
+            db=db,
+            project=project,
+            faculty=faculty,
+            status_label="approved",
+            faculty_feedback=evaluation.professor_feedback,
+            faculty_score=91.0,
+            evaluation_record=evaluation,
+            evaluation_file_url=evaluation.evaluation_file_url,
+            evaluation_file_name=evaluation.evaluation_file_name,
+        )
+        await db.commit()
+
+        # Check student notification
+        stmt = pytest.importorskip("sqlalchemy").select(Notification).where(
+            Notification.recipient_id == student.id,
+            Notification.type == NotificationType.FACULTY_EVALUATION
+        )
+        res = await db.execute(stmt)
+        notif = res.scalars().first()
+
+        assert notif is not None
+        assert notif.attachment_url == "uploads/evaluation_files/turing_review.pdf"
+        assert notif.attachment_name == "Turing_Evaluation_Annotated.pdf"
+        assert notif.metadata_json["attachment_url"] == "uploads/evaluation_files/turing_review.pdf"
+        assert notif.metadata_json["attachment_name"] == "Turing_Evaluation_Annotated.pdf"
+        assert "Turing_Evaluation_Annotated.pdf" in notif.message
+

@@ -37,6 +37,20 @@ async def lifespan(app: FastAPI):
         # In production, use alembic upgrade head
         # For dev, we ensure tables exist
         await conn.run_sync(Base.metadata.create_all)
+        def migrate_sqlite_columns(sync_conn):
+            try:
+                cursor = sync_conn.connection.cursor()
+                cursor.execute("PRAGMA table_info(evaluations)")
+                existing_cols = [row[1] for row in cursor.fetchall()]
+                if "evaluation_file_url" not in existing_cols:
+                    cursor.execute("ALTER TABLE evaluations ADD COLUMN evaluation_file_url VARCHAR(1024)")
+                if "evaluation_file_name" not in existing_cols:
+                    cursor.execute("ALTER TABLE evaluations ADD COLUMN evaluation_file_name VARCHAR(255)")
+                if "status_label" not in existing_cols:
+                    cursor.execute("ALTER TABLE evaluations ADD COLUMN status_label VARCHAR(100)")
+            except Exception as e:
+                logger.warning(f"Column migration check note: {e}")
+        await conn.run_sync(migrate_sqlite_columns)
     logger.info("✅ Database tables synced")
     logger.info(f"CORS Allowed Origins ({type(settings.ALLOWED_ORIGINS)}): {settings.ALLOWED_ORIGINS}")
 

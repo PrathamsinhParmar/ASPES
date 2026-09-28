@@ -101,7 +101,7 @@ const ProjectDetailPage = () => {
       fetchProject();
     } catch (err) {
       console.error(err);
-      toast.error("Failed to evaluate project. Please try again.");
+      toast.error(err.response?.data?.detail || "Failed to evaluate project. Please try again.");
     } finally {
       setEvaluating(false);
     }

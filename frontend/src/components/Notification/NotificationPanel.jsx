@@ -3,6 +3,7 @@ import { createPortal } from 'react-dom';
 import { useAuth } from '../../context/AuthContext';
 import { useNotifications } from '../../context/NotificationContext';
 import notificationService from '../../services/notificationService';
+import { projectService } from '../../services/projectService';
 import { useNavigate } from 'react-router-dom';
 import { formatLanguageName } from '../../utils/languageFormatter';
 import {
@@ -26,6 +27,7 @@ import {
   ShieldCheckIcon,
   UserIcon,
   XMarkIcon,
+  ArrowDownTrayIcon,
 } from '@heroicons/react/24/outline';
 import toast from 'react-hot-toast';
 
@@ -83,6 +85,40 @@ const NotificationPanel = ({ defaultTab = 'all', compact = false }) => {
   // Admin Audit Logs State
   const [auditLogs, setAuditLogs] = useState([]);
   const [auditFilter, setAuditFilter] = useState('');
+
+  // Download file attachment helper
+  const handleDownloadAttachment = async (e, notifItem) => {
+    e?.stopPropagation();
+    const attachUrl = notifItem.attachment_url || notifItem.metadata_json?.attachment_url;
+    const attachName = notifItem.attachment_name || notifItem.metadata_json?.attachment_name || 'evaluation_file';
+    
+    // Try downloading via project evaluation download endpoint if it's a faculty_evaluation with related_project_id
+    if (notifItem.type === 'faculty_evaluation' && notifItem.related_project_id) {
+      try {
+        const blob = await projectService.downloadEvaluationFile(notifItem.related_project_id);
+        const url = window.URL.createObjectURL(new Blob([blob]));
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = attachName;
+        document.body.appendChild(link);
+        link.click();
+        link.remove();
+        window.URL.revokeObjectURL(url);
+        toast.success(`Downloaded "${attachName}" successfully!`);
+        return;
+      } catch (err) {
+        console.warn('API file download fallback to direct URL:', err);
+      }
+    }
+
+    if (attachUrl) {
+      const cleanPath = attachUrl.replace(/\\/g, '/').replace(/^\.?\//, '');
+      const fullUrl = `${API_BASE_URL}/${cleanPath}`;
+      window.open(fullUrl, '_blank');
+    } else {
+      toast.error('Attachment link unavailable.');
+    }
+  };
 
   // Fetch Notifications
   const fetchNotifications = async () => {
@@ -612,6 +648,33 @@ const NotificationPanel = ({ defaultTab = 'all', compact = false }) => {
                                 &ldquo;{meta.feedback}&rdquo;
                               </div>
                             )}
+
+                            {/* ── Student Evaluation File Attachment Card ── */}
+                            {(notif.attachment_url || meta.attachment_url) && (
+                              <div className="mt-3 p-3.5 bg-white dark:bg-slate-900/90 rounded-xl border border-indigo-200/80 dark:border-indigo-800/60 flex items-center justify-between gap-3 shadow-xs">
+                                <div className="flex items-center gap-3 min-w-0">
+                                  <div className="w-9 h-9 rounded-lg bg-indigo-50 dark:bg-indigo-950/60 border border-indigo-200/50 dark:border-indigo-800/40 flex items-center justify-center text-indigo-600 dark:text-indigo-400 flex-shrink-0">
+                                    <PaperClipIcon className="w-4 h-4" />
+                                  </div>
+                                  <div className="min-w-0">
+                                    <span className="font-bold text-slate-800 dark:text-slate-100 block text-xs truncate">
+                                      {notif.attachment_name || meta.attachment_name || 'Faculty Evaluation Attachment'}
+                                    </span>
+                                    <span className="text-[10px] text-slate-500 dark:text-slate-400">
+                                      Attached evaluation review & feedback file
+                                    </span>
+                                  </div>
+                                </div>
+                                <button
+                                  type="button"
+                                  onClick={(e) => handleDownloadAttachment(e, notif)}
+                                  className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-white bg-indigo-600 hover:bg-indigo-700 active:bg-indigo-800 rounded-lg shadow-xs hover:-translate-y-0.5 transition-all flex-shrink-0"
+                                >
+                                  <ArrowDownTrayIcon className="w-3.5 h-3.5" />
+                                  <span>Download</span>
+                                </button>
+                              </div>
+                            )}
                           </div>
                         )}
 
@@ -629,16 +692,16 @@ const NotificationPanel = ({ defaultTab = 'all', compact = false }) => {
                         {/* Attachments / Direct Action Link */}
                         <div className="flex flex-wrap items-center justify-between gap-3 pt-2">
                           <div className="flex items-center gap-2">
-                            {notif.attachment_url && (
-                              <a
-                                href={`${API_BASE_URL}/${notif.attachment_url.replace(/^\.\//, '')}`}
-                                target="_blank"
-                                rel="noreferrer"
-                                className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-indigo-600 dark:text-indigo-400 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-lg hover:bg-slate-50 transition-colors shadow-xs"
+                            {(notif.attachment_url || meta.attachment_url) && (
+                              <button
+                                type="button"
+                                onClick={(e) => handleDownloadAttachment(e, notif)}
+                                className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-indigo-600 dark:text-indigo-400 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-lg hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors shadow-xs"
                               >
                                 <PaperClipIcon className="w-3.5 h-3.5" />
-                                <span>{notif.attachment_name || 'Download Attachment'}</span>
-                              </a>
+                                <span>{notif.attachment_name || meta.attachment_name || 'Download Attachment'}</span>
+                                <ArrowDownTrayIcon className="w-3.5 h-3.5 opacity-70" />
+                              </button>
                             )}
                           </div>
 

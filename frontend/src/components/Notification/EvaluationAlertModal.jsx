@@ -9,6 +9,8 @@ import {
   ArrowTopRightOnSquareIcon,
   ClipboardDocumentCheckIcon,
   InformationCircleIcon,
+  PaperClipIcon,
+  ArrowDownTrayIcon,
 } from '@heroicons/react/24/outline';
 
 const statusBadgeStyles = {
@@ -18,6 +20,8 @@ const statusBadgeStyles = {
   rejected: 'bg-rose-500/10 text-rose-600 dark:text-rose-400 border-rose-500/30',
   'feedback provided': 'bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 border-indigo-500/30',
 };
+
+const API_BASE_URL = (process.env.REACT_APP_API_URL || 'http://localhost:8000/api/v1').replace('/api/v1', '');
 
 const EvaluationAlertModal = () => {
   const { activeEvaluationAlert, dismissEvaluationAlert } = useNotifications();
@@ -143,6 +147,35 @@ const EvaluationAlertModal = () => {
               &ldquo;{meta.feedback || notif.message}&rdquo;
             </div>
           </div>
+
+          {/* Attached Evaluation File */}
+          {(notif.attachment_url || meta.attachment_url) && (
+            <div className="p-3.5 bg-indigo-50/70 dark:bg-indigo-950/40 border border-indigo-200/80 dark:border-indigo-800/60 rounded-xl flex items-center justify-between gap-3 shadow-xs">
+              <div className="flex items-center gap-2.5 min-w-0">
+                <div className="w-8 h-8 rounded-lg bg-indigo-600 text-white flex items-center justify-center flex-shrink-0">
+                  <PaperClipIcon className="w-4 h-4" />
+                </div>
+                <div className="min-w-0">
+                  <span className="font-bold text-slate-800 dark:text-slate-100 block text-xs truncate">
+                    {notif.attachment_name || meta.attachment_name || 'Faculty Evaluation Attachment'}
+                  </span>
+                  <span className="text-[10px] text-slate-500 dark:text-slate-400">
+                    Evaluation review file attached by professor
+                  </span>
+                </div>
+              </div>
+              <a
+                href={`${API_BASE_URL}/${(notif.attachment_url || meta.attachment_url).replace(/\\/g, '/').replace(/^\.?\//, '')}`}
+                download={notif.attachment_name || meta.attachment_name || true}
+                target="_blank"
+                rel="noreferrer"
+                className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-white bg-indigo-600 hover:bg-indigo-700 rounded-lg shadow-xs hover:-translate-y-0.5 transition-all flex-shrink-0"
+              >
+                <ArrowDownTrayIcon className="w-3.5 h-3.5" />
+                <span>Download</span>
+              </a>
+            </div>
+          )}
 
           {/* Admin Notation / Platform update note */}
           {meta.admin_notation && (

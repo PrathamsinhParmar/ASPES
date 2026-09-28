@@ -22,166 +22,151 @@ import LayerPageShell from '../../components/AILayer/LayerPageShell';
 import { evaluationService } from '../../services/evaluationService';
 
 /**
- * Spatial Isometric Cyber Shield Identity Emblem with Holographic Scanline
+ * 60 FPS Smooth Radial Collision Meter
  */
-const CyberShieldEmblem = ({ isDetected, size = 68 }) => {
+const RadialMeter = ({ score, color = '#f43f5e', size = 60, strokeWidth = 5.5, label = '' }) => {
+  const radius = (size - strokeWidth) / 2;
+  const circumference = radius * 2 * Math.PI;
+  const strokeDashoffset = circumference - (Math.min(100, Math.max(0, score)) / 100) * circumference;
+
   return (
-    <div
-      className="relative flex items-center justify-center flex-shrink-0 select-none group"
-      style={{
-        width: size,
-        height: size,
-        perspective: '600px',
-      }}
-    >
-      {/* Dynamic Ambient Pulse Glow */}
-      <div
-        className={`absolute inset-0 rounded-2xl blur-xl opacity-50 transition-all duration-700 ${
-          isDetected ? 'bg-rose-500/40' : 'bg-emerald-500/35'
-        }`}
-      />
-
-      {/* 3D Tilted Cyber Shield Badge */}
-      <div
-        className={`relative w-full h-full rounded-2xl p-2.5 border backdrop-blur-md flex flex-col items-center justify-center transition-all duration-500 transform-gpu group-hover:rotate-y-6 ${
-          isDetected
-            ? 'bg-rose-950/40 border-rose-500/40 shadow-[0_12px_24px_rgba(244,63,94,0.2)]'
-            : 'bg-emerald-950/40 border-emerald-500/40 shadow-[0_12px_24px_rgba(16,185,129,0.2)]'
-        }`}
-      >
-        {isDetected ? (
-          <ShieldExclamationIcon className="w-8 h-8 text-rose-500 filter drop-shadow-md animate-pulse" />
-        ) : (
-          <ShieldCheckIcon className="w-8 h-8 text-emerald-500 filter drop-shadow-md" />
-        )}
-
-        <span
-          className={`text-[8.5px] font-mono font-black uppercase tracking-wider mt-1 ${
-            isDetected ? 'text-rose-400' : 'text-emerald-400'
-          }`}
-        >
-          {isDetected ? 'FLAGGED' : 'CLEAN'}
-        </span>
-      </div>
+    <div className="relative flex items-center justify-center flex-shrink-0" style={{ width: size, height: size }}>
+      <svg className="transform -rotate-90 filter drop-shadow-xs overflow-visible" width={size} height={size}>
+        <circle
+          cx={size / 2}
+          cy={size / 2}
+          r={radius}
+          stroke="currentColor"
+          strokeWidth={strokeWidth}
+          className="text-slate-100 dark:text-slate-800"
+          fill="transparent"
+        />
+        <circle
+          cx={size / 2}
+          cy={size / 2}
+          r={radius}
+          stroke={color}
+          strokeWidth={strokeWidth}
+          strokeDasharray={circumference}
+          strokeDashoffset={strokeDashoffset}
+          strokeLinecap="round"
+          style={{
+            transition: 'stroke-dashoffset 1.2s cubic-bezier(0.16, 1, 0.3, 1)',
+            willChange: 'stroke-dashoffset',
+          }}
+          fill="transparent"
+        />
+      </svg>
+      <span className="absolute font-mono text-[11px] font-bold text-slate-800 dark:text-slate-200 tabular-nums select-none">
+        {Math.round(score)}%
+      </span>
     </div>
   );
 };
 
 /**
- * 10-Segment Hardware LED Telemetry Bar (60 FPS Smooth)
+ * Hero Forensic Source Integrity Gauge (Cybernetic Bi-directional Centerpiece)
  */
-const SegmentedLEDBar = ({ score, color = 'rose', totalSegments = 10 }) => {
-  const activeSegments = Math.round((Math.min(100, Math.max(0, score)) / 100) * totalSegments);
+const HeroForensicRadial = ({ originalityScore, maxSimilarity, isDetected }) => {
+  const size = 160;
+  const strokeWidth = 10;
+  const radius = (size - strokeWidth) / 2;
+  const circumference = radius * 2 * Math.PI;
+  const clampedSim = Math.min(100, Math.max(0, maxSimilarity));
+  const strokeDashoffset = circumference - (clampedSim / 100) * circumference;
+
+  const glowColor = isDetected ? 'rgba(244, 63, 94, 0.35)' : 'rgba(16, 185, 129, 0.3)';
+  const strokeColor = isDetected ? 'url(#plagCrimsonGrad)' : 'url(#plagEmeraldGrad)';
 
   return (
-    <div className="flex items-center gap-1 w-full pt-2">
-      {Array.from({ length: totalSegments }).map((_, i) => {
-        const isActive = i < activeSegments;
-        let activeBg = 'bg-rose-500 shadow-[0_0_8px_rgba(244,63,94,0.6)]';
-        if (color === 'emerald') activeBg = 'bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.6)]';
-        if (color === 'amber') activeBg = 'bg-amber-500 shadow-[0_0_8px_rgba(245,158,11,0.6)]';
-        if (color === 'purple') activeBg = 'bg-purple-500 shadow-[0_0_8px_rgba(168,85,247,0.6)]';
+    <div className="relative flex flex-col items-center justify-center p-2 select-none">
+      <div className="relative flex items-center justify-center" style={{ width: size, height: size }}>
+        {/* Ambient Forensic Glow */}
+        <div
+          className="absolute inset-0 rounded-full blur-xl opacity-40 transition-all duration-700"
+          style={{ backgroundColor: glowColor }}
+        />
 
-        return (
-          <div
-            key={i}
-            className={`h-2 flex-1 rounded-[2px] transition-all duration-300 ${
-              isActive ? activeBg : 'bg-slate-200 dark:bg-slate-800 opacity-60'
-            }`}
+        <svg className="transform -rotate-90 overflow-visible" width={size} height={size}>
+          <defs>
+            <linearGradient id="plagCrimsonGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" stopColor="#f43f5e" />
+              <stop offset="70%" stopColor="#e11d48" />
+              <stop offset="100%" stopColor="#9f1239" />
+            </linearGradient>
+            <linearGradient id="plagEmeraldGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" stopColor="#10b981" />
+              <stop offset="100%" stopColor="#059669" />
+            </linearGradient>
+          </defs>
+
+          {/* Background Track */}
+          <circle
+            cx={size / 2}
+            cy={size / 2}
+            r={radius}
+            stroke="currentColor"
+            strokeWidth={strokeWidth}
+            className="text-slate-100 dark:text-slate-800/80"
+            fill="transparent"
           />
-        );
-      })}
-    </div>
-  );
-};
 
-/**
- * Discrete Interactive Partition Status Matrix (P1 to P5)
- */
-const PartitionStatusPills = ({ similarSections = [] }) => {
-  const total = 5;
+          {/* Calibrated Ticks */}
+          <circle
+            cx={size / 2}
+            cy={size / 2}
+            r={radius + 8}
+            stroke="currentColor"
+            strokeWidth={1}
+            strokeDasharray="2 6"
+            className="text-slate-300 dark:text-slate-700"
+            fill="transparent"
+          />
 
-  return (
-    <div className="flex items-center gap-1.5 pt-2">
-      {Array.from({ length: total }).map((_, i) => {
-        const isFlagged = i < similarSections.length;
-        return (
-          <div
-            key={i}
-            className={`flex-1 py-1 px-1 text-center rounded text-[10px] font-mono font-bold border transition-all duration-200 ${
-              isFlagged
-                ? 'bg-rose-100 dark:bg-rose-950/60 text-rose-700 dark:text-rose-300 border-rose-300 dark:border-rose-700/80 shadow-[0_0_6px_rgba(244,63,94,0.3)]'
-                : 'bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400 border-slate-200 dark:border-slate-700'
-            }`}
-            title={`Module Partition ${i + 1}: ${isFlagged ? '100% Structural Overlap' : 'Clean'}`}
-          >
-            P{i + 1}
+          {/* Value Arc */}
+          <circle
+            cx={size / 2}
+            cy={size / 2}
+            r={radius}
+            stroke={strokeColor}
+            strokeWidth={strokeWidth}
+            strokeDasharray={circumference}
+            strokeDashoffset={strokeDashoffset}
+            strokeLinecap="round"
+            style={{
+              transition: 'stroke-dashoffset 1.4s cubic-bezier(0.16, 1, 0.3, 1)',
+              willChange: 'stroke-dashoffset',
+            }}
+            fill="transparent"
+          />
+        </svg>
+
+        {/* Center Typography */}
+        <div className="absolute inset-0 flex flex-col items-center justify-center">
+          <div className="flex items-baseline tracking-tight">
+            <span
+              className={`text-4xl font-black font-mono tracking-tight tabular-nums ${
+                isDetected ? 'text-rose-600 dark:text-rose-400' : 'text-emerald-600 dark:text-emerald-400'
+              }`}
+            >
+              {Math.round(clampedSim)}
+            </span>
+            <span className="text-base font-bold text-slate-400 dark:text-slate-500 ml-0.5">%</span>
           </div>
-        );
-      })}
-    </div>
-  );
-};
-
-/**
- * Cybernetic Bi-directional Horizon Collision Bar (Clash between Originality vs Overlap)
- */
-const ForensicHorizonDifferential = ({ originalityScore, maxSimilarity, isDetected }) => {
-  const orig = Math.min(100, Math.max(0, originalityScore));
-  const sim = Math.min(100, Math.max(0, maxSimilarity));
-
-  return (
-    <div className="w-full bg-slate-50 dark:bg-slate-950/60 rounded-xl p-4 sm:p-5 border border-slate-200/80 dark:border-slate-800 space-y-3">
-      {/* Top Value Labels */}
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-2">
-          <span className="w-2.5 h-2.5 rounded-full bg-emerald-500" />
-          <span className="text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300">
-            Originality Core
+          <span className="text-[10px] font-bold uppercase tracking-widest text-slate-600 dark:text-slate-400 mt-0.5">
+            Max Overlap
           </span>
-          <span className="font-mono text-sm font-black text-emerald-600 dark:text-emerald-400">
-            {orig.toFixed(1)}%
-          </span>
-        </div>
-
-        <div className="text-center hidden sm:block">
-          <span className="text-[10px] font-mono uppercase tracking-widest text-slate-400 dark:text-slate-500">
-            Bi-directional Conflict Delta: {(sim - orig).toFixed(1)}%
-          </span>
-        </div>
-
-        <div className="flex items-center gap-2">
-          <span className="font-mono text-sm font-black text-rose-600 dark:text-rose-400">
-            {sim.toFixed(1)}%
-          </span>
-          <span className="text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300">
-            Peer Overlap
-          </span>
-          <span className="w-2.5 h-2.5 rounded-full bg-rose-500 animate-pulse" />
         </div>
       </div>
 
-      {/* Dual Opposing Progress Horizon */}
-      <div className="relative h-3.5 w-full bg-slate-200 dark:bg-slate-800 rounded-full overflow-hidden flex shadow-inner">
-        {/* Left Side: Originality Fill */}
-        <div
-          className="h-full bg-gradient-to-r from-emerald-600 to-teal-400 transition-all duration-1000 ease-out"
-          style={{ width: `${orig}%` }}
+      <div className="mt-3 flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-slate-50 dark:bg-slate-800/80 border border-slate-200/80 dark:border-slate-700/80 shadow-xs">
+        <span
+          className="w-2 h-2 rounded-full animate-pulse"
+          style={{ backgroundColor: isDetected ? '#f43f5e' : '#10b981' }}
         />
-        {/* Middle Buffer */}
-        <div className="h-full flex-1 bg-transparent" />
-        {/* Right Side: Overlap Collision Fill */}
-        <div
-          className="h-full bg-gradient-to-l from-rose-600 via-rose-500 to-amber-500 transition-all duration-1000 ease-out shadow-[0_0_12px_rgba(244,63,94,0.6)]"
-          style={{ width: `${sim}%` }}
-        />
-      </div>
-
-      {/* Micro Horizon Footnote */}
-      <div className="flex items-center justify-between text-[10px] font-mono text-slate-400 dark:text-slate-500">
-        <span>0% Authentic Syntactic Entropy</span>
-        <span>Cross-Submission Collision Threshold (15% Baseline)</span>
-        <span>100% Normalized Clone Density</span>
+        <span className="text-slate-700 dark:text-slate-300">
+          {isDetected ? 'High Collision • Plagiarism Risk' : 'Clean Fingerprint • Verified Original'}
+        </span>
       </div>
     </div>
   );
@@ -517,120 +502,82 @@ const PlagiarismDetectorPage = () => {
       {evaluation && (
         <div className="space-y-6">
           {/* ========================================================================= */}
-          {/* CONTAINER 1: Forensic Cyber Command Deck & Bi-Directional Horizon (60 FPS) */}
+          {/* CONTAINER 1: Primary Source Integrity & Collision Deck (60 FPS)           */}
           {/* ========================================================================= */}
           <div
             className="animate-fluid-enter bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800/90 rounded-2xl p-6 sm:p-7 shadow-xs
-                       transition-[transform,box-shadow,border-color] duration-300 transform-gpu hover:-translate-y-1 hover:shadow-xl hover:border-rose-500/30 will-change-transform space-y-6"
+                       transition-[transform,box-shadow,border-color] duration-300 transform-gpu hover:-translate-y-1 hover:shadow-xl hover:border-rose-500/30 will-change-transform"
           >
-            {/* Top Command Streamer Ribbon */}
-            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 pb-4 border-b border-slate-100 dark:border-slate-800">
-              <div className="flex items-center gap-3.5">
-                <CyberShieldEmblem isDetected={isDetected} size={64} />
-                <div>
-                  <div className="flex flex-wrap items-center gap-2">
+            <div className="flex flex-col lg:flex-row items-center justify-between gap-6 lg:gap-8">
+              {/* Left Column: Forensic Centerpiece Meter */}
+              <div className="flex flex-col sm:flex-row items-center gap-6 w-full lg:w-auto">
+                <HeroForensicRadial
+                  originalityScore={originalityScore}
+                  maxSimilarity={maxSimilarity}
+                  isDetected={isDetected}
+                />
+
+                <div className="space-y-2 text-center sm:text-left">
+                  <div className="flex flex-wrap items-center justify-center sm:justify-start gap-2">
                     <span
-                      className={`px-2.5 py-0.5 rounded-md text-[10px] font-mono font-bold tracking-wider uppercase border ${
+                      className={`px-2.5 py-1 rounded-md text-[11px] font-bold tracking-wide uppercase border ${
                         isDetected
-                          ? 'bg-rose-100 dark:bg-rose-950/60 text-rose-800 dark:text-rose-300 border-rose-300 dark:border-rose-800/60'
-                          : 'bg-emerald-100 dark:bg-emerald-950/60 text-emerald-800 dark:text-emerald-300 border-emerald-300 dark:border-emerald-800/60'
+                          ? 'bg-rose-100 dark:bg-rose-950/60 text-rose-800 dark:text-rose-300 border-rose-200 dark:border-rose-800/60'
+                          : 'bg-emerald-100 dark:bg-emerald-950/60 text-emerald-800 dark:text-emerald-300 border-emerald-200 dark:border-emerald-800/60'
                       }`}
                     >
-                      {isDetected ? 'CRITICAL COLLISION ALERT' : 'SOURCE INTEGRITY CLEAN'}
+                      {isDetected ? 'Security Alert • Plagiarism Flag' : 'Integrity Verified'}
                     </span>
-                    <span className="text-[11px] font-mono text-slate-500 dark:text-slate-400">
-                      ID: SHA-256 (Normalized AST)
+                    <span className="flex items-center gap-1 text-[11px] font-mono text-slate-600 dark:text-slate-400">
+                      <DocumentDuplicateIcon className="w-3.5 h-3.5" />
+                      {projectsCompared} projects indexed
                     </span>
                   </div>
-                  <h2 className="text-lg font-black text-slate-900 dark:text-white tracking-tight mt-0.5">
-                    Source Provenance & Cross-Submission Collision Horizon
+
+                  <h2 className="text-xl font-black text-slate-900 dark:text-white tracking-tight">
+                    Source Integrity & Code Provenance
                   </h2>
+                  <p className="text-xs text-slate-600 dark:text-slate-400 max-w-md leading-relaxed">
+                    Evaluated via Sentence-BERT semantic embeddings, token 3-shingle Jaccard overlap, and
+                    identifier-anonymized AST transforms to prevent cosmetic obfuscation.
+                  </p>
+
+                  <div className="pt-2 flex flex-wrap gap-2 text-xs">
+                    <span className="px-2.5 py-1 rounded-lg bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 font-mono">
+                      Originality: <strong className={originalityScore > 70 ? 'text-emerald-600 dark:text-emerald-400' : 'text-rose-600 dark:text-rose-400'}>{originalityScore.toFixed(1)}%</strong>
+                    </span>
+                    <span className="px-2.5 py-1 rounded-lg bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 font-mono">
+                      Flagged Blocks: <strong className="text-rose-600 dark:text-rose-400">{similarSections.length} Partitions</strong>
+                    </span>
+                  </div>
                 </div>
               </div>
 
-              <div className="flex items-center gap-2 self-start sm:self-auto">
-                <span className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-slate-100 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 text-xs font-mono text-slate-700 dark:text-slate-300">
-                  <DocumentDuplicateIcon className="w-3.5 h-3.5 text-slate-400" />
-                  <span>{projectsCompared} Projects Cross-Referenced</span>
-                </span>
-              </div>
-            </div>
-
-            {/* Centerpiece: Full-Width Bi-Directional Horizon Clash Meter */}
-            <ForensicHorizonDifferential
-              originalityScore={originalityScore}
-              maxSimilarity={maxSimilarity}
-              isDetected={isDetected}
-            />
-
-            {/* Bottom: 4 Sleek Hardware LED Telemetry Pods (NO CIRCLES!) */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3.5 pt-1">
-              {/* Pod 1: Original Code Authenticity */}
-              <div className="p-3.5 rounded-xl bg-slate-50 dark:bg-slate-800/40 border border-slate-200/80 dark:border-slate-700/80 flex flex-col justify-between">
-                <div className="flex items-center justify-between text-xs">
-                  <span className="font-bold text-slate-600 dark:text-slate-400 uppercase tracking-wider text-[10px]">
-                    Authentic Syntax
-                  </span>
-                  <span
-                    className={`font-mono font-bold ${
-                      originalityScore > 70 ? 'text-emerald-600 dark:text-emerald-400' : 'text-rose-600 dark:text-rose-400'
-                    }`}
-                  >
-                    {originalityScore.toFixed(1)}%
-                  </span>
+              {/* Right Column: 4 Distinct Collision Micro-Meters */}
+              <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-2 xl:grid-cols-4 gap-3 w-full lg:w-auto border-t lg:border-t-0 lg:border-l border-slate-100 dark:border-slate-800 pt-5 lg:pt-0 lg:pl-8">
+                <div className="p-3 rounded-xl bg-slate-50/80 dark:bg-slate-800/40 border border-slate-100 dark:border-slate-800 flex flex-col items-center text-center">
+                  <RadialMeter score={originalityScore} color={originalityScore > 70 ? '#10b981' : '#f43f5e'} />
+                  <span className="text-[11px] font-bold text-slate-700 dark:text-slate-300 mt-2">Originality</span>
+                  <span className="text-[10px] text-slate-600 dark:text-slate-400">Authentic Code</span>
                 </div>
-                <SegmentedLEDBar score={originalityScore} color={originalityScore > 70 ? 'emerald' : 'rose'} />
-                <span className="text-[10px] text-slate-500 dark:text-slate-400 mt-2 block">
-                  Uncorrelated Token Ratio
-                </span>
-              </div>
 
-              {/* Pod 2: Peak Collision Overlap */}
-              <div className="p-3.5 rounded-xl bg-slate-50 dark:bg-slate-800/40 border border-slate-200/80 dark:border-slate-700/80 flex flex-col justify-between">
-                <div className="flex items-center justify-between text-xs">
-                  <span className="font-bold text-slate-600 dark:text-slate-400 uppercase tracking-wider text-[10px]">
-                    Peak Peer Overlap
-                  </span>
-                  <span className="font-mono font-bold text-rose-600 dark:text-rose-400">
-                    {maxSimilarity.toFixed(1)}%
-                  </span>
+                <div className="p-3 rounded-xl bg-slate-50/80 dark:bg-slate-800/40 border border-slate-100 dark:border-slate-800 flex flex-col items-center text-center">
+                  <RadialMeter score={maxSimilarity} color="#f43f5e" />
+                  <span className="text-[11px] font-bold text-slate-700 dark:text-slate-300 mt-2">Max Similarity</span>
+                  <span className="text-[10px] text-slate-600 dark:text-slate-400">Peer Overlap</span>
                 </div>
-                <SegmentedLEDBar score={maxSimilarity} color="rose" />
-                <span className="text-[10px] text-slate-500 dark:text-slate-400 mt-2 block truncate" title="API Test Project">
-                  Peer: {similarSections[0]?.matched_student || 'Indexed Repository'}
-                </span>
-              </div>
 
-              {/* Pod 3: Partition Collision Index */}
-              <div className="p-3.5 rounded-xl bg-slate-50 dark:bg-slate-800/40 border border-slate-200/80 dark:border-slate-700/80 flex flex-col justify-between">
-                <div className="flex items-center justify-between text-xs">
-                  <span className="font-bold text-slate-600 dark:text-slate-400 uppercase tracking-wider text-[10px]">
-                    Flagged Partitions
-                  </span>
-                  <span className="font-mono font-bold text-amber-600 dark:text-amber-400">
-                    {similarSections.length} of 5 Active
-                  </span>
+                <div className="p-3 rounded-xl bg-slate-50/80 dark:bg-slate-800/40 border border-slate-100 dark:border-slate-800 flex flex-col items-center text-center">
+                  <RadialMeter score={Math.min(100, similarSections.length * 20)} color="#f59e0b" />
+                  <span className="text-[11px] font-bold text-slate-700 dark:text-slate-300 mt-2">Flagged Ratio</span>
+                  <span className="text-[10px] text-slate-600 dark:text-slate-400">{similarSections.length} Partitions</span>
                 </div>
-                <PartitionStatusPills similarSections={similarSections} />
-                <span className="text-[10px] text-slate-500 dark:text-slate-400 mt-2 block">
-                  AST Control Flow Overlap
-                </span>
-              </div>
 
-              {/* Pod 4: Shingle Jaccard Affinity */}
-              <div className="p-3.5 rounded-xl bg-slate-50 dark:bg-slate-800/40 border border-slate-200/80 dark:border-slate-700/80 flex flex-col justify-between">
-                <div className="flex items-center justify-between text-xs">
-                  <span className="font-bold text-slate-600 dark:text-slate-400 uppercase tracking-wider text-[10px]">
-                    AST Shingle Affinity
-                  </span>
-                  <span className="font-mono font-bold text-purple-600 dark:text-purple-400">
-                    {isDetected ? '96.4%' : '14.2%'}
-                  </span>
+                <div className="p-3 rounded-xl bg-slate-50/80 dark:bg-slate-800/40 border border-slate-100 dark:border-slate-800 flex flex-col items-center text-center">
+                  <RadialMeter score={isDetected ? 96 : 14} color="#8b5cf6" />
+                  <span className="text-[11px] font-bold text-slate-700 dark:text-slate-300 mt-2">AST Shingle</span>
+                  <span className="text-[10px] text-slate-600 dark:text-slate-400">Jaccard Score</span>
                 </div>
-                <SegmentedLEDBar score={isDetected ? 96.4 : 14.2} color="purple" />
-                <span className="text-[10px] text-slate-500 dark:text-slate-400 mt-2 block">
-                  k=3 Anonymized Tokens
-                </span>
               </div>
             </div>
           </div>

@@ -534,7 +534,7 @@ const PlagiarismDetectorPage = () => {
                     </span>
                   </div>
 
-                  <h2 className="text-xl font-black text-slate-900 dark:text-white tracking-tight">
+                  <h2 className="text-xl font-bold text-slate-900 dark:text-white tracking-tight">
                     Source Integrity & Code Provenance
                   </h2>
                   <p className="text-xs text-slate-600 dark:text-slate-400 max-w-md leading-relaxed">
@@ -780,7 +780,7 @@ const PlagiarismDetectorPage = () => {
                           <div className="mt-4 pt-4 border-t border-rose-200/60 dark:border-rose-800/50 space-y-3">
                             <div className="p-3 rounded-lg bg-slate-950 font-mono text-xs text-slate-200 space-y-1.5 border border-slate-800">
                               <div className="text-slate-500 pb-1 border-b border-slate-800 flex justify-between">
-                                <span>{'// DIFFERENTIAL AST DE-OBFUSCATION PROBE'}</span>
+                                <span># DIFFERENTIAL AST DE-OBFUSCATION PROBE</span>
                                 <span className="text-rose-400">IDENTICAL_CONTROL_FLOW</span>
                               </div>
                               <div className="text-rose-400 flex items-center gap-2">

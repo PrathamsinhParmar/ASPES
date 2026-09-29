@@ -54,9 +54,9 @@ const PriorityBadge = ({ priority }) => {
 
   return (
     <span
-      className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-md text-xs font-mono font-bold uppercase tracking-wider border ${c.bg}`}
+      className={`inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-md text-[10px] font-bold uppercase tracking-wider border ${c.bg}`}
     >
-      <span className={`w-2 h-2 rounded-full ${c.dot}`} />
+      <span className={`w-1.5 h-1.5 rounded-full ${c.dot}`} />
       {priority}
     </span>
   );
@@ -84,31 +84,31 @@ const EffortImpactQuadrantChart = ({ actions, selectedActionIdx, onSelectAction 
   const midY = paddingTop + plotH / 2;
 
   return (
-    <div className="space-y-3.5 w-full select-none">
-      <div className="flex flex-wrap items-center justify-between gap-3 text-xs sm:text-sm">
+    <div className="space-y-3 w-full select-none font-sans">
+      <div className="flex flex-wrap items-center justify-between gap-3 text-xs">
         <div className="flex items-center gap-2">
-          <span className="font-extrabold uppercase tracking-wide text-slate-800 dark:text-slate-200 text-sm">
+          <span className="font-bold uppercase tracking-wider text-slate-800 dark:text-slate-200 text-xs">
             Remediation ROI Quadrant (Effort vs. Score Yield)
           </span>
-          <span className="px-2.5 py-0.5 rounded text-xs font-mono font-bold bg-indigo-50 dark:bg-indigo-950/50 text-indigo-600 dark:text-indigo-400 border border-indigo-200 dark:border-indigo-800">
+          <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-indigo-50 dark:bg-indigo-950/50 text-indigo-600 dark:text-indigo-400 border border-indigo-200 dark:border-indigo-800">
             Interactive
           </span>
         </div>
-        <div className="flex items-center gap-4 text-xs font-mono font-semibold">
+        <div className="flex items-center gap-3.5 text-xs font-medium">
           <span className="flex items-center gap-1.5 text-emerald-600 dark:text-emerald-400">
-            <span className="w-3 h-3 rounded-full bg-emerald-500" /> Quick Wins (Priority 1)
+            <span className="w-2.5 h-2.5 rounded-full bg-emerald-500" /> Quick Wins (Priority 1)
           </span>
           <span className="flex items-center gap-1.5 text-blue-600 dark:text-blue-400">
-            <span className="w-3 h-3 rounded-full bg-blue-500" /> Strategic Overhauls
+            <span className="w-2.5 h-2.5 rounded-full bg-blue-500" /> Strategic Overhauls
           </span>
           <span className="flex items-center gap-1.5 text-slate-500 dark:text-slate-400">
-            <span className="w-3 h-3 rounded-full bg-slate-400" /> Polish / Minor
+            <span className="w-2.5 h-2.5 rounded-full bg-slate-400" /> Polish / Minor
           </span>
         </div>
       </div>
 
       <div className="w-full bg-slate-50/60 dark:bg-slate-900/60 rounded-xl border border-slate-200/80 dark:border-slate-800 p-2 overflow-hidden">
-        <svg viewBox={`0 0 ${width} ${height}`} className="w-full h-64 sm:h-76 overflow-visible">
+        <svg viewBox={`0 0 ${width} ${height}`} className="w-full h-64 sm:h-76 overflow-visible font-sans">
           {/* Quadrant Background Shading */}
           {/* Q1: Top-Left Quick Wins (Low Effort, High Impact) */}
           <rect
@@ -121,7 +121,7 @@ const EffortImpactQuadrantChart = ({ actions, selectedActionIdx, onSelectAction 
           <text
             x={paddingLeft + 14}
             y={paddingTop + 22}
-            className="text-[12px] font-mono font-black fill-emerald-600 dark:fill-emerald-400 tracking-wider uppercase opacity-90"
+            className="text-[11px] font-bold fill-emerald-600 dark:fill-emerald-400 tracking-wider uppercase opacity-90"
           >
             ★ QUICK WINS (High Yield, Fast)
           </text>
@@ -138,7 +138,7 @@ const EffortImpactQuadrantChart = ({ actions, selectedActionIdx, onSelectAction 
             x={width - paddingRight - 14}
             y={paddingTop + 22}
             textAnchor="end"
-            className="text-[12px] font-mono font-black fill-blue-600 dark:fill-blue-400 tracking-wider uppercase opacity-90"
+            className="text-[11px] font-bold fill-blue-600 dark:fill-blue-400 tracking-wider uppercase opacity-90"
           >
             STRATEGIC OVERHAULS (High Yield, Heavy)
           </text>
@@ -154,7 +154,7 @@ const EffortImpactQuadrantChart = ({ actions, selectedActionIdx, onSelectAction 
           <text
             x={paddingLeft + 14}
             y={height - paddingBottom - 12}
-            className="text-[11px] font-mono font-bold fill-slate-500 dark:fill-slate-400 tracking-wider uppercase opacity-80"
+            className="text-[10px] font-semibold fill-slate-500 dark:fill-slate-400 tracking-wider uppercase opacity-80"
           >
             POLISH & HYGIENE (Minor Fixes)
           </text>
@@ -171,7 +171,7 @@ const EffortImpactQuadrantChart = ({ actions, selectedActionIdx, onSelectAction 
             x={width - paddingRight - 14}
             y={height - paddingBottom - 12}
             textAnchor="end"
-            className="text-[11px] font-mono font-bold fill-rose-500/80 dark:fill-rose-400/80 tracking-wider uppercase opacity-80"
+            className="text-[10px] font-semibold fill-rose-500/80 dark:fill-rose-400/80 tracking-wider uppercase opacity-80"
           >
             RE-EVALUATE PRIORITY
           </text>
@@ -393,23 +393,23 @@ const RecoveryTrajectoryChart = ({ baselineScore, milestones, resolvedTasks }) =
   const areaD = `${pathD} L ${lastX} ${bottomY} L ${firstX} ${bottomY} Z`;
 
   return (
-    <div className="space-y-3.5 w-full select-none">
-      <div className="flex flex-wrap items-center justify-between gap-3 text-xs sm:text-sm">
-        <span className="font-extrabold uppercase tracking-wide text-slate-800 dark:text-slate-200 text-sm">
+    <div className="space-y-3 w-full select-none font-sans">
+      <div className="flex flex-wrap items-center justify-between gap-3 text-xs">
+        <span className="font-bold uppercase tracking-wider text-slate-800 dark:text-slate-200 text-xs">
           Remediation Recovery Trajectory (Grade Horizon)
         </span>
-        <div className="flex items-center gap-3 text-xs font-mono font-semibold">
+        <div className="flex items-center gap-3 text-xs font-medium">
           <span className="text-slate-600 dark:text-slate-400">
-            Baseline: <strong className="text-slate-900 dark:text-white">{Math.round(baselineScore)}%</strong>
+            Baseline: <strong className="text-slate-900 dark:text-white font-semibold">{Math.round(baselineScore)}%</strong>
           </span>
-          <span className="text-indigo-600 dark:text-indigo-400 font-bold">
-            Target: <strong className="text-emerald-500">+{Math.round(accumulated - baselineScore)} pts ({Math.min(100, Math.round(accumulated))}%)</strong>
+          <span className="text-indigo-600 dark:text-indigo-400 font-semibold">
+            Target: <strong className="text-emerald-500 font-semibold">+{Math.round(accumulated - baselineScore)} pts ({Math.min(100, Math.round(accumulated))}%)</strong>
           </span>
         </div>
       </div>
 
       <div className="w-full bg-slate-50/60 dark:bg-slate-900/60 rounded-xl border border-slate-200/80 dark:border-slate-800 p-2 overflow-hidden">
-        <svg viewBox={`0 0 ${width} ${height}`} className="w-full h-56 sm:h-68 overflow-visible">
+        <svg viewBox={`0 0 ${width} ${height}`} className="w-full h-56 sm:h-68 overflow-visible font-sans">
           <defs>
             <linearGradient id="trajectoryGrad" x1="0%" y1="0%" x2="100%" y2="0%">
               <stop offset="0%" stopColor="#f59e0b" stopOpacity="0.5" />
@@ -750,65 +750,65 @@ const FeedbackGeneratorPage = () => {
       projectTitle={evaluation?.project?.title}
     >
       {evaluation && (
-        <div className="space-y-7">
+        <div className="space-y-6 font-sans">
           {/* ========================================================================= */}
           {/* SECTION 1: SPATIAL EXECUTIVE RESOLUTION COCKPIT & LIVE SCORE SIMULATOR    */}
           {/* ========================================================================= */}
-          <div className="animate-fluid-enter bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800/90 rounded-2xl p-6 sm:p-8 shadow-xs relative overflow-hidden">
+          <div className="animate-fluid-enter bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800/90 rounded-2xl p-5 sm:p-6 shadow-xs relative overflow-hidden">
             {/* Subtle Top Gradient Accent */}
             <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-amber-500 via-indigo-500 to-emerald-500 opacity-90" />
 
-            <div className="flex flex-col xl:flex-row xl:items-center justify-between gap-8">
+            <div className="flex flex-col xl:flex-row xl:items-center justify-between gap-6 lg:gap-8">
               {/* Left Column: Executive Assessment & Verdict */}
-              <div className="space-y-4 max-w-2xl">
-                <div className="flex flex-wrap items-center gap-2.5">
-                  <div className="p-1.5 rounded-lg bg-amber-50 dark:bg-amber-950/60 border border-amber-200/80 dark:border-amber-800 text-amber-600 dark:text-amber-400">
-                    <SparklesIcon className="w-4 h-4" />
+              <div className="space-y-3 max-w-2xl">
+                <div className="flex flex-wrap items-center gap-2">
+                  <div className="p-1 rounded-lg bg-amber-50 dark:bg-amber-950/60 border border-amber-200/80 dark:border-amber-800 text-amber-600 dark:text-amber-400">
+                    <SparklesIcon className="w-3.5 h-3.5" />
                   </div>
-                  <span className="text-xs sm:text-sm font-bold uppercase tracking-wider text-slate-600 dark:text-slate-400">
+                  <span className="text-[10px] sm:text-[11px] font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">
                     Departmental Remediation Synthesis
                   </span>
-                  <span className="px-2.5 py-1 rounded-md text-xs font-mono font-bold bg-amber-100 dark:bg-amber-950/80 text-amber-800 dark:text-amber-300 border border-amber-200 dark:border-amber-800">
+                  <span className="px-2 py-0.5 rounded-md text-[10px] font-bold bg-amber-100 dark:bg-amber-950/80 text-amber-800 dark:text-amber-300 border border-amber-200 dark:border-amber-800">
                     Advisory Grade: {suggestedGrade}
                   </span>
                 </div>
 
                 <div>
-                  <h2 className="text-xl sm:text-2xl font-black text-slate-900 dark:text-white tracking-tight">
+                  <h2 className="text-base sm:text-lg font-bold text-slate-900 dark:text-white tracking-tight">
                     Executive Diagnostic Verdict
                   </h2>
-                  <p className="mt-1.5 text-base sm:text-lg font-bold text-amber-600 dark:text-amber-400 leading-snug">
+                  <p className="mt-1 text-xs sm:text-sm font-semibold text-amber-600 dark:text-amber-400 leading-normal">
                     &ldquo;{verdict}&rdquo;
                   </p>
                 </div>
 
-                <p className="text-sm sm:text-base text-slate-600 dark:text-slate-300 leading-relaxed font-medium">
+                <p className="text-xs text-slate-600 dark:text-slate-400 leading-relaxed font-normal">
                   {execSummary}
                 </p>
 
                 {/* Pillar Telemetry Pills */}
-                <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5 pt-2">
-                  <div className="p-3 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200/80 dark:border-slate-800">
-                    <span className="text-xs font-mono font-bold uppercase text-slate-500 dark:text-slate-400 block">Code Health</span>
-                    <span className="text-base sm:text-lg font-black font-mono text-slate-900 dark:text-white">
+                <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5 pt-1">
+                  <div className="p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200/80 dark:border-slate-800">
+                    <span className="text-[10px] font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 block">Code Health</span>
+                    <span className="text-sm sm:text-base font-bold font-mono text-slate-900 dark:text-white tabular-nums">
                       {Math.round(scoresBlock.code_quality || 62)}%
                     </span>
                   </div>
-                  <div className="p-3 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200/80 dark:border-slate-800">
-                    <span className="text-xs font-mono font-bold uppercase text-slate-500 dark:text-slate-400 block">Doc Completeness</span>
-                    <span className="text-base sm:text-lg font-black font-mono text-slate-900 dark:text-white">
+                  <div className="p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200/80 dark:border-slate-800">
+                    <span className="text-[10px] font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 block">Doc Completeness</span>
+                    <span className="text-sm sm:text-base font-bold font-mono text-slate-900 dark:text-white tabular-nums">
                       {Math.round(docFb.completeness_percent || 45)}%
                     </span>
                   </div>
-                  <div className="p-3 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200/80 dark:border-slate-800">
-                    <span className="text-xs font-mono font-bold uppercase text-slate-500 dark:text-slate-400 block">Alignment</span>
-                    <span className="text-base sm:text-lg font-black font-mono text-slate-900 dark:text-white">
+                  <div className="p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200/80 dark:border-slate-800">
+                    <span className="text-[10px] font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 block">Alignment</span>
+                    <span className="text-sm sm:text-base font-bold font-mono text-slate-900 dark:text-white tabular-nums">
                       {Math.round(alignFb.alignment_score || 64)}%
                     </span>
                   </div>
-                  <div className="p-3 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200/80 dark:border-slate-800">
-                    <span className="text-xs font-mono font-bold uppercase text-slate-500 dark:text-slate-400 block">Originality</span>
-                    <span className="text-base sm:text-lg font-black font-mono text-emerald-600 dark:text-emerald-400">
+                  <div className="p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200/80 dark:border-slate-800">
+                    <span className="text-[10px] font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 block">Originality</span>
+                    <span className="text-sm sm:text-base font-bold font-mono text-emerald-600 dark:text-emerald-400 tabular-nums">
                       {originFb.risk_level === 'LOW' ? '96% Clean' : 'Review'}
                     </span>
                   </div>
@@ -816,15 +816,15 @@ const FeedbackGeneratorPage = () => {
               </div>
 
               {/* Right Column: Live Interactive Score Recovery Gauge */}
-              <div className="p-5 sm:p-6 rounded-2xl bg-slate-50/80 dark:bg-slate-800/50 border border-slate-200/90 dark:border-slate-800 flex flex-col justify-between gap-5 min-w-[320px]">
-                <div className="flex items-center justify-between pb-3 border-b border-slate-200/80 dark:border-slate-700/80">
-                  <div className="flex items-center gap-2">
+              <div className="p-4 sm:p-5 rounded-xl bg-slate-50/80 dark:bg-slate-800/50 border border-slate-200/90 dark:border-slate-800 flex flex-col justify-between gap-4 min-w-[300px]">
+                <div className="flex items-center justify-between pb-2.5 border-b border-slate-200/80 dark:border-slate-700/80">
+                  <div className="flex items-center gap-1.5">
                     <ArrowTrendingUpIcon className="w-4 h-4 text-emerald-500" />
-                    <span className="text-xs sm:text-sm font-extrabold uppercase tracking-wide text-slate-800 dark:text-slate-200">
+                    <span className="text-xs font-bold uppercase tracking-wider text-slate-800 dark:text-slate-200">
                       Live Remediation Horizon
                     </span>
                   </div>
-                  <span className="px-3 py-1 rounded-md text-xs font-mono font-bold bg-emerald-50 dark:bg-emerald-950/60 text-emerald-600 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-800">
+                  <span className="px-2 py-0.5 rounded-md text-[10px] font-bold bg-emerald-50 dark:bg-emerald-950/60 text-emerald-600 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-800">
                     +{pointsRecovered} pts Recovered
                   </span>
                 </div>
@@ -832,39 +832,39 @@ const FeedbackGeneratorPage = () => {
                 {/* Score Comparison Display */}
                 <div className="flex items-center justify-around text-center py-1">
                   <div>
-                    <span className="text-xs font-mono uppercase font-bold text-slate-500 block">Baseline Score</span>
-                    <span className="text-3xl sm:text-4xl font-black font-mono text-slate-700 dark:text-slate-300">
+                    <span className="text-[10px] uppercase font-bold text-slate-500 block tracking-wider">Baseline Score</span>
+                    <span className="text-2xl sm:text-3xl font-black font-mono text-slate-700 dark:text-slate-300 tabular-nums">
                       {Math.round(baselineScore)}
                     </span>
-                    <span className="text-xs font-mono font-semibold text-slate-500 dark:text-slate-400 block mt-1">Grade {suggestedGrade}</span>
+                    <span className="text-[10px] font-medium text-slate-500 dark:text-slate-400 block mt-0.5">Grade {suggestedGrade}</span>
                   </div>
 
                   <div className="text-slate-400 dark:text-slate-600">
-                    <ArrowPathIcon className="w-6 h-6 mx-auto animate-spin-slow" />
+                    <ArrowPathIcon className="w-5 h-5 mx-auto animate-spin-slow" />
                   </div>
 
                   <div>
-                    <span className="text-xs font-mono uppercase text-emerald-600 dark:text-emerald-400 font-bold block">
+                    <span className="text-[10px] uppercase text-emerald-600 dark:text-emerald-400 font-bold block tracking-wider">
                       Target Projected
                     </span>
-                    <span className="text-3xl sm:text-4xl font-black font-mono text-emerald-600 dark:text-emerald-400 transition-all duration-300">
+                    <span className="text-2xl sm:text-3xl font-black font-mono text-emerald-600 dark:text-emerald-400 tabular-nums transition-all duration-300">
                       {liveSimulatedScore}
                     </span>
-                    <span className="text-xs font-mono text-emerald-600 dark:text-emerald-400 font-bold block mt-1">
-                      {liveSimulatedScore >= 85 ? 'Grade A (Distinction)' : liveSimulatedScore >= 70 ? 'Grade B (Proficient)' : 'Grade C (Passing)'}
+                    <span className="text-[10px] font-medium text-emerald-600 dark:text-emerald-400 block mt-0.5">
+                      {liveSimulatedScore >= 85 ? 'Grade A (Passing)' : liveSimulatedScore >= 70 ? 'Grade B (Passing)' : 'Grade C (Passing)'}
                     </span>
                   </div>
                 </div>
 
                 {/* Progress Bar */}
-                <div className="space-y-2">
-                  <div className="flex justify-between text-xs sm:text-sm font-mono font-semibold">
-                    <span className="text-slate-600 dark:text-slate-300">Action Plan Resolution</span>
-                    <span className="font-bold text-slate-900 dark:text-white">
+                <div className="space-y-1.5">
+                  <div className="flex justify-between text-xs font-medium text-slate-600 dark:text-slate-400">
+                    <span>Action Plan Resolution</span>
+                    <span className="font-semibold text-slate-900 dark:text-white">
                       {resolvedCount} of {rawActions.length} Completed
                     </span>
                   </div>
-                  <div className="h-3 w-full rounded-full bg-slate-200 dark:bg-slate-700 overflow-hidden">
+                  <div className="h-2.5 w-full rounded-full bg-slate-200 dark:bg-slate-700 overflow-hidden">
                     <div
                       className="h-full rounded-full bg-gradient-to-r from-amber-500 to-emerald-500 transition-all duration-500"
                       style={{
@@ -875,9 +875,9 @@ const FeedbackGeneratorPage = () => {
                 </div>
 
                 {/* Summary Metadata */}
-                <div className="flex items-center justify-between text-xs sm:text-sm font-mono font-semibold text-slate-600 dark:text-slate-300 pt-2.5 border-t border-slate-200/80 dark:border-slate-700/80">
+                <div className="flex items-center justify-between text-xs font-medium text-slate-600 dark:text-slate-400 pt-2 border-t border-slate-200/80 dark:border-slate-700/80">
                   <span>Est. Dev Effort: ~{totalEffortHours}h</span>
-                  <span className="text-emerald-600 dark:text-emerald-400 font-bold">Max Recovery: +{totalPotentialUplift} pts</span>
+                  <span className="text-emerald-600 dark:text-emerald-400 font-semibold">Max Recovery: +{totalPotentialUplift} pts</span>
                 </div>
               </div>
             </div>
@@ -911,42 +911,41 @@ const FeedbackGeneratorPage = () => {
 
           {/* ========================================================================= */}
           {/* SECTION 3: STRATEGIC BALANCE: CORE STRENGTHS VS REMEDIATION DEFICITS      */}
-          {/* Enhanced font sizes for effortless legibility                             */}
           {/* ========================================================================= */}
           <div className="animate-fluid-enter animate-fluid-delay-2 grid grid-cols-1 lg:grid-cols-2 gap-6">
             {/* Validated Strengths */}
-            <div className="bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800/90 rounded-2xl p-6 sm:p-7 shadow-xs space-y-4">
-              <div className="flex items-center justify-between pb-3.5 border-b border-slate-100 dark:border-slate-800">
-                <div className="flex items-center gap-3">
-                  <div className="p-2 rounded-xl bg-emerald-50 dark:bg-emerald-950/60 text-emerald-600 dark:text-emerald-400 border border-emerald-200/80 dark:border-emerald-800/60">
-                    <CheckCircleIcon className="w-5 h-5" />
+            <div className="bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800/90 rounded-2xl p-5 sm:p-6 shadow-xs space-y-3.5">
+              <div className="flex items-center justify-between pb-3 border-b border-slate-100 dark:border-slate-800">
+                <div className="flex items-center gap-2.5">
+                  <div className="p-1.5 rounded-xl bg-emerald-50 dark:bg-emerald-950/60 text-emerald-600 dark:text-emerald-400 border border-emerald-200/80 dark:border-emerald-800/60">
+                    <CheckCircleIcon className="w-4 h-4" />
                   </div>
                   <div>
-                    <h3 className="text-base sm:text-lg font-black uppercase tracking-wide text-slate-900 dark:text-white">
+                    <h3 className="text-sm font-bold uppercase tracking-wider text-slate-800 dark:text-slate-200">
                       Validated Implementation Strengths
                     </h3>
-                    <p className="text-xs sm:text-sm font-medium text-slate-600 dark:text-slate-300">
+                    <p className="text-xs text-slate-500 dark:text-slate-400 font-normal">
                       High-performing architectural aspects to protect during revision
                     </p>
                   </div>
                 </div>
-                <span className="text-xs font-mono font-bold px-3 py-1 rounded-lg bg-emerald-50 dark:bg-emerald-950/60 text-emerald-600 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-800">
+                <span className="text-[10px] font-bold px-2 py-0.5 rounded-md uppercase tracking-wider bg-emerald-50 dark:bg-emerald-950/60 text-emerald-600 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-800">
                   {strengths.length} Confirmed
                 </span>
               </div>
 
-              <div className="space-y-3.5">
+              <div className="space-y-2.5">
                 {strengths.map((str, idx) => (
                   <div
                     key={idx}
-                    className="p-4 rounded-xl bg-emerald-50/40 dark:bg-emerald-950/20 border border-emerald-200/80 dark:border-emerald-800/40 flex items-start gap-3.5 transition-colors hover:border-emerald-400"
+                    className="p-3.5 rounded-xl bg-emerald-50/40 dark:bg-emerald-950/20 border border-emerald-200/80 dark:border-emerald-800/40 flex items-start gap-3 transition-colors hover:border-emerald-400"
                   >
-                    <CheckCircleIcon className="w-6 h-6 text-emerald-500 flex-shrink-0 mt-0.5" />
-                    <div className="space-y-1">
-                      <span className="text-sm sm:text-base font-bold text-slate-900 dark:text-white leading-relaxed block">
+                    <CheckCircleIcon className="w-5 h-5 text-emerald-500 flex-shrink-0 mt-0.5" />
+                    <div className="space-y-0.5">
+                      <span className="text-xs sm:text-sm font-semibold text-slate-900 dark:text-white leading-normal block">
                         {str}
                       </span>
-                      <span className="text-xs sm:text-sm font-mono font-semibold text-emerald-600 dark:text-emerald-400 block">
+                      <span className="text-xs font-medium text-emerald-600 dark:text-emerald-400 block font-sans">
                         ✓ Preserves +{(idx + 1) * 6} pts in rubric baseline
                       </span>
                     </div>
@@ -956,38 +955,38 @@ const FeedbackGeneratorPage = () => {
             </div>
 
             {/* Priority Deficits */}
-            <div className="bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800/90 rounded-2xl p-6 sm:p-7 shadow-xs space-y-4">
-              <div className="flex items-center justify-between pb-3.5 border-b border-slate-100 dark:border-slate-800">
-                <div className="flex items-center gap-3">
-                  <div className="p-2 rounded-xl bg-amber-50 dark:bg-amber-950/60 text-amber-600 dark:text-amber-400 border border-amber-200/80 dark:border-amber-800/60">
-                    <LightBulbIcon className="w-5 h-5" />
+            <div className="bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800/90 rounded-2xl p-5 sm:p-6 shadow-xs space-y-3.5">
+              <div className="flex items-center justify-between pb-3 border-b border-slate-100 dark:border-slate-800">
+                <div className="flex items-center gap-2.5">
+                  <div className="p-1.5 rounded-xl bg-amber-50 dark:bg-amber-950/60 text-amber-600 dark:text-amber-400 border border-amber-200/80 dark:border-amber-800/60">
+                    <LightBulbIcon className="w-4 h-4" />
                   </div>
                   <div>
-                    <h3 className="text-base sm:text-lg font-black uppercase tracking-wide text-slate-900 dark:text-white">
+                    <h3 className="text-sm font-bold uppercase tracking-wider text-slate-800 dark:text-slate-200">
                       Identified Growth Deficits
                     </h3>
-                    <p className="text-xs sm:text-sm font-medium text-slate-600 dark:text-slate-300">
+                    <p className="text-xs text-slate-500 dark:text-slate-400 font-normal">
                       Root causes contributing directly to rubric point deductions
                     </p>
                   </div>
                 </div>
-                <span className="text-xs font-mono font-bold px-3 py-1 rounded-lg bg-amber-50 dark:bg-amber-950/60 text-amber-600 dark:text-amber-400 border border-amber-200 dark:border-amber-800">
+                <span className="text-[10px] font-bold px-2 py-0.5 rounded-md uppercase tracking-wider bg-amber-50 dark:bg-amber-950/60 text-amber-600 dark:text-amber-400 border border-amber-200 dark:border-amber-800">
                   {improvements.length} Gaps
                 </span>
               </div>
 
-              <div className="space-y-3.5">
+              <div className="space-y-2.5">
                 {improvements.map((imp, idx) => (
                   <div
                     key={idx}
-                    className="p-4 rounded-xl bg-amber-50/40 dark:bg-amber-950/20 border border-amber-200/80 dark:border-amber-800/40 flex items-start gap-3.5 transition-colors hover:border-amber-400"
+                    className="p-3.5 rounded-xl bg-amber-50/40 dark:bg-amber-950/20 border border-amber-200/80 dark:border-amber-800/40 flex items-start gap-3 transition-colors hover:border-amber-400"
                   >
-                    <ExclamationCircleIcon className="w-6 h-6 text-amber-500 flex-shrink-0 mt-0.5" />
-                    <div className="space-y-1">
-                      <span className="text-sm sm:text-base font-bold text-slate-900 dark:text-white leading-relaxed block">
+                    <ExclamationCircleIcon className="w-5 h-5 text-amber-500 flex-shrink-0 mt-0.5" />
+                    <div className="space-y-0.5">
+                      <span className="text-xs sm:text-sm font-semibold text-slate-900 dark:text-white leading-normal block">
                         {imp}
                       </span>
-                      <span className="text-xs sm:text-sm font-mono font-semibold text-amber-600 dark:text-amber-400 block">
+                      <span className="text-xs font-medium text-amber-600 dark:text-amber-400 block font-sans">
                         ⚠ Potential deduction: -{(idx + 1) * 7} pts if unresolved
                       </span>
                     </div>
@@ -1000,45 +999,45 @@ const FeedbackGeneratorPage = () => {
           {/* ========================================================================= */}
           {/* SECTION 4: TABBED ACTION & DIAGNOSTIC NAVIGATION                          */}
           {/* ========================================================================= */}
-          <div className="flex border-b border-slate-200 dark:border-slate-800 gap-6 text-sm sm:text-base font-bold">
+          <div className="flex border-b border-slate-200 dark:border-slate-800 gap-6 text-xs sm:text-sm font-semibold">
             <button
               onClick={() => setActiveTab('ACTION_PLAN')}
-              className={`pb-3.5 transition-colors border-b-2 flex items-center gap-2.5 ${
+              className={`pb-3 transition-colors border-b-2 flex items-center gap-2 ${
                 activeTab === 'ACTION_PLAN'
                   ? 'border-amber-500 text-amber-600 dark:text-amber-400'
                   : 'border-transparent text-slate-500 hover:text-slate-800 dark:hover:text-slate-200'
               }`}
             >
-              <BoltIcon className="w-5 h-5" />
+              <BoltIcon className="w-4 h-4" />
               <span>Interactive Action Checklist</span>
-              <span className="px-2 py-0.5 rounded-full text-xs font-mono font-bold bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300">
+              <span className="px-1.5 py-0.2 rounded-md text-[10px] font-bold bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400">
                 {rawActions.length}
               </span>
             </button>
 
             <button
               onClick={() => setActiveTab('DEEP_DIVE')}
-              className={`pb-3.5 transition-colors border-b-2 flex items-center gap-2.5 ${
+              className={`pb-3 transition-colors border-b-2 flex items-center gap-2 ${
                 activeTab === 'DEEP_DIVE'
                   ? 'border-amber-500 text-amber-600 dark:text-amber-400'
                   : 'border-transparent text-slate-500 hover:text-slate-800 dark:hover:text-slate-200'
               }`}
             >
-              <CubeIcon className="w-5 h-5" />
+              <CubeIcon className="w-4 h-4" />
               <span>4-Pillar Deep-Dive Diagnostics</span>
             </button>
 
             <button
               onClick={() => setActiveTab('LEARNING_RESOURCES')}
-              className={`pb-3.5 transition-colors border-b-2 flex items-center gap-2.5 ${
+              className={`pb-3 transition-colors border-b-2 flex items-center gap-2 ${
                 activeTab === 'LEARNING_RESOURCES'
                   ? 'border-amber-500 text-amber-600 dark:text-amber-400'
                   : 'border-transparent text-slate-500 hover:text-slate-800 dark:hover:text-slate-200'
               }`}
             >
-              <BookOpenIcon className="w-5 h-5" />
+              <BookOpenIcon className="w-4 h-4" />
               <span>Curated Learning Curricula</span>
-              <span className="px-2 py-0.5 rounded-full text-xs font-mono font-bold bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300">
+              <span className="px-1.5 py-0.2 rounded-md text-[10px] font-bold bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400">
                 {learningResources.length}
               </span>
             </button>
@@ -1046,13 +1045,13 @@ const FeedbackGeneratorPage = () => {
 
           {/* TAB CONTENT: ACTION CHECKLIST */}
           {activeTab === 'ACTION_PLAN' && (
-            <div className="animate-fluid-enter bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800/90 rounded-2xl p-6 sm:p-7 shadow-xs space-y-5">
-              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-slate-100 dark:border-slate-800">
+            <div className="animate-fluid-enter bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800/90 rounded-2xl p-5 sm:p-6 shadow-xs space-y-4">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3.5 border-b border-slate-100 dark:border-slate-800">
                 <div>
-                  <h3 className="text-base sm:text-lg font-bold text-slate-900 dark:text-white tracking-tight">
+                  <h3 className="text-sm font-bold uppercase tracking-wider text-slate-900 dark:text-white">
                     Prioritized Remediation Checklist
                   </h3>
-                  <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400">
+                  <p className="text-xs text-slate-500 dark:text-slate-400 font-normal">
                     Check off tasks to dynamically simulate grade recovery in real time
                   </p>
                 </div>
@@ -1063,7 +1062,7 @@ const FeedbackGeneratorPage = () => {
                     <button
                       key={f}
                       onClick={() => setActiveFilter(f)}
-                      className={`px-3.5 py-1.5 rounded-lg text-xs sm:text-sm font-bold transition-all whitespace-nowrap ${
+                      className={`px-3 py-1 rounded-lg text-xs font-semibold transition-all whitespace-nowrap ${
                         activeFilter === f
                           ? 'bg-white dark:bg-slate-900 text-slate-900 dark:text-white shadow-xs'
                           : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
@@ -1076,39 +1075,39 @@ const FeedbackGeneratorPage = () => {
               </div>
 
               {/* Checklist Items */}
-              <div className="space-y-3.5">
+              <div className="space-y-2.5">
                 {filteredActions.map((item, idx) => {
                   const isResolved = resolvedTasks[idx];
 
                   return (
                     <div
                       key={idx}
-                      className={`p-4 sm:p-5 rounded-xl border transition-all duration-300 flex flex-col sm:flex-row sm:items-center justify-between gap-4 ${
+                      className={`p-3.5 sm:p-4 rounded-xl border transition-all duration-300 flex flex-col sm:flex-row sm:items-center justify-between gap-3.5 ${
                         isResolved
                           ? 'bg-emerald-50/20 dark:bg-emerald-950/10 border-emerald-300 dark:border-emerald-900/50 opacity-75'
                           : 'bg-slate-50/80 dark:bg-slate-800/40 border-slate-200/80 dark:border-slate-800 hover:border-slate-300 dark:hover:border-slate-700'
                       }`}
                     >
-                      <div className="flex items-start gap-4">
+                      <div className="flex items-start gap-3">
                         <button
                           onClick={() => toggleTask(idx)}
-                          className={`mt-0.5 w-6 h-6 rounded-lg border flex items-center justify-center transition-all ${
+                          className={`mt-0.5 w-5 h-5 rounded-md border flex items-center justify-center transition-all ${
                             isResolved
                               ? 'bg-emerald-500 border-emerald-500 text-white shadow-xs'
                               : 'border-slate-300 dark:border-slate-600 hover:border-emerald-500 bg-white dark:bg-slate-900'
                           }`}
                         >
-                          {isResolved && <CheckCircleIcon className="w-4 h-4 stroke-[3]" />}
+                          {isResolved && <CheckCircleIcon className="w-3.5 h-3.5 stroke-[3]" />}
                         </button>
 
-                        <div className="space-y-1.5">
-                          <div className="flex flex-wrap items-center gap-2.5">
+                        <div className="space-y-1">
+                          <div className="flex flex-wrap items-center gap-2">
                             <PriorityBadge priority={item.priority || 'MEDIUM'} />
-                            <span className="text-xs font-mono font-semibold px-2.5 py-1 rounded bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-300">
+                            <span className="text-[10px] font-bold px-2 py-0.5 rounded bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-300 uppercase tracking-wider">
                               {item.category}
                             </span>
                             <span
-                              className={`text-base font-bold ${
+                              className={`text-xs sm:text-sm font-semibold ${
                                 isResolved
                                   ? 'line-through text-slate-400 dark:text-slate-500'
                                   : 'text-slate-900 dark:text-white'
@@ -1119,21 +1118,21 @@ const FeedbackGeneratorPage = () => {
                           </div>
 
                           {item.rationale && (
-                            <p className="text-sm text-slate-600 dark:text-slate-300 leading-relaxed font-medium">
+                            <p className="text-xs text-slate-500 dark:text-slate-400 leading-relaxed font-normal">
                               {item.rationale}
                             </p>
                           )}
                         </div>
                       </div>
 
-                      <div className="flex items-center gap-3.5 text-xs sm:text-sm font-mono self-end sm:self-auto flex-shrink-0">
+                      <div className="flex items-center gap-3 text-xs self-end sm:self-auto flex-shrink-0">
                         {item.impact && (
-                          <span className="px-3 py-1 rounded-md text-xs font-mono font-bold text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800/60">
+                          <span className="px-2 py-0.5 rounded-md text-[10px] font-bold text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800/60">
                             {item.impact}
                           </span>
                         )}
-                        <span className="flex items-center gap-1.5 text-slate-600 dark:text-slate-400 font-semibold">
-                          <ClockIcon className="w-4 h-4" />
+                        <span className="flex items-center gap-1 text-slate-500 dark:text-slate-400 font-medium">
+                          <ClockIcon className="w-3.5 h-3.5" />
                           <span>~{item.estimated_hours}h</span>
                         </span>
                       </div>
@@ -1150,57 +1149,57 @@ const FeedbackGeneratorPage = () => {
               {/* Top Row: Code Quality & Docs */}
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                 {/* Code Quality Card */}
-                <div className="bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800/90 rounded-2xl p-6 sm:p-7 shadow-xs space-y-4">
-                  <div className="flex items-center justify-between pb-3.5 border-b border-slate-100 dark:border-slate-800">
-                    <div className="flex items-center gap-2 text-blue-600 dark:text-blue-400 font-extrabold text-sm uppercase tracking-wide">
-                      <CodeBracketIcon className="w-5 h-5" />
+                <div className="bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800/90 rounded-2xl p-5 sm:p-6 shadow-xs space-y-3.5">
+                  <div className="flex items-center justify-between pb-3 border-b border-slate-100 dark:border-slate-800">
+                    <div className="flex items-center gap-2 text-blue-600 dark:text-blue-400 font-bold text-xs uppercase tracking-wider">
+                      <CodeBracketIcon className="w-4 h-4" />
                       <span>Code Quality & AST Defect Telemetry</span>
                     </div>
-                    <span className="text-sm font-mono font-bold text-blue-600 dark:text-blue-400">
+                    <span className="text-xs font-bold text-blue-600 dark:text-blue-400">
                       Score: {Math.round(scoresBlock.code_quality || 62)}%
                     </span>
                   </div>
 
-                  <p className="text-sm text-slate-700 dark:text-slate-200 leading-relaxed font-medium">
+                  <p className="text-xs text-slate-600 dark:text-slate-300 leading-relaxed font-normal">
                     {codeQualityFb.summary}
                   </p>
 
                   {/* Notes Grid */}
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs sm:text-sm">
-                    <div className="p-3 rounded-lg bg-slate-50 dark:bg-slate-800/40 border border-slate-200/80 dark:border-slate-800">
-                      <strong className="text-xs font-mono font-bold text-slate-500 uppercase block mb-1">Complexity</strong>
-                      <span className="text-slate-700 dark:text-slate-300 font-medium">{codeQualityFb.complexity_notes || 'Cyclomatic complexity within bounds'}</span>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 text-xs">
+                    <div className="p-2.5 rounded-lg bg-slate-50 dark:bg-slate-800/40 border border-slate-200/80 dark:border-slate-800">
+                      <strong className="text-[10px] font-bold uppercase tracking-wider text-slate-500 block mb-0.5">Complexity</strong>
+                      <span className="text-slate-700 dark:text-slate-300 font-normal">{codeQualityFb.complexity_notes || 'Cyclomatic complexity within bounds'}</span>
                     </div>
-                    <div className="p-3 rounded-lg bg-slate-50 dark:bg-slate-800/40 border border-slate-200/80 dark:border-slate-800">
-                      <strong className="text-xs font-mono font-bold text-slate-500 uppercase block mb-1">Maintainability</strong>
-                      <span className="text-slate-700 dark:text-slate-300 font-medium">{codeQualityFb.maintainability_notes || 'Module decoupling recommended'}</span>
+                    <div className="p-2.5 rounded-lg bg-slate-50 dark:bg-slate-800/40 border border-slate-200/80 dark:border-slate-800">
+                      <strong className="text-[10px] font-bold uppercase tracking-wider text-slate-500 block mb-0.5">Maintainability</strong>
+                      <span className="text-slate-700 dark:text-slate-300 font-normal">{codeQualityFb.maintainability_notes || 'Module decoupling recommended'}</span>
                     </div>
                   </div>
 
                   {/* Code Issues List */}
                   {Array.isArray(codeQualityFb.issues) && codeQualityFb.issues.length > 0 && (
-                    <div className="space-y-2.5 pt-2 border-t border-slate-100 dark:border-slate-800">
-                      <span className="text-xs font-mono uppercase font-bold text-slate-500 block">
+                    <div className="space-y-2 pt-2 border-t border-slate-100 dark:border-slate-800">
+                      <span className="text-[10px] font-bold uppercase tracking-wider text-slate-500 block">
                         Specific AST Defect Findings:
                       </span>
                       {codeQualityFb.issues.slice(0, 3).map((issue, idx) => (
                         <div
                           key={idx}
-                          className="p-3.5 rounded-lg bg-rose-50/30 dark:bg-rose-950/20 border border-rose-200/60 dark:border-rose-900/40 text-xs sm:text-sm space-y-1.5"
+                          className="p-3 rounded-lg bg-rose-50/30 dark:bg-rose-950/20 border border-rose-200/60 dark:border-rose-900/40 text-xs space-y-1"
                         >
-                          <div className="flex items-center justify-between font-mono text-xs">
-                            <span className="font-bold text-rose-600 dark:text-rose-400">
+                          <div className="flex items-center justify-between text-xs">
+                            <span className="font-semibold text-rose-600 dark:text-rose-400 font-mono">
                               {issue.file || 'File'} : Line {issue.line || 0}
                             </span>
-                            <span className="px-2 py-0.5 rounded bg-rose-100 dark:bg-rose-900/50 text-rose-800 dark:text-rose-300 uppercase font-bold text-[11px]">
+                            <span className="px-1.5 py-0.2 rounded bg-rose-100 dark:bg-rose-900/50 text-rose-800 dark:text-rose-300 uppercase font-bold text-[10px]">
                               {issue.severity}
                             </span>
                           </div>
-                          <p className="text-slate-800 dark:text-slate-200 font-medium">
+                          <p className="text-slate-700 dark:text-slate-300 font-normal">
                             {issue.description}
                           </p>
                           {issue.suggestion && (
-                            <p className="text-emerald-700 dark:text-emerald-400 text-xs sm:text-sm font-mono font-semibold">
+                            <p className="text-emerald-700 dark:text-emerald-400 text-xs font-medium">
                               💡 Solution: {issue.suggestion}
                             </p>
                           )}
@@ -1211,30 +1210,30 @@ const FeedbackGeneratorPage = () => {
                 </div>
 
                 {/* Documentation Card */}
-                <div className="bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800/90 rounded-2xl p-6 sm:p-7 shadow-xs space-y-4">
-                  <div className="flex items-center justify-between pb-3.5 border-b border-slate-100 dark:border-slate-800">
-                    <div className="flex items-center gap-2 text-emerald-600 dark:text-emerald-400 font-extrabold text-sm uppercase tracking-wide">
-                      <DocumentTextIcon className="w-5 h-5" />
+                <div className="bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800/90 rounded-2xl p-5 sm:p-6 shadow-xs space-y-3.5">
+                  <div className="flex items-center justify-between pb-3 border-b border-slate-100 dark:border-slate-800">
+                    <div className="flex items-center gap-2 text-emerald-600 dark:text-emerald-400 font-bold text-xs uppercase tracking-wider">
+                      <DocumentTextIcon className="w-4 h-4" />
                       <span>Documentation Completeness Audit</span>
                     </div>
-                    <span className="text-sm font-mono font-bold text-emerald-600 dark:text-emerald-400">
+                    <span className="text-xs font-bold text-emerald-600 dark:text-emerald-400">
                       {Math.round(docFb.completeness_percent || 45)}% Complete
                     </span>
                   </div>
 
-                  <p className="text-sm text-slate-700 dark:text-slate-200 leading-relaxed font-medium">
+                  <p className="text-xs text-slate-600 dark:text-slate-300 leading-relaxed font-normal">
                     {docFb.summary}
                   </p>
 
                   {/* Completeness Bar */}
-                  <div className="space-y-2">
-                    <div className="flex justify-between text-xs sm:text-sm font-mono font-semibold">
-                      <span className="text-slate-500">IEEE Standard Compliance</span>
-                      <span className="font-bold text-slate-900 dark:text-white">
+                  <div className="space-y-1.5">
+                    <div className="flex justify-between text-xs font-medium text-slate-600 dark:text-slate-400">
+                      <span>IEEE Standard Compliance</span>
+                      <span className="font-semibold text-slate-900 dark:text-white">
                         {Math.round(docFb.completeness_percent || 45)}%
                       </span>
                     </div>
-                    <div className="h-2.5 w-full rounded-full bg-slate-200 dark:bg-slate-700 overflow-hidden">
+                    <div className="h-2 w-full rounded-full bg-slate-200 dark:bg-slate-700 overflow-hidden">
                       <div
                         className="h-full rounded-full bg-emerald-500"
                         style={{ width: `${Math.round(docFb.completeness_percent || 45)}%` }}
@@ -1244,15 +1243,15 @@ const FeedbackGeneratorPage = () => {
 
                   {/* Missing Sections */}
                   {Array.isArray(docFb.missing_sections) && docFb.missing_sections.length > 0 && (
-                    <div className="pt-2 border-t border-slate-100 dark:border-slate-800 space-y-2.5">
-                      <span className="text-xs font-mono uppercase font-bold text-slate-500 block">
+                    <div className="pt-2 border-t border-slate-100 dark:border-slate-800 space-y-2">
+                      <span className="text-[10px] font-bold uppercase tracking-wider text-slate-500 block">
                         Mandatory Missing Sections to Add:
                       </span>
-                      <div className="flex flex-wrap gap-2">
+                      <div className="flex flex-wrap gap-1.5">
                         {docFb.missing_sections.map((sec, i) => (
                           <span
                             key={i}
-                            className="px-3 py-1.5 text-xs sm:text-sm font-mono font-bold bg-amber-50 dark:bg-amber-950/40 text-amber-700 dark:text-amber-400 rounded-md border border-amber-200 dark:border-amber-800"
+                            className="px-2 py-0.5 text-xs font-semibold bg-amber-50 dark:bg-amber-950/40 text-amber-700 dark:text-amber-400 rounded-md border border-amber-200 dark:border-amber-800"
                           >
                             + {sec}
                           </span>
@@ -1262,7 +1261,7 @@ const FeedbackGeneratorPage = () => {
                   )}
 
                   {docFb.clarity_notes && (
-                    <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 italic pt-1 font-medium">
+                    <p className="text-xs text-slate-500 dark:text-slate-400 italic pt-1 font-normal">
                       {docFb.clarity_notes}
                     </p>
                   )}
@@ -1272,28 +1271,28 @@ const FeedbackGeneratorPage = () => {
               {/* Bottom Row: Alignment & Originality */}
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                 {/* Alignment Card */}
-                <div className="bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800/90 rounded-2xl p-6 sm:p-7 shadow-xs space-y-4">
-                  <div className="flex items-center justify-between pb-3.5 border-b border-slate-100 dark:border-slate-800">
-                    <div className="flex items-center gap-2 text-indigo-600 dark:text-indigo-400 font-extrabold text-sm uppercase tracking-wide">
-                      <ScaleIcon className="w-5 h-5" />
+                <div className="bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800/90 rounded-2xl p-5 sm:p-6 shadow-xs space-y-3.5">
+                  <div className="flex items-center justify-between pb-3 border-b border-slate-100 dark:border-slate-800">
+                    <div className="flex items-center gap-2 text-indigo-600 dark:text-indigo-400 font-bold text-xs uppercase tracking-wider">
+                      <ScaleIcon className="w-4 h-4" />
                       <span>Code-to-Report Alignment Discrepancies</span>
                     </div>
-                    <span className="text-sm font-mono font-bold text-indigo-600 dark:text-indigo-400">
+                    <span className="text-xs font-bold text-indigo-600 dark:text-indigo-400">
                       Score: {Math.round(alignFb.alignment_score || 64)}%
                     </span>
                   </div>
 
-                  <p className="text-sm text-slate-700 dark:text-slate-200 leading-relaxed font-medium">
+                  <p className="text-xs text-slate-600 dark:text-slate-300 leading-relaxed font-normal">
                     {alignFb.summary}
                   </p>
 
-                  <div className="space-y-3">
+                  <div className="space-y-2.5">
                     {alignFb.features_claimed_not_implemented?.length > 0 && (
-                      <div className="p-3.5 rounded-xl bg-rose-50/40 dark:bg-rose-950/20 border border-rose-200/80 dark:border-rose-900/40 text-xs sm:text-sm">
-                        <strong className="text-rose-700 dark:text-rose-400 font-mono text-xs uppercase block mb-1.5 font-bold">
+                      <div className="p-3 rounded-xl bg-rose-50/40 dark:bg-rose-950/20 border border-rose-200/80 dark:border-rose-900/40 text-xs">
+                        <strong className="text-rose-700 dark:text-rose-400 text-[10px] uppercase tracking-wider block mb-1 font-bold">
                           Claimed in Report but Missing in Code (Phantom Features):
                         </strong>
-                        <ul className="list-disc pl-5 space-y-1 text-slate-700 dark:text-slate-300 font-medium">
+                        <ul className="list-disc pl-5 space-y-0.5 text-slate-600 dark:text-slate-400 font-normal">
                           {alignFb.features_claimed_not_implemented.map((f, i) => (
                             <li key={i}>{f}</li>
                           ))}
@@ -1302,11 +1301,11 @@ const FeedbackGeneratorPage = () => {
                     )}
 
                     {alignFb.features_implemented_not_documented?.length > 0 && (
-                      <div className="p-3.5 rounded-xl bg-blue-50/40 dark:bg-blue-950/20 border border-blue-200/80 dark:border-blue-900/40 text-xs sm:text-sm">
-                        <strong className="text-blue-700 dark:text-blue-400 font-mono text-xs uppercase block mb-1.5 font-bold">
+                      <div className="p-3 rounded-xl bg-blue-50/40 dark:bg-blue-950/20 border border-blue-200/80 dark:border-blue-900/40 text-xs">
+                        <strong className="text-blue-700 dark:text-blue-400 text-[10px] uppercase tracking-wider block mb-1 font-bold">
                           Implemented in Code but Undocumented:
                         </strong>
-                        <ul className="list-disc pl-5 space-y-1 text-slate-700 dark:text-slate-300 font-medium">
+                        <ul className="list-disc pl-5 space-y-0.5 text-slate-600 dark:text-slate-400 font-normal">
                           {alignFb.features_implemented_not_documented.map((f, i) => (
                             <li key={i}>{f}</li>
                           ))}
@@ -1317,37 +1316,37 @@ const FeedbackGeneratorPage = () => {
                 </div>
 
                 {/* Originality Card */}
-                <div className="bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800/90 rounded-2xl p-6 sm:p-7 shadow-xs space-y-4">
-                  <div className="flex items-center justify-between pb-3.5 border-b border-slate-100 dark:border-slate-800">
-                    <div className="flex items-center gap-2 text-purple-600 dark:text-purple-400 font-extrabold text-sm uppercase tracking-wide">
-                      <FingerPrintIcon className="w-5 h-5" />
+                <div className="bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800/90 rounded-2xl p-5 sm:p-6 shadow-xs space-y-3.5">
+                  <div className="flex items-center justify-between pb-3 border-b border-slate-100 dark:border-slate-800">
+                    <div className="flex items-center gap-2 text-purple-600 dark:text-purple-400 font-bold text-xs uppercase tracking-wider">
+                      <FingerPrintIcon className="w-4 h-4" />
                       <span>Originality & Academic Integrity</span>
                     </div>
-                    <span className="text-sm font-mono font-bold text-purple-600 dark:text-purple-400">
+                    <span className="text-xs font-bold text-purple-600 dark:text-purple-400">
                       Risk Level: {originFb.risk_level}
                     </span>
                   </div>
 
-                  <p className="text-sm text-slate-700 dark:text-slate-200 leading-relaxed font-medium">
+                  <p className="text-xs text-slate-600 dark:text-slate-300 leading-relaxed font-normal">
                     {originFb.summary}
                   </p>
 
-                  <div className="grid grid-cols-2 gap-3.5 text-xs sm:text-sm">
-                    <div className="p-3.5 rounded-xl bg-slate-50 dark:bg-slate-800/40 border border-slate-200/80 dark:border-slate-800">
-                      <span className="text-xs font-mono text-slate-500 uppercase block font-bold">AI Likelihood</span>
-                      <span className="text-xl font-black font-mono text-slate-900 dark:text-white">
+                  <div className="grid grid-cols-2 gap-3 text-xs">
+                    <div className="p-3 rounded-xl bg-slate-50 dark:bg-slate-800/40 border border-slate-200/80 dark:border-slate-800">
+                      <span className="text-[10px] text-slate-500 uppercase block font-bold tracking-wider">AI Likelihood</span>
+                      <span className="text-base sm:text-lg font-bold font-mono text-slate-900 dark:text-white tabular-nums">
                         {Math.round(originFb.ai_detection_probability_percent || 8)}%
                       </span>
                     </div>
-                    <div className="p-3.5 rounded-xl bg-slate-50 dark:bg-slate-800/40 border border-slate-200/80 dark:border-slate-800">
-                      <span className="text-xs font-mono text-slate-500 uppercase block font-bold">Corpus Overlap</span>
-                      <span className="text-xl font-black font-mono text-slate-900 dark:text-white">
+                    <div className="p-3 rounded-xl bg-slate-50 dark:bg-slate-800/40 border border-slate-200/80 dark:border-slate-800">
+                      <span className="text-[10px] text-slate-500 uppercase block font-bold tracking-wider">Corpus Overlap</span>
+                      <span className="text-base sm:text-lg font-bold font-mono text-slate-900 dark:text-white tabular-nums">
                         {Math.round(originFb.plagiarism_similarity_percent || 4)}%
                       </span>
                     </div>
                   </div>
 
-                  <div className="p-3 rounded-lg bg-emerald-50/50 dark:bg-emerald-950/20 border border-emerald-200/80 dark:border-emerald-900/40 text-xs sm:text-sm text-emerald-800 dark:text-emerald-300 font-mono font-semibold">
+                  <div className="p-2.5 rounded-lg bg-emerald-50/50 dark:bg-emerald-950/20 border border-emerald-200/80 dark:border-emerald-900/40 text-xs text-emerald-800 dark:text-emerald-300 font-medium">
                     ✓ Verified: No disciplinary review required. Authentic student implementation.
                   </div>
                 </div>
@@ -1357,32 +1356,32 @@ const FeedbackGeneratorPage = () => {
 
           {/* TAB CONTENT: LEARNING CURRICULA */}
           {activeTab === 'LEARNING_RESOURCES' && (
-            <div className="animate-fluid-enter bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800/90 rounded-2xl p-6 sm:p-7 shadow-xs space-y-4">
-              <div className="pb-3.5 border-b border-slate-100 dark:border-slate-800">
-                <h3 className="text-base sm:text-lg font-bold text-slate-900 dark:text-white tracking-tight">
+            <div className="animate-fluid-enter bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800/90 rounded-2xl p-5 sm:p-6 shadow-xs space-y-3.5">
+              <div className="pb-3 border-b border-slate-100 dark:border-slate-800">
+                <h3 className="text-sm font-bold uppercase tracking-wider text-slate-900 dark:text-white">
                   Curated Engineering Learning Modules
                 </h3>
-                <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400">
+                <p className="text-xs text-slate-500 dark:text-slate-400 font-normal">
                   Targeted academic concepts to review based on detected implementation gaps
                 </p>
               </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-3.5">
                 {learningResources.map((res, idx) => (
                   <div
                     key={idx}
-                    className="p-4 sm:p-5 rounded-xl bg-slate-50/80 dark:bg-slate-800/40 border border-slate-200/80 dark:border-slate-800 space-y-2 hover:border-amber-400 transition-colors"
+                    className="p-3.5 sm:p-4 rounded-xl bg-slate-50/80 dark:bg-slate-800/40 border border-slate-200/80 dark:border-slate-800 space-y-1.5 hover:border-amber-400 transition-colors"
                   >
-                    <div className="flex items-center gap-2 text-amber-600 dark:text-amber-400">
-                      <AcademicCapIcon className="w-5 h-5 flex-shrink-0" />
-                      <span className="text-xs font-bold font-mono uppercase tracking-wider">
+                    <div className="flex items-center gap-1.5 text-amber-600 dark:text-amber-400">
+                      <AcademicCapIcon className="w-4 h-4 flex-shrink-0" />
+                      <span className="text-[10px] font-bold uppercase tracking-wider">
                         Topic {idx + 1}
                       </span>
                     </div>
-                    <h4 className="text-sm sm:text-base font-bold text-slate-900 dark:text-white">
+                    <h4 className="text-xs sm:text-sm font-semibold text-slate-900 dark:text-white">
                       {res.topic}
                     </h4>
-                    <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-300 leading-relaxed font-medium">
+                    <p className="text-xs text-slate-500 dark:text-slate-400 leading-relaxed font-normal">
                       {res.suggestion}
                     </p>
                   </div>
@@ -1395,20 +1394,20 @@ const FeedbackGeneratorPage = () => {
           {/* SECTION 5: INSTRUCTOR NOTES & SYSTEM TELEMETRY AUDIT TERMINAL             */}
           {/* ========================================================================= */}
           {instructorNotes && (
-            <div className="bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800/90 rounded-2xl p-6 shadow-xs space-y-3">
-              <div className="flex items-center justify-between pb-3 border-b border-slate-100 dark:border-slate-800">
-                <div className="flex items-center gap-2">
-                  <ShieldCheckIcon className="w-5 h-5 text-amber-600 dark:text-amber-400" />
-                  <h3 className="text-sm font-bold uppercase tracking-wider text-slate-900 dark:text-white">
+            <div className="bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800/90 rounded-2xl p-5 sm:p-6 shadow-xs space-y-2.5">
+              <div className="flex items-center justify-between pb-2.5 border-b border-slate-100 dark:border-slate-800">
+                <div className="flex items-center gap-1.5">
+                  <ShieldCheckIcon className="w-4 h-4 text-amber-600 dark:text-amber-400" />
+                  <h3 className="text-xs font-bold uppercase tracking-wider text-slate-900 dark:text-white">
                     Instructor Notes & Diagnostic Output
                   </h3>
                 </div>
-                <span className="text-xs font-mono font-bold text-slate-500">
+                <span className="text-[10px] font-bold text-slate-400">
                   SYSTEM_AUDIT_LOG
                 </span>
               </div>
 
-              <div className="p-4 rounded-xl bg-amber-50/40 dark:bg-amber-950/20 border border-amber-200/80 dark:border-amber-800/40 font-mono text-xs sm:text-sm text-amber-900 dark:text-amber-300 font-medium leading-relaxed">
+              <div className="p-3.5 rounded-xl bg-amber-50/40 dark:bg-amber-950/20 border border-amber-200/80 dark:border-amber-800/40 font-mono text-xs text-amber-900 dark:text-amber-300 font-normal leading-relaxed">
                 {typeof instructorNotes === 'string'
                   ? instructorNotes
                   : instructorNotes.summary || JSON.stringify(instructorNotes)}
@@ -1417,22 +1416,22 @@ const FeedbackGeneratorPage = () => {
           )}
 
           {/* ACTION FOOTER */}
-          <div className="p-5 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800/90 shadow-xs flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-            <div className="flex items-center gap-2 text-xs sm:text-sm text-slate-600 dark:text-slate-400 font-medium">
+          <div className="p-4 sm:p-5 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800/90 shadow-xs flex flex-col sm:flex-row sm:items-center justify-between gap-3.5">
+            <div className="flex items-center gap-2 text-xs text-slate-600 dark:text-slate-400 font-normal">
               <ClipboardDocumentCheckIcon className="w-4 h-4 text-emerald-500 flex-shrink-0" />
               <span>
                 Export complete remediation plan with simulated target uplift to departmental records
               </span>
             </div>
 
-            <div className="flex gap-2.5">
+            <div className="flex gap-2">
               <button
                 onClick={() => {
                   const text = `ASPES Remediation Plan:\nVerdict: ${verdict}\nProjected Grade Uplift: +${pointsRecovered} pts (Target: ${liveSimulatedScore}%)\nKey Action Items:\n${rawActions.map((a, i) => `${i + 1}. [${a.priority}] ${a.action} (~${a.estimated_hours}h)`).join('\n')}`;
                   navigator.clipboard?.writeText(text);
                   alert('Remediation action plan copied to clipboard!');
                 }}
-                className="py-2.5 px-5 rounded-xl text-xs sm:text-sm font-bold bg-amber-600 text-white hover:bg-amber-700 transition-colors shadow-xs flex items-center gap-2"
+                className="py-2 px-4 rounded-xl text-xs font-semibold bg-amber-600 text-white hover:bg-amber-700 transition-colors shadow-xs flex items-center gap-1.5"
               >
                 <ClipboardDocumentCheckIcon className="w-4 h-4" />
                 <span>Copy Full Action Plan</span>

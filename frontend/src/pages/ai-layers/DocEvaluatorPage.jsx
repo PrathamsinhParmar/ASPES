@@ -500,7 +500,7 @@ const DocEvaluatorPage = () => {
                     </span>
                   </div>
 
-                  <h2 className="text-xl font-black text-slate-900 dark:text-white tracking-tight">
+                  <h2 className="text-xl font-bold text-slate-900 dark:text-white tracking-tight">
                     Technical Documentation Index
                   </h2>
                   <p className="text-xs text-slate-600 dark:text-slate-400 max-w-md leading-relaxed">

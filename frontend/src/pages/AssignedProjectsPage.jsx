@@ -88,60 +88,103 @@ const AssignedProjectsPage = () => {
   }
 
   return (
-    <div className="p-4 sm:p-5 lg:p-6 space-y-4 sm:space-y-5 min-h-screen bg-slate-50/50 dark:bg-slate-950 animate-fade-in relative font-sans max-w-7xl mx-auto">
-      {/* Background glow */}
-      <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-indigo-200/20 dark:bg-indigo-500/10 blur-[100px] rounded-full pointer-events-none -z-10 translate-x-1/2 -translate-y-1/2" />
+    <div className="min-h-screen bg-slate-50/50 dark:bg-slate-950 font-sans relative overflow-x-hidden">
+      {/* Antigravity Spatial Depth Ambient Glows */}
+      <div className="absolute top-0 right-1/4 -translate-y-24 w-[480px] h-[480px] bg-gradient-to-br from-indigo-500/10 to-violet-500/5 dark:from-indigo-600/15 dark:to-purple-600/5 rounded-full blur-[100px] pointer-events-none -z-10" />
+      <div className="absolute top-1/2 left-0 -translate-x-1/2 w-[380px] h-[380px] bg-gradient-to-tr from-emerald-500/5 to-teal-500/5 dark:from-emerald-500/10 dark:to-teal-500/5 rounded-full blur-[90px] pointer-events-none -z-10" />
 
-      {/* Header */}
-      <div className="bg-white/80 dark:bg-slate-900/80 backdrop-blur-md rounded-xl shadow-sm border border-slate-200/80 dark:border-slate-800/80 p-4 sm:p-5 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
-        <div className="flex items-center gap-3">
-          <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-lg bg-indigo-50 dark:bg-indigo-950/60 border border-indigo-100 dark:border-indigo-800/40 text-indigo-600 dark:text-indigo-400 flex items-center justify-center shadow-xs flex-shrink-0">
-            <RectangleStackIcon className="w-4.5 h-4.5" />
-          </div>
-          <div>
-            <h1 className="text-xl sm:text-2xl font-bold text-slate-900 dark:text-white tracking-tight">Assigned Projects</h1>
-            <p className="text-xs sm:text-sm font-normal text-slate-500 dark:text-slate-400 mt-0.5">Projects submitted by students assigned to you</p>
-          </div>
-        </div>
-        {/* Search bar */}
-        <div className="relative w-full sm:w-64">
-          <MagnifyingGlassIcon className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
-          <input
-            type="text"
-            value={search}
-            onChange={e => setSearch(e.target.value)}
-            placeholder="Search projects..."
-            className="w-full pl-9 pr-3.5 py-2 text-xs sm:text-sm bg-slate-50/90 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700/80 rounded-lg text-slate-800 dark:text-white placeholder-slate-400 focus:outline-none focus:border-indigo-400 transition-all"
-          />
-        </div>
-      </div>
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 py-4 sm:py-5 space-y-4 sm:space-y-4.5 font-sans">
+        {/* Modern Compact Hero Header & Integrated Telemetry Ribbon */}
+        <div className="relative rounded-xl sm:rounded-2xl p-4 sm:p-5 bg-white/80 dark:bg-slate-900/80 backdrop-blur-xl border border-slate-200/80 dark:border-slate-800/80 shadow-xs overflow-hidden">
+          {/* Subtle Top Accent Sheen */}
+          <div className="absolute inset-x-0 top-0 h-[2px] bg-gradient-to-r from-transparent via-indigo-500/40 to-transparent" />
 
-      {/* Stats */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
-        {[
-          { label: 'Total Projects', value: stats.total, icon: DocumentDuplicateIcon, color: 'blue' },
-          { label: 'Pending Review', value: stats.pending, icon: QueueListIcon, color: 'amber', badge: '↑ Queue' },
-          { label: 'Successfully Scored', value: stats.evaluated, icon: CheckBadgeIcon, color: 'emerald' },
-          { label: 'Global Average', value: stats.avgScore ?? '0', icon: PresentationChartLineIcon, color: 'indigo' },
-        ].map(({ label, value, icon: Icon, color, badge }) => (
-          <div key={label} className="group relative overflow-hidden bg-white dark:bg-slate-900/90 backdrop-blur-sm rounded-xl p-3.5 sm:p-4 border border-slate-200/80 dark:border-slate-800/80 hover:border-slate-300 dark:hover:border-slate-700 shadow-sm dark:shadow-[0_1px_0_0_rgba(255,255,255,0.05)_inset,0_4px_20px_-2px_rgba(0,0,0,0.4)] hover:-translate-y-0.5 transition-all duration-200 cursor-default flex justify-between items-center">
-            <div>
-              <p className="text-[11px] font-semibold text-slate-500 dark:text-slate-400 mb-1 uppercase tracking-wider">{label}</p>
-              <div className="flex items-center gap-2.5">
-                <p className="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-white tracking-tight leading-none">{value}</p>
-                {badge && (
-                  <span className="px-2 py-0.5 rounded-md text-[10px] font-semibold bg-emerald-50 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-400 border border-emerald-200/60 dark:border-emerald-800/40">
-                    {badge}
-                  </span>
-                )}
+          {/* Header Row: Pill, Title, Subtitle & Compact Search */}
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-4">
+            <div className="space-y-1">
+              <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[11px] font-semibold tracking-wide uppercase bg-indigo-50 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400 border border-indigo-200/50 dark:border-indigo-800/50">
+                <RectangleStackIcon className="w-3 h-3" />
+                <span>Academic Supervision</span>
+              </div>
+              
+              <h1 className="text-xl sm:text-2xl font-bold text-slate-900 dark:text-white tracking-tight">
+                Assigned Projects
+              </h1>
+              
+              <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 max-w-xl font-normal leading-normal">
+                Projects submitted by students assigned to you for review, evaluation, and grading.
+              </p>
+            </div>
+
+            {/* Compact Refined Search Input */}
+            <div className="relative w-full sm:w-64 flex-shrink-0">
+              <MagnifyingGlassIcon className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+              <input
+                type="text"
+                value={search}
+                onChange={e => setSearch(e.target.value)}
+                placeholder="Search projects..."
+                className="w-full pl-9 pr-3.5 py-2 text-xs sm:text-sm bg-slate-50/80 dark:bg-slate-800/50 border border-slate-200/80 dark:border-slate-700/80 rounded-lg text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all shadow-2xs"
+              />
+            </div>
+          </div>
+
+          {/* Quick Stats Telemetry Ribbon - Compact */}
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-2.5 sm:gap-3 mt-4 pt-4 border-t border-slate-100 dark:border-slate-800/80">
+            {/* Total Projects */}
+            <div className="p-2.5 sm:p-3 rounded-lg sm:rounded-xl bg-slate-50/70 dark:bg-slate-800/40 border border-slate-200/60 dark:border-slate-700/60 flex items-center justify-between hover:bg-slate-50 dark:hover:bg-slate-800/60 transition-colors">
+              <div>
+                <span className="text-[10px] sm:text-[11px] font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400 block">Total Projects</span>
+                <span className="text-lg sm:text-xl font-bold font-mono text-slate-900 dark:text-white mt-0.5 block">{stats.total}</span>
+              </div>
+              <div className="w-8 h-8 rounded-lg bg-indigo-50 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400 flex items-center justify-center border border-indigo-100 dark:border-indigo-900/60 flex-shrink-0">
+                <DocumentDuplicateIcon className="w-4 h-4" />
               </div>
             </div>
-            <div className={`w-8 h-8 sm:w-9 sm:h-9 rounded-lg flex items-center justify-center bg-${color}-50 dark:bg-${color}-950/60 border border-${color}-100/80 dark:border-${color}-800/50 shadow-xs group-hover:-translate-y-0.5 transition-transform duration-200 flex-shrink-0`}>
-              <Icon className={`w-4 h-4 sm:w-4.5 sm:h-4.5 text-${color}-600 dark:text-${color}-400`} />
+
+            {/* Pending Review */}
+            <div className="p-2.5 sm:p-3 rounded-lg sm:rounded-xl bg-slate-50/70 dark:bg-slate-800/40 border border-slate-200/60 dark:border-slate-700/60 flex items-center justify-between hover:bg-slate-50 dark:hover:bg-slate-800/60 transition-colors">
+              <div>
+                <div className="flex items-center gap-1.5">
+                  <span className="text-[10px] sm:text-[11px] font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400 block">Pending Review</span>
+                  {stats.pending > 0 && (
+                    <span className="px-1.5 py-0.5 rounded text-[10px] font-semibold bg-amber-50 dark:bg-amber-950/60 text-amber-700 dark:text-amber-400 border border-amber-200/60 dark:border-amber-800/40 leading-none">
+                      Queue
+                    </span>
+                  )}
+                </div>
+                <span className="text-lg sm:text-xl font-bold font-mono text-amber-600 dark:text-amber-400 mt-0.5 block">{stats.pending}</span>
+              </div>
+              <div className="w-8 h-8 rounded-lg bg-amber-50 dark:bg-amber-950/60 text-amber-600 dark:text-amber-400 flex items-center justify-center border border-amber-100 dark:border-amber-900/60 flex-shrink-0">
+                <QueueListIcon className="w-4 h-4" />
+              </div>
+            </div>
+
+            {/* Successfully Scored */}
+            <div className="p-2.5 sm:p-3 rounded-lg sm:rounded-xl bg-slate-50/70 dark:bg-slate-800/40 border border-slate-200/60 dark:border-slate-700/60 flex items-center justify-between hover:bg-slate-50 dark:hover:bg-slate-800/60 transition-colors">
+              <div>
+                <span className="text-[10px] sm:text-[11px] font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400 block">Successfully Scored</span>
+                <span className="text-lg sm:text-xl font-bold font-mono text-emerald-600 dark:text-emerald-400 mt-0.5 block">{stats.evaluated}</span>
+              </div>
+              <div className="w-8 h-8 rounded-lg bg-emerald-50 dark:bg-emerald-950/60 text-emerald-600 dark:text-emerald-400 flex items-center justify-center border border-emerald-100 dark:border-emerald-900/60 flex-shrink-0">
+                <CheckBadgeIcon className="w-4 h-4" />
+              </div>
+            </div>
+
+            {/* Global Average */}
+            <div className="p-2.5 sm:p-3 rounded-lg sm:rounded-xl bg-slate-50/70 dark:bg-slate-800/40 border border-slate-200/60 dark:border-slate-700/60 flex items-center justify-between hover:bg-slate-50 dark:hover:bg-slate-800/60 transition-colors">
+              <div>
+                <span className="text-[10px] sm:text-[11px] font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400 block">Global Average</span>
+                <span className="text-lg sm:text-xl font-bold font-mono text-indigo-600 dark:text-indigo-400 mt-0.5 block">
+                  {stats.avgScore !== null ? `${stats.avgScore}%` : '—'}
+                </span>
+              </div>
+              <div className="w-8 h-8 rounded-lg bg-violet-50 dark:bg-violet-950/60 text-violet-600 dark:text-violet-400 flex items-center justify-center border border-violet-100 dark:border-violet-900/60 flex-shrink-0">
+                <PresentationChartLineIcon className="w-4 h-4" />
+              </div>
             </div>
           </div>
-        ))}
-      </div>
+        </div>
 
       {/* Faculty View Tab Switcher */}
       <div className="inline-flex items-center p-1 bg-slate-200/60 dark:bg-slate-900/90 rounded-xl border border-slate-200/80 dark:border-slate-800/80 shadow-2xs gap-1">
@@ -263,6 +306,7 @@ const AssignedProjectsPage = () => {
           </div>
         </div>
       )}
+      </div>
     </div>
   );
 };

@@ -8,8 +8,8 @@ const ThemeToggle = () => {
 
   return (
     <button
-      onClick={toggleTheme}
-      className="relative flex items-center w-14 h-7 p-1 rounded-full bg-slate-200 dark:bg-slate-800 transition-colors duration-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20 group"
+      onClick={(e) => toggleTheme(e)}
+      className="relative flex items-center w-14 h-7 p-1 rounded-full bg-slate-200 dark:bg-slate-800 transition-colors duration-300 focus:outline-none focus:ring-2 focus:ring-indigo-500/30 group cursor-pointer"
       aria-label="Toggle Theme"
       title={theme === 'light' ? 'Switch to Dark Mode' : 'Switch to Light Mode'}
     >

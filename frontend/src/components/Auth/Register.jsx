@@ -4,7 +4,19 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
-import { AlertCircle, Loader2, Mail, User, Briefcase, Lock, UserPlus, FileSignature, CheckCircle2, Eye, EyeOff } from 'lucide-react';
+import { motion } from 'framer-motion';
+import { 
+  AlertCircle, 
+  Loader2, 
+  Eye, 
+  EyeOff, 
+  ArrowRight,
+  ShieldCheck,
+  CheckCircle2,
+  Cpu,
+  UserCheck,
+  Lock
+} from 'lucide-react';
 import ThemeToggle from '../Common/ThemeToggle';
 
 const schema = yup.object().shape({
@@ -18,6 +30,104 @@ const schema = yup.object().shape({
   department: yup.string().optional()
 });
 
+// 3D Glass Isometric Cube with 6 faces (GPU & Compositor Optimized)
+const Floating3DCube = ({ size = 72, color = 'indigo' }) => {
+  const half = size / 2;
+  const isIndigo = color === 'indigo';
+  const faceStyle = `absolute inset-0 rounded-xl border ${
+    isIndigo
+      ? 'border-indigo-400/45 dark:border-indigo-400/35 bg-gradient-to-br from-indigo-500/30 via-indigo-600/20 to-violet-600/35'
+      : 'border-cyan-400/45 dark:border-cyan-400/35 bg-gradient-to-br from-cyan-500/30 via-blue-600/20 to-indigo-600/35'
+  }`;
+
+  return (
+    <div
+      style={{
+        width: size,
+        height: size,
+        transformStyle: 'preserve-3d',
+      }}
+      className="relative will-change-transform [backface-visibility:hidden]"
+    >
+      <div className={faceStyle} style={{ transform: `translateZ(${half}px)` }} />
+      <div className={faceStyle} style={{ transform: `rotateY(180deg) translateZ(${half}px)` }} />
+      <div className={faceStyle} style={{ transform: `rotateY(90deg) translateZ(${half}px)` }} />
+      <div className={faceStyle} style={{ transform: `rotateY(-90deg) translateZ(${half}px)` }} />
+      <div className={faceStyle} style={{ transform: `rotateX(90deg) translateZ(${half}px)` }} />
+      <div className={faceStyle} style={{ transform: `rotateX(-90deg) translateZ(${half}px)` }} />
+    </div>
+  );
+};
+
+// 3D Floating Diamond / Prism (GPU & Compositor Optimized)
+const Floating3DDiamond = ({ size = 62 }) => {
+  return (
+    <div
+      style={{
+        width: size,
+        height: size,
+        transformStyle: 'preserve-3d',
+      }}
+      className="relative will-change-transform [backface-visibility:hidden]"
+    >
+      <div
+        className="absolute inset-0 rounded-2xl border border-violet-400/45 dark:border-violet-400/35 bg-gradient-to-tr from-violet-500/35 to-fuchsia-500/30"
+        style={{ transform: 'rotateX(45deg) rotateY(45deg) translateZ(12px)' }}
+      />
+      <div
+        className="absolute inset-0 rounded-2xl border border-indigo-400/40 dark:border-indigo-400/30 bg-gradient-to-bl from-indigo-500/30 to-cyan-500/30"
+        style={{ transform: 'rotateX(-45deg) rotateY(-45deg) translateZ(-12px)' }}
+      />
+    </div>
+  );
+};
+
+// 3D Floating Orbital Holographic Rings (GPU & Compositor Optimized)
+const Floating3DRing = ({ size = 84 }) => {
+  return (
+    <div
+      style={{
+        width: size,
+        height: size,
+        transformStyle: 'preserve-3d',
+      }}
+      className="relative flex items-center justify-center will-change-transform [backface-visibility:hidden]"
+    >
+      <div
+        className="w-full h-full rounded-full border-2 border-indigo-400/55 dark:border-indigo-400/45 bg-gradient-to-br from-indigo-500/20 to-transparent"
+        style={{ transform: 'rotateX(65deg)' }}
+      />
+      <div
+        className="absolute w-2/3 h-2/3 rounded-full border border-violet-400/50 dark:border-violet-400/40"
+        style={{ transform: 'rotateX(-65deg)' }}
+      />
+    </div>
+  );
+};
+
+// 3D Glass Polyhedral Gem (GPU & Compositor Optimized)
+const Floating3DGem = ({ size = 66 }) => {
+  return (
+    <div
+      style={{
+        width: size,
+        height: size,
+        transformStyle: 'preserve-3d',
+      }}
+      className="relative will-change-transform [backface-visibility:hidden]"
+    >
+      <div
+        className="absolute inset-0 rounded-2xl border border-emerald-400/45 dark:border-emerald-400/35 bg-gradient-to-tr from-emerald-500/30 via-teal-500/25 to-indigo-500/30"
+        style={{ transform: 'rotateX(55deg) rotateY(35deg) translateZ(14px)' }}
+      />
+      <div
+        className="absolute inset-0 rounded-2xl border border-teal-400/40 dark:border-teal-400/30 bg-gradient-to-bl from-teal-500/25 to-indigo-600/30"
+        style={{ transform: 'rotateX(-55deg) rotateY(-35deg) translateZ(-14px)' }}
+      />
+    </div>
+  );
+};
+
 const Register = () => {
   const { register: registerUser } = useAuth();
   const navigate = useNavigate();
@@ -26,7 +136,11 @@ const Register = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
-  const { register, handleSubmit, formState: { errors, isSubmitting } } = useForm({
+  const {
+    register,
+    handleSubmit,
+    formState: { errors, isSubmitting },
+  } = useForm({
     resolver: yupResolver(schema),
   });
 
@@ -40,216 +154,613 @@ const Register = () => {
         username: data.username,
         full_name: data.full_name,
         password: data.password,
-        role: 'student',  // Always STUDENT on public signup
-        department: data.department
+        role: 'student', // Always STUDENT on public signup
+        department: data.department || '',
       };
 
       await registerUser(userData);
-      setSuccessMsg('Registration successful! Redirecting to login...');
-      setTimeout(() => navigate('/login'), 2500);
+      setSuccessMsg('Account created successfully! Redirecting to login...');
+      setTimeout(() => navigate('/login'), 2200);
     } catch (err) {
-      setApiError(err.response?.data?.detail || 'Registration failed. Please try again.');
+      setApiError(err.response?.data?.detail || 'Registration failed. Please check your information and try again.');
     }
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-indigo-50 via-white to-cyan-50 dark:from-slate-950 dark:via-slate-950 dark:to-cyan-950/20 relative overflow-hidden py-12 px-4 sm:px-6 lg:px-8 transition-colors duration-500">
-      {/* Theme Toggle Position on Auth Pages */}
-      <div className="absolute top-6 right-6 z-20">
+    <div className="h-screen max-h-screen overflow-hidden flex items-center justify-center bg-gradient-to-br from-slate-50 via-indigo-50/40 to-slate-100 dark:from-slate-950 dark:via-slate-900 dark:to-indigo-950/40 relative font-sans transition-colors duration-500 perspective-[1200px] px-4 py-2 sm:py-3">
+      {/* Dynamic Background Mesh Grids & Ambient Lighting */}
+      <div className="absolute inset-0 bg-[radial-gradient(#6366f1_1px,transparent_1px)] [background-size:24px_24px] opacity-[0.10] dark:opacity-[0.14] pointer-events-none" />
+
+      {/* Atmospheric Spatial Radial Glows (Zero-cost Hardware Accelerated Gradients) */}
+      <div className="absolute -top-32 -left-32 w-[550px] h-[550px] bg-[radial-gradient(circle_at_center,rgba(99,102,241,0.14)_0%,transparent_70%)] pointer-events-none" />
+      <div className="absolute -bottom-32 -right-32 w-[600px] h-[600px] bg-[radial-gradient(circle_at_center,rgba(139,92,246,0.14)_0%,transparent_70%)] pointer-events-none" />
+      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[700px] h-[700px] bg-[radial-gradient(circle_at_center,rgba(6,182,212,0.06)_0%,transparent_70%)] pointer-events-none" />
+
+      {/* Theme Toggle Position */}
+      <div className="absolute top-4 right-4 sm:top-6 sm:right-6 z-30">
         <ThemeToggle />
       </div>
-      {/* Decorative background shapes */}
-      <div className="absolute top-0 inset-x-0 h-40 bg-gradient-to-l from-indigo-600 to-cyan-600 transform skew-y-6 origin-top-right -z-10 opacity-10"></div>
-      <div className="absolute -bottom-32 -left-32 w-96 h-96 bg-cyan-400 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob"></div>
-      <div className="absolute -top-32 -right-32 w-96 h-96 bg-indigo-400 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob animation-delay-4000"></div>
 
-      <div className="w-full max-w-2xl px-8 py-10 bg-white dark:bg-slate-900 shadow-[0_8px_30px_rgb(0,0,0,0.06)] dark:shadow-[0_8px_30px_rgb(0,0,0,0.3)] sm:rounded-2xl border border-gray-100 dark:border-slate-800 backdrop-blur-sm relative z-10 my-8 transition-colors">
+      {/* ========================================================================= */}
+      {/* LEFT SIDE 3D FLOATING ELEMENTS (ASCENDING FROM BOTTOM TO UPPER SIDE)      */}
+      {/* ========================================================================= */}
+      <div className="absolute inset-y-0 left-0 w-1/4 sm:w-1/3 xl:w-[26%] pointer-events-none overflow-hidden z-10 hidden sm:block">
+        {/* Shape 1: Large Isometric Indigo Cube */}
+        <motion.div
+          className="absolute left-[8%] will-change-transform"
+          initial={{ y: '115vh', rotateX: 20, rotateY: 30, rotateZ: 10, opacity: 0 }}
+          animate={{
+            y: ['115vh', '-25vh'],
+            rotateX: [20, 200, 380],
+            rotateY: [30, 210, 390],
+            rotateZ: [10, 100, 190],
+            opacity: [0, 0.9, 0.9, 0],
+          }}
+          transition={{
+            duration: 11,
+            repeat: Infinity,
+            ease: 'linear',
+            delay: 0,
+          }}
+        >
+          <Floating3DCube size={74} color="indigo" />
+        </motion.div>
 
-        <div className="text-center mb-8">
-          <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-cyan-50 dark:bg-cyan-900/20 mb-4 shadow-sm border border-cyan-100 dark:border-cyan-500/20">
-            <UserPlus className="w-8 h-8 text-cyan-600 dark:text-cyan-400" />
-          </div>
-          <h2 className="text-3xl font-bold text-gray-900 dark:text-white tracking-tight">
-            Create an Account
-          </h2>
-          <p className="mt-2 text-sm text-gray-500 dark:text-slate-400">
-            Join the ASPES platform to manage evaluations
-          </p>
-        </div>
+        {/* Shape 2: Diamond Prism */}
+        <motion.div
+          className="absolute left-[24%] will-change-transform"
+          initial={{ y: '115vh', rotateX: -30, rotateY: 45, opacity: 0 }}
+          animate={{
+            y: ['115vh', '-25vh'],
+            rotateX: [-30, 150, 330],
+            rotateY: [45, 225, 405],
+            opacity: [0, 0.85, 0.85, 0],
+          }}
+          transition={{
+            duration: 12.5,
+            repeat: Infinity,
+            ease: 'linear',
+            delay: 2.5,
+          }}
+        >
+          <Floating3DDiamond size={64} />
+        </motion.div>
 
-        {apiError && (
-          <div className="rounded-xl bg-red-50 dark:bg-red-900/10 p-4 mb-6 border border-red-100 dark:border-red-900/20 flex items-start">
-            <AlertCircle className="h-5 w-5 text-red-500 flex-shrink-0 mt-0.5" />
-            <div className="ml-3">
-              <h3 className="text-sm font-medium text-red-800 dark:text-red-400">{apiError}</h3>
+        {/* Shape 3: Orbital Holographic Ring */}
+        <motion.div
+          className="absolute left-[14%] will-change-transform"
+          initial={{ y: '115vh', rotateX: 60, rotateZ: 25, opacity: 0 }}
+          animate={{
+            y: ['115vh', '-25vh'],
+            rotateX: [60, 240, 420],
+            rotateZ: [25, 180, 385],
+            opacity: [0, 0.85, 0.85, 0],
+          }}
+          transition={{
+            duration: 10,
+            repeat: Infinity,
+            ease: 'linear',
+            delay: 5,
+          }}
+        >
+          <Floating3DRing size={86} />
+        </motion.div>
+
+        {/* Shape 4: Polyhedral Gem */}
+        <motion.div
+          className="absolute left-[33%] will-change-transform"
+          initial={{ y: '115vh', rotateX: 55, rotateY: 35, opacity: 0 }}
+          animate={{
+            y: ['115vh', '-25vh'],
+            rotateX: [55, 235, 415],
+            rotateY: [35, 215, 395],
+            opacity: [0, 0.8, 0.8, 0],
+          }}
+          transition={{
+            duration: 13,
+            repeat: Infinity,
+            ease: 'linear',
+            delay: 1.5,
+          }}
+        >
+          <Floating3DGem size={66} />
+        </motion.div>
+
+        {/* Shape 5: Medium Cyan Cube */}
+        <motion.div
+          className="absolute left-[18%] will-change-transform"
+          initial={{ y: '115vh', rotateX: 45, rotateY: -30, opacity: 0 }}
+          animate={{
+            y: ['115vh', '-25vh'],
+            rotateX: [45, 225, 405],
+            rotateY: [-30, -210, -390],
+            opacity: [0, 0.85, 0.85, 0],
+          }}
+          transition={{
+            duration: 11.5,
+            repeat: Infinity,
+            ease: 'linear',
+            delay: 7,
+          }}
+        >
+          <Floating3DCube size={64} color="cyan" />
+        </motion.div>
+
+        {/* Shape 6: Compact Diamond */}
+        <motion.div
+          className="absolute left-[30%] will-change-transform"
+          initial={{ y: '115vh', rotateX: -20, rotateY: 40, opacity: 0 }}
+          animate={{
+            y: ['115vh', '-25vh'],
+            rotateX: [-20, 160, 340],
+            rotateY: [40, 220, 400],
+            opacity: [0, 0.8, 0.8, 0],
+          }}
+          transition={{
+            duration: 9.5,
+            repeat: Infinity,
+            ease: 'linear',
+            delay: 4,
+          }}
+        >
+          <Floating3DDiamond size={54} />
+        </motion.div>
+
+        {/* Anchored Weightless 3D Telemetry Preview Card (Desktop) */}
+        <motion.div
+          className="absolute top-1/2 left-[5%] -translate-y-1/2 hidden 2xl:block will-change-transform"
+          style={{ transformStyle: 'preserve-3d', perspective: 1000 }}
+          animate={{
+            y: [-12, 12, -12],
+            rotateX: [16, 22, 16],
+            rotateY: [-22, -16, -22],
+            rotateZ: [4, 8, 4],
+          }}
+          transition={{
+            duration: 8,
+            repeat: Infinity,
+            ease: 'easeInOut',
+          }}
+        >
+          <div className="w-64 p-4 rounded-2xl bg-white/70 dark:bg-slate-900/70 backdrop-blur-xl border border-slate-200/80 dark:border-slate-800/80 shadow-[0_20px_40px_-15px_rgba(79,70,229,0.15)] dark:shadow-[0_20px_50px_rgba(0,0,0,0.5)] space-y-3">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <div className="w-7 h-7 rounded-lg bg-indigo-50 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400 flex items-center justify-center border border-indigo-200/50 dark:border-indigo-800/50">
+                  <UserCheck className="w-4 h-4" />
+                </div>
+                <div>
+                  <h4 className="text-xs font-bold text-slate-900 dark:text-white">Student Enrollment</h4>
+                  <p className="text-[10px] text-slate-400 font-medium">Instant Provisioning</p>
+                </div>
+              </div>
+              <span className="flex h-2 w-2 relative">
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-indigo-400 opacity-75" />
+                <span className="relative inline-flex rounded-full h-2 w-2 bg-indigo-500" />
+              </span>
+            </div>
+
+            <div className="space-y-1.5 pt-1 border-t border-slate-100 dark:border-slate-800/80 text-[11px] text-slate-600 dark:text-slate-300">
+              <div className="flex items-center gap-1.5">
+                <CheckCircle2 className="w-3.5 h-3.5 text-emerald-500 flex-shrink-0" />
+                <span>Automated Project Workspace</span>
+              </div>
+              <div className="flex items-center gap-1.5">
+                <CheckCircle2 className="w-3.5 h-3.5 text-emerald-500 flex-shrink-0" />
+                <span>AI Code Analysis Telemetry</span>
+              </div>
             </div>
           </div>
-        )}
+        </motion.div>
+      </div>
 
-        {successMsg && (
-          <div className="rounded-xl bg-emerald-50 p-4 mb-6 border border-emerald-200 flex items-start">
-            <CheckCircle2 className="h-5 w-5 text-emerald-500 flex-shrink-0 mt-0.5" />
-            <div className="ml-3">
-              <h3 className="text-sm font-medium text-emerald-800">{successMsg}</h3>
+      {/* ========================================================================= */}
+      {/* RIGHT SIDE 3D FLOATING ELEMENTS (ASCENDING FROM BOTTOM TO UPPER SIDE)     */}
+      {/* ========================================================================= */}
+      <div className="absolute inset-y-0 right-0 w-1/4 sm:w-1/3 xl:w-[26%] pointer-events-none overflow-hidden z-10 hidden sm:block">
+        {/* Shape 7: Large Cyan Cube */}
+        <motion.div
+          className="absolute right-[10%] will-change-transform"
+          initial={{ y: '115vh', rotateX: 35, rotateY: -25, rotateZ: -10, opacity: 0 }}
+          animate={{
+            y: ['115vh', '-25vh'],
+            rotateX: [35, 215, 395],
+            rotateY: [-25, -205, -385],
+            rotateZ: [-10, -90, -170],
+            opacity: [0, 0.9, 0.9, 0],
+          }}
+          transition={{
+            duration: 11,
+            repeat: Infinity,
+            ease: 'linear',
+            delay: 1,
+          }}
+        >
+          <Floating3DCube size={76} color="cyan" />
+        </motion.div>
+
+        {/* Shape 8: Diamond Prism */}
+        <motion.div
+          className="absolute right-[25%] will-change-transform"
+          initial={{ y: '115vh', rotateX: 45, rotateY: -45, opacity: 0 }}
+          animate={{
+            y: ['115vh', '-25vh'],
+            rotateX: [45, 225, 405],
+            rotateY: [-45, -225, -405],
+            opacity: [0, 0.85, 0.85, 0],
+          }}
+          transition={{
+            duration: 12,
+            repeat: Infinity,
+            ease: 'linear',
+            delay: 3.5,
+          }}
+        >
+          <Floating3DDiamond size={64} />
+        </motion.div>
+
+        {/* Shape 9: Orbital Holographic Ring */}
+        <motion.div
+          className="absolute right-[15%] will-change-transform"
+          initial={{ y: '115vh', rotateX: -55, rotateZ: -30, opacity: 0 }}
+          animate={{
+            y: ['115vh', '-25vh'],
+            rotateX: [-55, -235, -415],
+            rotateZ: [-30, -190, -390],
+            opacity: [0, 0.85, 0.85, 0],
+          }}
+          transition={{
+            duration: 10.5,
+            repeat: Infinity,
+            ease: 'linear',
+            delay: 6,
+          }}
+        >
+          <Floating3DRing size={88} />
+        </motion.div>
+
+        {/* Shape 10: Polyhedral Gem */}
+        <motion.div
+          className="absolute right-[31%] will-change-transform"
+          initial={{ y: '115vh', rotateX: -45, rotateY: 50, opacity: 0 }}
+          animate={{
+            y: ['115vh', '-25vh'],
+            rotateX: [-45, 135, 315],
+            rotateY: [50, 230, 410],
+            opacity: [0, 0.8, 0.8, 0],
+          }}
+          transition={{
+            duration: 13.5,
+            repeat: Infinity,
+            ease: 'linear',
+            delay: 2,
+          }}
+        >
+          <Floating3DGem size={68} />
+        </motion.div>
+
+        {/* Shape 11: Medium Indigo Cube */}
+        <motion.div
+          className="absolute right-[19%] will-change-transform"
+          initial={{ y: '115vh', rotateX: -30, rotateY: 40, opacity: 0 }}
+          animate={{
+            y: ['115vh', '-25vh'],
+            rotateX: [-30, 150, 330],
+            rotateY: [40, 220, 400],
+            opacity: [0, 0.85, 0.85, 0],
+          }}
+          transition={{
+            duration: 11.5,
+            repeat: Infinity,
+            ease: 'linear',
+            delay: 8,
+          }}
+        >
+          <Floating3DCube size={64} color="indigo" />
+        </motion.div>
+
+        {/* Shape 12: Compact Diamond */}
+        <motion.div
+          className="absolute right-[27%] will-change-transform"
+          initial={{ y: '115vh', rotateX: 30, rotateY: -35, opacity: 0 }}
+          animate={{
+            y: ['115vh', '-25vh'],
+            rotateX: [30, 210, 390],
+            rotateY: [-35, -215, -395],
+            opacity: [0, 0.8, 0.8, 0],
+          }}
+          transition={{
+            duration: 10,
+            repeat: Infinity,
+            ease: 'linear',
+            delay: 4.5,
+          }}
+        >
+          <Floating3DDiamond size={56} />
+        </motion.div>
+
+        {/* Anchored Weightless 3D Telemetry Preview Card (Desktop) */}
+        <motion.div
+          className="absolute top-1/2 right-[5%] -translate-y-1/2 hidden 2xl:block will-change-transform"
+          style={{ transformStyle: 'preserve-3d', perspective: 1000 }}
+          animate={{
+            y: [12, -12, 12],
+            rotateX: [-16, -22, -16],
+            rotateY: [22, 16, 22],
+            rotateZ: [-4, -8, -4],
+          }}
+          transition={{
+            duration: 8,
+            repeat: Infinity,
+            ease: 'easeInOut',
+          }}
+        >
+          <div className="w-64 p-4 rounded-2xl bg-white/90 dark:bg-slate-900/90 backdrop-blur-md border border-slate-200/80 dark:border-slate-800/80 shadow-[0_20px_40px_-15px_rgba(79,70,229,0.15)] dark:shadow-[0_20px_50px_rgba(0,0,0,0.5)] space-y-3">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <div className="w-7 h-7 rounded-lg bg-emerald-50 dark:bg-emerald-950/60 text-emerald-600 dark:text-emerald-400 flex items-center justify-center border border-emerald-200/50 dark:border-emerald-800/50">
+                  <ShieldCheck className="w-4 h-4" />
+                </div>
+                <div>
+                  <h4 className="text-xs font-bold text-slate-900 dark:text-white">Security Shield</h4>
+                  <p className="text-[10px] text-slate-400 font-medium">Enterprise Argon2</p>
+                </div>
+              </div>
+              <span className="px-1.5 py-0.5 rounded text-[10px] font-bold bg-emerald-50 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-400 border border-emerald-200/60 dark:border-emerald-800/50">
+                ACTIVE
+              </span>
+            </div>
+
+            <div className="flex items-center gap-1.5 text-[11px] text-slate-600 dark:text-slate-300 font-medium pt-1 border-t border-slate-100 dark:border-slate-800/80">
+              <CheckCircle2 className="w-3.5 h-3.5 text-emerald-500 flex-shrink-0" />
+              <span>Zero-Knowledge Credential Vault</span>
             </div>
           </div>
-        )}
+        </motion.div>
+      </div>
 
-        <form className="space-y-6" onSubmit={handleSubmit(onSubmit)}>
+      {/* ========================================================================= */}
+      {/* CENTRAL REGISTRATION CARD                                                 */}
+      {/* ========================================================================= */}
+      <motion.div
+        initial={{ opacity: 0, y: 20, scale: 0.98 }}
+        animate={{ opacity: 1, y: 0, scale: 1 }}
+        transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
+        className="w-full max-w-[660px] mx-auto relative z-20 my-auto"
+      >
+        <div className="relative rounded-2xl sm:rounded-3xl p-6 sm:p-8 md:p-9 bg-white/90 dark:bg-slate-900/90 backdrop-blur-xl border border-slate-200/80 dark:border-slate-800/80 shadow-[0_20px_60px_-15px_rgba(79,70,229,0.12),0_10px_25px_-5px_rgba(0,0,0,0.06)] dark:shadow-[0_25px_70px_-15px_rgba(0,0,0,0.8),0_0_0_1px_rgba(255,255,255,0.06)_inset] max-h-[calc(100dvh-1.5rem)] overflow-y-auto [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden transition-all duration-300">
+          {/* Subtle Top Accent Sheen */}
+          <div className="absolute inset-x-0 top-0 h-[2.5px] bg-gradient-to-r from-transparent via-indigo-500 to-transparent" />
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          {/* Form Header with Theme-Adaptive Project Logos */}
+          <div className="text-center mb-5 sm:mb-6">
+            {/* Theme-Adaptive Logos */}
+            <div className="flex justify-center mb-3 sm:mb-3.5">
+              {/* Light Mode Logo */}
+              <img
+                src="/ASPESLight.png"
+                alt="ASPES KPGU AI Evaluation System"
+                className="h-12 sm:h-14 md:h-15 w-auto max-w-[250px] sm:max-w-[275px] object-contain block dark:hidden select-none drop-shadow-xs"
+              />
+              {/* Dark Mode Logo */}
+              <img
+                src="/ASPESDark.png"
+                alt="ASPES KPGU AI Evaluation System"
+                className="h-12 sm:h-14 md:h-15 w-auto max-w-[250px] sm:max-w-[275px] object-contain hidden dark:block select-none drop-shadow-xs"
+              />
+            </div>
 
-            {/* Left Column */}
-            <div className="space-y-5">
-              <div>
-                <label className="block text-sm font-semibold text-gray-700 dark:text-slate-300 mb-1.5 ml-1">Email address</label>
-                <div className="relative">
-                  <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none">
-                    <Mail className="h-4 w-4 text-gray-400 dark:text-slate-500" />
-                  </div>
+            <h1 className="text-xl sm:text-2xl font-bold tracking-tight text-slate-900 dark:text-white">
+              Create an Account
+            </h1>
+            <p className="mt-1 text-xs sm:text-[13px] text-slate-500 dark:text-slate-400 font-normal">
+              Join the <span className="font-semibold text-slate-800 dark:text-slate-200">ASPES</span> platform to manage and track evaluations
+            </p>
+          </div>
+
+          {/* Error Banner */}
+          {apiError && (
+            <motion.div
+              initial={{ opacity: 0, y: -8 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="rounded-xl bg-rose-50 dark:bg-rose-950/40 p-3 sm:p-3.5 mb-4 border border-rose-200/80 dark:border-rose-800/50 flex items-start gap-2.5 text-xs text-rose-700 dark:text-rose-300 font-medium"
+            >
+              <AlertCircle className="h-4 w-4 text-rose-500 mt-0.5 flex-shrink-0" />
+              <div className="flex-1">{apiError}</div>
+            </motion.div>
+          )}
+
+          {/* Success Banner */}
+          {successMsg && (
+            <motion.div
+              initial={{ opacity: 0, y: -8 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="rounded-xl bg-emerald-50 dark:bg-emerald-950/40 p-3 sm:p-3.5 mb-4 border border-emerald-200/80 dark:border-emerald-800/50 flex items-start gap-2.5 text-xs text-emerald-700 dark:text-emerald-300 font-medium"
+            >
+              <CheckCircle2 className="h-4 w-4 text-emerald-500 mt-0.5 flex-shrink-0" />
+              <div className="flex-1">{successMsg}</div>
+            </motion.div>
+          )}
+
+          {/* Registration Form */}
+          <form className="space-y-4 sm:space-y-5" onSubmit={handleSubmit(onSubmit)}>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-5">
+              {/* Left Column */}
+              <div className="space-y-3.5 sm:space-y-4">
+                {/* Email address */}
+                <div>
+                  <label className="block text-[11px] sm:text-[12px] font-semibold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-1.5">
+                    Email address <span className="text-rose-500">*</span>
+                  </label>
                   <input
                     {...register('email')}
                     type="email"
+                    autoComplete="email"
                     placeholder="email@university.edu"
-                    className={`text-gray-900 dark:text-white bg-white dark:bg-slate-800/50 block w-full pl-10 pr-3 py-2.5 border ${errors.email ? 'border-red-300 ring-2 ring-red-50 dark:ring-red-900/10' : 'border-gray-200 dark:border-slate-700 focus:ring-4 focus:ring-indigo-50 dark:focus:ring-indigo-900/10 focus:border-indigo-500'} rounded-xl shadow-sm placeholder-gray-400 dark:placeholder-slate-500 transition-all sm:text-sm`}
+                    className={`w-full px-3.5 py-2.5 sm:py-3 bg-slate-50/80 dark:bg-slate-800/60 border ${
+                      errors.email
+                        ? 'border-rose-400 dark:border-rose-600 focus:ring-rose-500/20'
+                        : 'border-slate-200/90 dark:border-slate-700/80 focus:border-indigo-500 focus:ring-indigo-500/20'
+                    } rounded-xl text-xs sm:text-sm text-slate-900 dark:text-white font-medium placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none focus:ring-4 transition-all shadow-2xs`}
                   />
+                  {errors.email && (
+                    <p className="mt-1 text-[11px] font-medium text-rose-500">{errors.email.message}</p>
+                  )}
                 </div>
-                {errors.email && <p className="mt-1 ml-1 text-xs text-red-500">{errors.email.message}</p>}
-              </div>
 
-              <div>
-                <label className="block text-sm font-semibold text-gray-700 dark:text-slate-300 mb-1.5 ml-1">Username</label>
-                <div className="relative">
-                  <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none">
-                    <User className="h-4 w-4 text-gray-400 dark:text-slate-500" />
-                  </div>
+                {/* Username */}
+                <div>
+                  <label className="block text-[11px] sm:text-[12px] font-semibold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-1.5">
+                    Username <span className="text-rose-500">*</span>
+                  </label>
                   <input
                     {...register('username')}
                     type="text"
-                    placeholder="john_doe"
-                    className={`text-gray-900 dark:text-white bg-white dark:bg-slate-800/50 block w-full pl-10 pr-3 py-2.5 border ${errors.username ? 'border-red-300 ring-2 ring-red-50 dark:ring-red-900/10' : 'border-gray-200 dark:border-slate-700 focus:ring-4 focus:ring-indigo-50 dark:focus:ring-indigo-900/10 focus:border-indigo-500'} rounded-xl shadow-sm placeholder-gray-400 dark:placeholder-slate-500 transition-all sm:text-sm`}
+                    autoComplete="username"
+                    placeholder="e.g. pratham_p"
+                    className={`w-full px-3.5 py-2.5 sm:py-3 bg-slate-50/80 dark:bg-slate-800/60 border ${
+                      errors.username
+                        ? 'border-rose-400 dark:border-rose-600 focus:ring-rose-500/20'
+                        : 'border-slate-200/90 dark:border-slate-700/80 focus:border-indigo-500 focus:ring-indigo-500/20'
+                    } rounded-xl text-xs sm:text-sm text-slate-900 dark:text-white font-medium placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none focus:ring-4 transition-all shadow-2xs`}
                   />
+                  {errors.username && (
+                    <p className="mt-1 text-[11px] font-medium text-rose-500">{errors.username.message}</p>
+                  )}
                 </div>
-                {errors.username && <p className="mt-1 ml-1 text-xs text-red-500">{errors.username.message}</p>}
-              </div>
 
-              <div>
-                <label className="block text-sm font-semibold text-gray-700 dark:text-slate-300 mb-1.5 ml-1">Full Name</label>
-                <div className="relative">
-                  <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none">
-                    <FileSignature className="h-4 w-4 text-gray-400 dark:text-slate-500" />
-                  </div>
+                {/* Full Name */}
+                <div>
+                  <label className="block text-[11px] sm:text-[12px] font-semibold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-1.5">
+                    Full Name <span className="text-rose-500">*</span>
+                  </label>
                   <input
                     {...register('full_name')}
                     type="text"
-                    placeholder="John Doe"
-                    className={`text-gray-900 dark:text-white bg-white dark:bg-slate-800/50 block w-full pl-10 pr-3 py-2.5 border ${errors.full_name ? 'border-red-300 ring-2 ring-red-50 dark:ring-red-900/10' : 'border-gray-200 dark:border-slate-700 focus:ring-4 focus:ring-indigo-50 dark:focus:ring-indigo-900/10 focus:border-indigo-500'} rounded-xl shadow-sm placeholder-gray-400 dark:placeholder-slate-500 transition-all sm:text-sm`}
+                    autoComplete="name"
+                    placeholder="e.g. Prathamsinh Parmar"
+                    className={`w-full px-3.5 py-2.5 sm:py-3 bg-slate-50/80 dark:bg-slate-800/60 border ${
+                      errors.full_name
+                        ? 'border-rose-400 dark:border-rose-600 focus:ring-rose-500/20'
+                        : 'border-slate-200/90 dark:border-slate-700/80 focus:border-indigo-500 focus:ring-indigo-500/20'
+                    } rounded-xl text-xs sm:text-sm text-slate-900 dark:text-white font-medium placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none focus:ring-4 transition-all shadow-2xs`}
                   />
+                  {errors.full_name && (
+                    <p className="mt-1 text-[11px] font-medium text-rose-500">{errors.full_name.message}</p>
+                  )}
                 </div>
-                {errors.full_name && <p className="mt-1 ml-1 text-xs text-red-500">{errors.full_name.message}</p>}
               </div>
-            </div>
 
-            {/* Right Column */}
-            <div className="space-y-5">
-
-              <div>
-                <label className="block text-sm font-semibold text-gray-700 dark:text-slate-300 mb-1.5 ml-1">Dept <span className="text-gray-400 font-normal">(Optional)</span></label>
-                <div className="relative">
-                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                    <Briefcase className="h-4 w-4 text-gray-400 dark:text-slate-500" />
-                  </div>
+              {/* Right Column */}
+              <div className="space-y-3.5 sm:space-y-4">
+                {/* Department (Optional) */}
+                <div>
+                  <label className="block text-[11px] sm:text-[12px] font-semibold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-1.5">
+                    Department <span className="text-slate-400 font-normal lowercase">(optional)</span>
+                  </label>
                   <input
                     {...register('department')}
                     type="text"
-                    placeholder="e.g. Computer Science"
-                    className="text-gray-900 dark:text-white bg-white dark:bg-slate-800 block w-full pl-9 pr-2 py-2.5 border border-gray-200 dark:border-slate-700 rounded-xl shadow-sm focus:ring-4 focus:ring-indigo-50 dark:focus:ring-indigo-900/10 focus:border-indigo-500 transition-all sm:text-sm"
+                    placeholder="e.g. Computer Science & Eng."
+                    className="w-full px-3.5 py-2.5 sm:py-3 bg-slate-50/80 dark:bg-slate-800/60 border border-slate-200/90 dark:border-slate-700/80 rounded-xl text-xs sm:text-sm text-slate-900 dark:text-white font-medium placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none focus:ring-4 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all shadow-2xs"
                   />
                 </div>
-              </div>
 
-              <div>
-                <label className="block text-sm font-semibold text-gray-700 dark:text-slate-300 mb-1.5 ml-1">Password</label>
-                <div className="relative">
-                  <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none">
-                    <Lock className="h-4 w-4 text-gray-400 dark:text-slate-500" />
+                {/* Password */}
+                <div>
+                  <label className="block text-[11px] sm:text-[12px] font-semibold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-1.5">
+                    Password <span className="text-rose-500">*</span>
+                  </label>
+                  <div className="relative">
+                    <input
+                      {...register('password')}
+                      type={showPassword ? 'text' : 'password'}
+                      autoComplete="new-password"
+                      placeholder="At least 8 characters"
+                      className={`w-full pl-3.5 pr-10 py-2.5 sm:py-3 bg-slate-50/80 dark:bg-slate-800/60 border ${
+                        errors.password
+                          ? 'border-rose-400 dark:border-rose-600 focus:ring-rose-500/20'
+                          : 'border-slate-200/90 dark:border-slate-700/80 focus:border-indigo-500 focus:ring-indigo-500/20'
+                      } rounded-xl text-xs sm:text-sm text-slate-900 dark:text-white font-medium placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none focus:ring-4 transition-all shadow-2xs`}
+                    />
+                    <button
+                      type="button"
+                      tabIndex={-1}
+                      className="absolute inset-y-0 right-0 pr-3 flex items-center text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 transition-colors"
+                      onClick={() => setShowPassword(!showPassword)}
+                    >
+                      {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                    </button>
                   </div>
-                  <input
-                    {...register('password')}
-                    type={showPassword ? 'text' : 'password'}
-                    placeholder="••••••••"
-                    className={`text-gray-900 dark:text-white bg-white dark:bg-slate-800/50 block w-full pl-10 pr-10 py-2.5 border ${errors.password ? 'border-red-300 ring-2 ring-red-50 dark:ring-red-900/10' : 'border-gray-200 dark:border-slate-700 focus:ring-4 focus:ring-indigo-50 dark:focus:ring-indigo-900/10 focus:border-indigo-500'} rounded-xl shadow-sm placeholder-gray-400 dark:placeholder-slate-500 transition-all sm:text-sm`}
-                  />
-                  <button
-                    type="button"
-                    className="absolute inset-y-0 right-0 pr-3 flex items-center"
-                    onClick={() => setShowPassword(!showPassword)}
-                  >
-                    {showPassword ? (
-                      <EyeOff className="h-4 w-4 text-gray-400 dark:text-slate-500 hover:text-gray-500 dark:hover:text-slate-400 transition-colors" />
-                    ) : (
-                      <Eye className="h-4 w-4 text-gray-400 dark:text-slate-500 hover:text-gray-500 dark:hover:text-slate-400 transition-colors" />
-                    )}
-                  </button>
+                  {errors.password && (
+                    <p className="mt-1 text-[11px] font-medium text-rose-500">{errors.password.message}</p>
+                  )}
                 </div>
-                {errors.password && <p className="mt-1 ml-1 text-xs text-red-500">{errors.password.message}</p>}
-              </div>
 
-              <div>
-                <label className="block text-sm font-semibold text-gray-700 dark:text-slate-300 mb-1.5 ml-1">Confirm Password</label>
-                <div className="relative">
-                  <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none">
-                    <Lock className="h-4 w-4 text-gray-400 dark:text-slate-500" />
+                {/* Confirm Password */}
+                <div>
+                  <label className="block text-[11px] sm:text-[12px] font-semibold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-1.5">
+                    Confirm Password <span className="text-rose-500">*</span>
+                  </label>
+                  <div className="relative">
+                    <input
+                      {...register('confirm_password')}
+                      type={showConfirmPassword ? 'text' : 'password'}
+                      autoComplete="new-password"
+                      placeholder="Repeat your password"
+                      className={`w-full pl-3.5 pr-10 py-2.5 sm:py-3 bg-slate-50/80 dark:bg-slate-800/60 border ${
+                        errors.confirm_password
+                          ? 'border-rose-400 dark:border-rose-600 focus:ring-rose-500/20'
+                          : 'border-slate-200/90 dark:border-slate-700/80 focus:border-indigo-500 focus:ring-indigo-500/20'
+                      } rounded-xl text-xs sm:text-sm text-slate-900 dark:text-white font-medium placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none focus:ring-4 transition-all shadow-2xs`}
+                    />
+                    <button
+                      type="button"
+                      tabIndex={-1}
+                      className="absolute inset-y-0 right-0 pr-3 flex items-center text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 transition-colors"
+                      onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                    >
+                      {showConfirmPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                    </button>
                   </div>
-                  <input
-                    {...register('confirm_password')}
-                    type={showConfirmPassword ? 'text' : 'password'}
-                    placeholder="••••••••"
-                    className={`text-gray-900 dark:text-white bg-white dark:bg-slate-800/50 block w-full pl-10 pr-10 py-2.5 border ${errors.confirm_password ? 'border-red-300 ring-2 ring-red-50 dark:ring-red-900/10' : 'border-gray-200 dark:border-slate-700 focus:ring-4 focus:ring-indigo-50 dark:focus:ring-indigo-900/10 focus:border-indigo-500'} rounded-xl shadow-sm placeholder-gray-400 dark:placeholder-slate-500 transition-all sm:text-sm`}
-                  />
-                  <button
-                    type="button"
-                    className="absolute inset-y-0 right-0 pr-3 flex items-center"
-                    onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                  >
-                    {showConfirmPassword ? (
-                      <EyeOff className="h-4 w-4 text-gray-400 dark:text-slate-500 hover:text-gray-500 dark:hover:text-slate-400 transition-colors" />
-                    ) : (
-                      <Eye className="h-4 w-4 text-gray-400 dark:text-slate-500 hover:text-gray-500 dark:hover:text-slate-400 transition-colors" />
-                    )}
-                  </button>
+                  {errors.confirm_password && (
+                    <p className="mt-1 text-[11px] font-medium text-rose-500">{errors.confirm_password.message}</p>
+                  )}
                 </div>
-                {errors.confirm_password && <p className="mt-1 ml-1 text-xs text-red-500">{errors.confirm_password.message}</p>}
               </div>
-
             </div>
-          </div>
 
-          <div className="pt-6 mt-6 border-t border-gray-100 dark:border-slate-800 flex flex-col md:flex-row items-center justify-between gap-4">
-            <p className="text-sm text-gray-500 dark:text-slate-400">
-              Already have an account?{' '}
-              <Link to="/login" className="font-bold text-indigo-600 dark:text-indigo-400 hover:text-indigo-500 transition-colors">
-                Sign in instead
-              </Link>
-            </p>
+            {/* Bottom Actions Row */}
+            <div className="pt-4 mt-5 sm:mt-6 border-t border-slate-100 dark:border-slate-800/80 flex flex-col sm:flex-row items-center justify-between gap-4">
+              <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 order-2 sm:order-1 text-center sm:text-left">
+                Already have an account?{' '}
+                <Link
+                  to="/login"
+                  className="font-semibold text-indigo-600 dark:text-indigo-400 hover:text-indigo-500 dark:hover:text-indigo-300 transition-colors"
+                >
+                  Sign in instead
+                </Link>
+              </p>
 
-            <button
-              type="submit"
-              disabled={isSubmitting}
-              className="group flex justify-center items-center py-3 px-8 border border-transparent rounded-xl shadow-md text-sm font-bold text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:opacity-70 transition-all duration-200 md:w-auto w-full"
-            >
-              {isSubmitting ? (
-                <Loader2 className="animate-spin h-5 w-5" />
-              ) : (
-                <>
-                  Register
-                  <UserPlus className="ml-2 w-4 h-4 group-hover:scale-110 transition-transform" />
-                </>
-              )}
-            </button>
-          </div>
-        </form>
-      </div>
+              <motion.button
+                whileHover={{ scale: 1.01 }}
+                whileTap={{ scale: 0.98 }}
+                type="submit"
+                disabled={isSubmitting}
+                className="w-full sm:w-auto px-7 py-3 rounded-xl text-xs sm:text-sm font-semibold text-white bg-gradient-to-r from-indigo-600 via-indigo-600 to-violet-600 hover:from-indigo-500 hover:to-violet-500 shadow-md shadow-indigo-500/20 hover:shadow-lg hover:shadow-indigo-500/30 disabled:opacity-60 transition-all duration-200 flex items-center justify-center gap-2 cursor-pointer order-1 sm:order-2"
+              >
+                {isSubmitting ? (
+                  <Loader2 className="animate-spin h-4 w-4" />
+                ) : (
+                  <>
+                    <span>Create Account</span>
+                    <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+                  </>
+                )}
+              </motion.button>
+            </div>
+          </form>
+        </div>
+      </motion.div>
     </div>
   );
 };

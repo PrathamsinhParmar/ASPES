@@ -33,7 +33,7 @@ const colorStyles = {
   },
 };
 
-const StatCard = ({ title, value, icon, trend, trendValue, subtitle, color = 'blue' }) => {
+const StatCard = ({ title, value, icon, trend, trendValue, subtitle, color = 'blue', valueClassName = '' }) => {
   const scheme = colorStyles[color] || colorStyles.blue;
 
   const renderTrendBadge = () => {
@@ -89,7 +89,7 @@ const StatCard = ({ title, value, icon, trend, trendValue, subtitle, color = 'bl
 
       {/* Main Metric Value & Trend / Badge */}
       <div className="flex items-baseline justify-between gap-2 pt-2 relative z-10">
-        <span className="text-2xl sm:text-3xl font-extrabold tracking-tight text-slate-900 dark:text-white font-sans">
+        <span className={`text-2xl sm:text-3xl font-semibold tracking-tight text-slate-900 dark:text-white font-sans ${valueClassName}`}>
           {value}
         </span>
         {renderTrendBadge()}

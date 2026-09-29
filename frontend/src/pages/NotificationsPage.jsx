@@ -5,7 +5,7 @@ import { BellIcon } from '@heroicons/react/24/outline';
 const NotificationsPage = () => {
 
   return (
-    <div className="p-4 sm:p-6 lg:p-8 space-y-6 min-h-screen bg-slate-50/50 dark:bg-slate-950 animate-fade-in relative font-sans">
+    <div className="px-4 sm:px-6 lg:px-8 pt-1.5 sm:pt-2.5 pb-6 sm:pb-8 space-y-3.5 min-h-screen bg-slate-50/50 dark:bg-slate-950 animate-fade-in relative font-sans">
       {/* Background glow */}
       <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-indigo-200/20 dark:bg-indigo-500/10 blur-[100px] rounded-full pointer-events-none -z-10 translate-x-1/2 -translate-y-1/2" />
 

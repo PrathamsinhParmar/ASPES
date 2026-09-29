@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { createPortal } from 'react-dom';
+import { motion, AnimatePresence } from 'framer-motion';
 import { useAuth } from '../../context/AuthContext';
 import { useNotifications } from '../../context/NotificationContext';
 import notificationService from '../../services/notificationService';
@@ -28,6 +29,7 @@ import {
   UserIcon,
   XMarkIcon,
   ArrowDownTrayIcon,
+  ChevronDownIcon,
 } from '@heroicons/react/24/outline';
 import toast from 'react-hot-toast';
 
@@ -259,7 +261,7 @@ const NotificationPanel = ({ defaultTab = 'all', compact = false }) => {
   };
 
   return (
-    <div className="bg-white/80 dark:bg-slate-900/80 backdrop-blur-md border border-slate-200 dark:border-slate-800 rounded-xl shadow-sm overflow-hidden font-sans">
+    <div className="bg-white/80 dark:bg-slate-900/80 backdrop-blur-md border border-slate-200 dark:border-slate-800 rounded-xl shadow-xs overflow-hidden font-sans">
       {/* Top Banner / Tabs Header */}
       <div className="p-5 sm:p-6 border-b border-slate-200 dark:border-slate-800 flex flex-col md:flex-row md:items-center justify-between gap-4 bg-slate-50/50 dark:bg-slate-950/40">
         <div>
@@ -290,16 +292,21 @@ const NotificationPanel = ({ defaultTab = 'all', compact = false }) => {
         {/* Global Quick Action */}
         <div className="flex items-center gap-2">
           {unreadCount > 0 && activeTab !== 'composer' && activeTab !== 'tracking' && activeTab !== 'audit' && (
-            <button
+            <motion.button
+              whileHover={{ scale: 1.04 }}
+              whileTap={{ scale: 0.94 }}
               onClick={markAllAsRead}
-              className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-indigo-600 dark:text-indigo-400 bg-indigo-50 dark:bg-indigo-900/20 hover:bg-indigo-100 dark:hover:bg-indigo-900/40 rounded-lg transition-colors border border-indigo-200/50 dark:border-indigo-800/50"
+              className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-indigo-600 dark:text-indigo-400 bg-indigo-50 dark:bg-indigo-900/20 hover:bg-indigo-100 dark:hover:bg-indigo-900/40 rounded-lg transition-colors border border-indigo-200/50 dark:border-indigo-800/50 shadow-2xs"
             >
               <CheckIcon className="w-4 h-4" />
               <span>Mark all read</span>
-            </button>
+            </motion.button>
           )}
 
-          <button
+          <motion.button
+            whileHover={{ scale: 1.08 }}
+            whileTap={{ scale: 0.9, rotate: 180 }}
+            transition={{ type: "spring", stiffness: 400, damping: 20 }}
             onClick={() => {
               if (activeTab === 'tracking') fetchAdminBroadcasts();
               else if (activeTab === 'audit') fetchAuditLogs();
@@ -309,94 +316,60 @@ const NotificationPanel = ({ defaultTab = 'all', compact = false }) => {
             title="Refresh"
           >
             <ArrowPathIcon className={`w-4 h-4 ${loading ? 'animate-spin' : ''}`} />
-          </button>
+          </motion.button>
         </div>
       </div>
 
-      {/* Main Tab Navigation */}
-      <div className="flex border-b border-slate-200 dark:border-slate-800 px-6 overflow-x-auto gap-4 scrollbar-none">
-        <button
-          onClick={() => setActiveTab('all')}
-          className={`py-3.5 text-xs sm:text-sm font-semibold border-b-2 transition-colors flex items-center gap-2 whitespace-nowrap ${
-            activeTab === 'all'
-              ? 'border-indigo-600 text-indigo-600 dark:text-indigo-400'
-              : 'border-transparent text-slate-500 hover:text-slate-700 dark:hover:text-slate-300'
-          }`}
-        >
-          <span>All Inbox</span>
-          <span className="text-[11px] px-1.5 py-0.5 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400">
-            {items.length}
-          </span>
-        </button>
-
-        <button
-          onClick={() => setActiveTab('unread')}
-          className={`py-3.5 text-xs sm:text-sm font-semibold border-b-2 transition-colors flex items-center gap-2 whitespace-nowrap ${
-            activeTab === 'unread'
-              ? 'border-indigo-600 text-indigo-600 dark:text-indigo-400'
-              : 'border-transparent text-slate-500 hover:text-slate-700 dark:hover:text-slate-300'
-          }`}
-        >
-          <span>Unread</span>
-          {unreadCount > 0 && (
-            <span className="text-[11px] px-1.5 py-0.5 rounded-full bg-indigo-100 dark:bg-indigo-950 text-indigo-600 dark:text-indigo-400 font-bold">
-              {unreadCount}
-            </span>
-          )}
-        </button>
-
-        <button
-          onClick={() => setActiveTab('archived')}
-          className={`py-3.5 text-xs sm:text-sm font-semibold border-b-2 transition-colors flex items-center gap-2 whitespace-nowrap ${
-            activeTab === 'archived'
-              ? 'border-indigo-600 text-indigo-600 dark:text-indigo-400'
-              : 'border-transparent text-slate-500 hover:text-slate-700 dark:hover:text-slate-300'
-          }`}
-        >
-          <ArchiveBoxIcon className="w-4 h-4" />
-          <span>Archived</span>
-        </button>
-
-        {/* Admin Tabs */}
-        {isAdmin && (
-          <>
-            <button
-              onClick={() => setActiveTab('composer')}
-              className={`py-3.5 text-xs sm:text-sm font-semibold border-b-2 transition-colors flex items-center gap-1.5 whitespace-nowrap ${
-                activeTab === 'composer'
-                  ? 'border-indigo-600 text-indigo-600 dark:text-indigo-400'
-                  : 'border-transparent text-slate-500 hover:text-slate-700 dark:hover:text-slate-300'
+      {/* Main Tab Navigation with Fluid Sliding Underline */}
+      <div className="flex border-b border-slate-200 dark:border-slate-800 px-6 overflow-x-auto gap-4 scrollbar-none relative">
+        {[
+          { id: 'all', label: 'All Inbox', count: items.length },
+          { id: 'unread', label: 'Unread', count: unreadCount },
+          { id: 'archived', label: 'Archived', icon: ArchiveBoxIcon },
+          ...(isAdmin
+            ? [
+                { id: 'composer', label: 'Compose Broadcast', icon: PaperAirplaneIcon },
+                { id: 'tracking', label: 'Read Receipts & Tracking', icon: EyeIcon },
+                { id: 'audit', label: 'Audit Trail', icon: ShieldCheckIcon },
+              ]
+            : []),
+        ].map((tab) => {
+          const Icon = tab.icon;
+          const isActive = activeTab === tab.id;
+          return (
+            <motion.button
+              key={tab.id}
+              whileTap={{ scale: 0.96 }}
+              onClick={() => setActiveTab(tab.id)}
+              className={`relative py-3.5 px-1 text-xs sm:text-sm font-semibold transition-colors flex items-center gap-2 whitespace-nowrap ${
+                isActive
+                  ? 'text-indigo-600 dark:text-indigo-400'
+                  : 'text-slate-500 hover:text-slate-700 dark:hover:text-slate-300'
               }`}
             >
-              <PaperAirplaneIcon className="w-4 h-4" />
-              <span>Compose Broadcast</span>
-            </button>
-
-            <button
-              onClick={() => setActiveTab('tracking')}
-              className={`py-3.5 text-xs sm:text-sm font-semibold border-b-2 transition-colors flex items-center gap-1.5 whitespace-nowrap ${
-                activeTab === 'tracking'
-                  ? 'border-indigo-600 text-indigo-600 dark:text-indigo-400'
-                  : 'border-transparent text-slate-500 hover:text-slate-700 dark:hover:text-slate-300'
-              }`}
-            >
-              <EyeIcon className="w-4 h-4" />
-              <span>Read Receipts & Tracking</span>
-            </button>
-
-            <button
-              onClick={() => setActiveTab('audit')}
-              className={`py-3.5 text-xs sm:text-sm font-semibold border-b-2 transition-colors flex items-center gap-1.5 whitespace-nowrap ${
-                activeTab === 'audit'
-                  ? 'border-indigo-600 text-indigo-600 dark:text-indigo-400'
-                  : 'border-transparent text-slate-500 hover:text-slate-700 dark:hover:text-slate-300'
-              }`}
-            >
-              <ShieldCheckIcon className="w-4 h-4" />
-              <span>Audit Trail</span>
-            </button>
-          </>
-        )}
+              {Icon && <Icon className="w-4 h-4" />}
+              <span>{tab.label}</span>
+              {tab.count !== undefined && (tab.id === 'all' || tab.count > 0) && (
+                <span
+                  className={`text-[11px] px-1.5 py-0.5 rounded-full font-bold ${
+                    tab.id === 'unread' && unreadCount > 0
+                      ? 'bg-indigo-100 dark:bg-indigo-950 text-indigo-600 dark:text-indigo-400'
+                      : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400'
+                  }`}
+                >
+                  {tab.count}
+                </span>
+              )}
+              {isActive && (
+                <motion.div
+                  layoutId="activeNotificationTab"
+                  className="absolute bottom-0 inset-x-0 h-0.5 bg-indigo-600 dark:bg-indigo-400 rounded-full"
+                  transition={{ type: "spring", stiffness: 500, damping: 35 }}
+                />
+              )}
+            </motion.button>
+          );
+        })}
       </div>
 
       {/* ─────────────────────────────────────────────────────────────
@@ -467,7 +440,7 @@ const NotificationPanel = ({ defaultTab = 'all', compact = false }) => {
             </div>
           ) : (
             <div className="space-y-3">
-              {items.map((notif) => {
+              {items.map((notif, index) => {
                 const isExpanded = expandedId === notif.id;
                 const meta = notif.metadata_json || {};
                 const priorityClass = priorityColors[notif.priority] || priorityColors.normal;
@@ -475,20 +448,22 @@ const NotificationPanel = ({ defaultTab = 'all', compact = false }) => {
                 return (
                   <div
                     key={notif.id}
-                    className={`rounded-lg border transition-all duration-200 overflow-hidden ${
-                      !notif.is_read
-                        ? 'bg-indigo-50/20 dark:bg-indigo-950/10 border-indigo-200/80 dark:border-indigo-800/40 shadow-xs'
-                        : 'bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800/80 hover:border-slate-300'
+                    className={`rounded-xl border transition-[border-color,box-shadow,background-color] duration-200 overflow-hidden ${
+                      isExpanded
+                        ? 'ring-1 ring-indigo-500/30 border-indigo-300/80 dark:border-indigo-700/60 shadow-md bg-white dark:bg-slate-900'
+                        : !notif.is_read
+                        ? 'bg-indigo-50/25 dark:bg-indigo-950/15 border-indigo-200/80 dark:border-indigo-800/40 shadow-2xs hover:border-indigo-300 dark:hover:border-indigo-700 hover:shadow-xs'
+                        : 'bg-white dark:bg-slate-900 border-slate-200/80 dark:border-slate-800/80 hover:border-slate-300 dark:hover:border-slate-700 hover:shadow-xs'
                     }`}
                   >
-                    {/* Item Main Row */}
+                    {/* Item Main Row with ultra-smooth 60FPS click feedback */}
                     <div
                       onClick={() => toggleExpand(notif.id, notif)}
-                      className="p-4 sm:p-5 cursor-pointer flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3"
+                      className="p-4 sm:p-5 cursor-pointer flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 select-none transition-colors duration-150 active:bg-slate-50/80 dark:active:bg-slate-800/60"
                     >
                       <div className="flex items-start gap-3.5 flex-1 min-w-0">
                         {/* Icon */}
-                        <div className="p-2.5 rounded-lg bg-slate-100 dark:bg-slate-800 flex-shrink-0 mt-0.5">
+                        <div className="p-2.5 rounded-xl bg-slate-100 dark:bg-slate-800 flex-shrink-0 mt-0.5">
                           {notif.type === 'project_submission' ? (
                             <InboxArrowDownIcon className="w-5 h-5 text-blue-600 dark:text-blue-400" />
                           ) : notif.type === 'faculty_evaluation' ? (
@@ -510,7 +485,7 @@ const NotificationPanel = ({ defaultTab = 'all', compact = false }) => {
                               {notif.priority}
                             </span>
                             {!notif.is_read && (
-                              <span className="w-2 h-2 rounded-full bg-indigo-600" />
+                              <span className="w-2 h-2 rounded-full bg-indigo-600 ring-2 ring-indigo-400/30 animate-pulse" />
                             )}
                           </div>
 
@@ -518,7 +493,7 @@ const NotificationPanel = ({ defaultTab = 'all', compact = false }) => {
                             {notif.title}
                           </h4>
 
-                          <p className="text-xs text-slate-500 dark:text-slate-400 line-clamp-1 mt-0.5">
+                          <p className="text-xs text-slate-500 dark:text-slate-400 line-clamp-1 mt-0.5 font-normal">
                             {notif.message}
                           </p>
                         </div>
@@ -526,7 +501,7 @@ const NotificationPanel = ({ defaultTab = 'all', compact = false }) => {
 
                       {/* Right Meta & Actions */}
                       <div className="flex items-center gap-3 self-end sm:self-center">
-                        <div className="text-right text-[11px] text-slate-400 flex items-center gap-1">
+                        <div className="text-right text-[11px] text-slate-400 flex items-center gap-1 font-normal">
                           <ClockIcon className="w-3.5 h-3.5" />
                           <span>{new Date(notif.created_at).toLocaleString()}</span>
                         </div>
@@ -536,7 +511,7 @@ const NotificationPanel = ({ defaultTab = 'all', compact = false }) => {
                           {!notif.is_read ? (
                             <button
                               onClick={() => markAsRead(notif.id)}
-                              className="p-1.5 text-slate-400 hover:text-indigo-600 dark:hover:text-indigo-400 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg transition-colors"
+                              className="p-1.5 text-slate-400 hover:text-indigo-600 dark:hover:text-indigo-400 hover:bg-slate-100 dark:hover:bg-slate-800 active:scale-90 rounded-lg transition-all duration-150"
                               title="Mark as read"
                             >
                               <CheckIcon className="w-4 h-4" />
@@ -549,7 +524,7 @@ const NotificationPanel = ({ defaultTab = 'all', compact = false }) => {
 
                           <button
                             onClick={() => archiveNotification(notif.id)}
-                            className="p-1.5 text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg transition-colors"
+                            className="p-1.5 text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 active:scale-90 rounded-lg transition-all duration-150"
                             title="Archive"
                           >
                             <ArchiveBoxIcon className="w-4 h-4" />
@@ -557,166 +532,195 @@ const NotificationPanel = ({ defaultTab = 'all', compact = false }) => {
 
                           <button
                             onClick={() => deleteNotification(notif.id)}
-                            className="p-1.5 text-slate-400 hover:text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-950/30 rounded-lg transition-colors"
+                            className="p-1.5 text-slate-400 hover:text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-950/30 active:scale-90 rounded-lg transition-all duration-150"
                             title="Delete"
                           >
                             <TrashIcon className="w-4 h-4" />
                           </button>
                         </div>
+
+                        {/* Smooth Rotating Chevron Drop List Indicator */}
+                        <div className="pl-1">
+                          <ChevronDownIcon
+                            className={`w-4 h-4 text-slate-400 transition-transform duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] ${
+                              isExpanded ? 'rotate-180 text-indigo-600 dark:text-indigo-400' : ''
+                            }`}
+                          />
+                        </div>
                       </div>
                     </div>
 
-                    {/* Expandable Details Container */}
-                    {isExpanded && (
-                      <div className="px-5 pb-5 pt-2 border-t border-slate-100 dark:border-slate-800/80 bg-slate-50/50 dark:bg-slate-950/30 space-y-4 animate-in fade-in duration-150">
-                        {/* Full Message Body */}
-                        <div className="p-3.5 bg-white dark:bg-slate-900 rounded-lg border border-slate-200/80 dark:border-slate-800 text-xs sm:text-sm text-slate-800 dark:text-slate-200 leading-relaxed whitespace-pre-line">
-                          {notif.message}
-                        </div>
-
-                        {/* ── Faculty Specific: Student Submission Details ── */}
-                        {notif.type === 'project_submission' && (
-                          <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-xs">
-                            <div className="p-3.5 bg-white dark:bg-slate-900 rounded-lg border border-slate-200/80 dark:border-slate-800 space-y-2">
-                              <h5 className="font-semibold text-slate-900 dark:text-white flex items-center gap-1.5">
-                                <UserIcon className="w-4 h-4 text-blue-500" /> Submitting Student Information
-                              </h5>
-                              <div className="space-y-1 text-slate-600 dark:text-slate-300">
-                                <div><span className="font-semibold text-slate-400">Name: </span>{meta.student_name || notif.sender_name}</div>
-                                <div><span className="font-semibold text-slate-400">Email: </span>{meta.student_email || 'N/A'}</div>
-                                <div><span className="font-semibold text-slate-400">Department: </span>{meta.student_department || 'General'}</div>
-                                {meta.team_name && <div><span className="font-semibold text-slate-400">Team: </span>{meta.team_name}</div>}
-                              </div>
+                    {/* Drop Down List Type Accordion (60FPS Native CSS Grid Unfolding) */}
+                    <div
+                      className={`grid transition-[grid-template-rows] duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] ${
+                        isExpanded ? 'grid-rows-[1fr]' : 'grid-rows-[0fr]'
+                      }`}
+                    >
+                      <div className="overflow-hidden">
+                        <div
+                          className={`transition-all duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] ${
+                            isExpanded
+                              ? 'opacity-100 translate-y-0'
+                              : 'opacity-0 -translate-y-2 pointer-events-none'
+                          }`}
+                        >
+                          <div className="px-5 pb-5 pt-2 border-t border-slate-100 dark:border-slate-800/80 bg-slate-50/50 dark:bg-slate-950/30 space-y-4">
+                            {/* Full Message Body */}
+                            <div className="p-3.5 bg-white dark:bg-slate-900 rounded-lg border border-slate-200/80 dark:border-slate-800 text-xs sm:text-sm text-slate-800 dark:text-slate-200 leading-relaxed whitespace-pre-line shadow-2xs">
+                              {notif.message}
                             </div>
 
-                            <div className="p-3.5 bg-white dark:bg-slate-900 rounded-lg border border-slate-200/80 dark:border-slate-800 space-y-2">
-                              <h5 className="font-semibold text-slate-900 dark:text-white flex items-center gap-1.5">
-                                <ClipboardDocumentCheckIcon className="w-4 h-4 text-indigo-500" /> Submission Metadata
-                              </h5>
-                              <div className="space-y-1 text-slate-600 dark:text-slate-300">
-                                <div><span className="font-semibold text-slate-400">Submission ID: </span>#{meta.submission_id || notif.related_project_id}</div>
-                                <div><span className="font-semibold text-slate-400">Course / Language: </span>{meta.course_name ? formatLanguageName(meta.course_name) : 'N/A'}</div>
-                                <div><span className="font-semibold text-slate-400">Submitted At: </span>{meta.submitted_at_str || new Date(notif.created_at).toLocaleString()}</div>
-                              </div>
-                            </div>
-                          </div>
-                        )}
-
-                        {/* ── Student Specific: Faculty Evaluation Assessment Details ── */}
-                        {notif.type === 'faculty_evaluation' && (
-                          <div className="p-4 bg-gradient-to-br from-indigo-50/60 to-purple-50/40 dark:from-indigo-950/30 dark:to-purple-950/20 border border-indigo-100 dark:border-indigo-900/50 rounded-lg space-y-3 text-xs">
-                            <div className="flex items-center justify-between">
-                              <div className="flex items-center gap-2">
-                                <SparklesIcon className="w-5 h-5 text-indigo-600 dark:text-indigo-400" />
-                                <span className="font-semibold text-slate-900 dark:text-white text-sm">
-                                  Evaluation Verdict: {meta.evaluation_status || 'Reviewed'}
-                                </span>
-                              </div>
-                              {meta.score !== null && meta.score !== undefined && (
-                                <div className="text-right">
-                                  <span className="text-lg font-bold text-indigo-600 dark:text-indigo-400">
-                                    {meta.score} / 100
-                                  </span>
+                            {/* ── Faculty Specific: Student Submission Details ── */}
+                            {notif.type === 'project_submission' && (
+                              <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-xs">
+                                <div className="p-3.5 bg-white dark:bg-slate-900 rounded-lg border border-slate-200/80 dark:border-slate-800 space-y-2 shadow-2xs">
+                                  <h5 className="font-semibold text-slate-900 dark:text-white flex items-center gap-1.5">
+                                    <UserIcon className="w-4 h-4 text-blue-500" /> Submitting Student Information
+                                  </h5>
+                                  <div className="space-y-1 text-slate-600 dark:text-slate-300">
+                                    <div><span className="font-semibold text-slate-400">Name: </span>{meta.student_name || notif.sender_name}</div>
+                                    <div><span className="font-semibold text-slate-400">Email: </span>{meta.student_email || 'N/A'}</div>
+                                    <div><span className="font-semibold text-slate-400">Department: </span>{meta.student_department || 'General'}</div>
+                                    {meta.team_name && <div><span className="font-semibold text-slate-400">Team: </span>{meta.team_name}</div>}
+                                  </div>
                                 </div>
+
+                                <div className="p-3.5 bg-white dark:bg-slate-900 rounded-lg border border-slate-200/80 dark:border-slate-800 space-y-2 shadow-2xs">
+                                  <h5 className="font-semibold text-slate-900 dark:text-white flex items-center gap-1.5">
+                                    <ClipboardDocumentCheckIcon className="w-4 h-4 text-indigo-500" /> Submission Metadata
+                                  </h5>
+                                  <div className="space-y-1 text-slate-600 dark:text-slate-300">
+                                    <div><span className="font-semibold text-slate-400">Submission ID: </span>#{meta.submission_id || notif.related_project_id}</div>
+                                    <div><span className="font-semibold text-slate-400">Course / Language: </span>{meta.course_name ? formatLanguageName(meta.course_name) : 'N/A'}</div>
+                                    <div><span className="font-semibold text-slate-400">Submitted At: </span>{meta.submitted_at_str || new Date(notif.created_at).toLocaleString()}</div>
+                                  </div>
+                                </div>
+                              </div>
+                            )}
+
+                            {/* ── Student Specific: Faculty Evaluation Assessment Details ── */}
+                            {notif.type === 'faculty_evaluation' && (
+                              <div className="p-4 bg-gradient-to-br from-indigo-50/60 to-purple-50/40 dark:from-indigo-950/30 dark:to-purple-950/20 border border-indigo-100 dark:border-indigo-900/50 rounded-lg space-y-3 text-xs">
+                                <div className="flex items-center justify-between">
+                                  <div className="flex items-center gap-2">
+                                    <SparklesIcon className="w-5 h-5 text-indigo-600 dark:text-indigo-400" />
+                                    <span className="font-semibold text-slate-900 dark:text-white text-sm">
+                                      Evaluation Verdict: {meta.evaluation_status || 'Reviewed'}
+                                    </span>
+                                  </div>
+                                  {meta.score !== null && meta.score !== undefined && (
+                                    <div className="text-right">
+                                      <span className="text-lg font-bold text-indigo-600 dark:text-indigo-400">
+                                        {meta.score} / 100
+                                      </span>
+                                    </div>
+                                  )}
+                                </div>
+
+                                {/* Sub scores if available */}
+                                {meta.metrics && (
+                                  <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 pt-2 border-t border-indigo-200/50 dark:border-indigo-800/40">
+                                    <div className="bg-white/70 dark:bg-slate-900/70 p-2 rounded-md text-center">
+                                      <span className="text-[10px] text-slate-400">Code Quality</span>
+                                      <p className="font-semibold text-slate-800 dark:text-slate-200">{meta.metrics.code_quality ?? 'N/A'}%</p>
+                                    </div>
+                                    <div className="bg-white/70 dark:bg-slate-900/70 p-2 rounded-md text-center">
+                                      <span className="text-[10px] text-slate-400">Documentation</span>
+                                      <p className="font-semibold text-slate-800 dark:text-slate-200">{meta.metrics.documentation ?? 'N/A'}%</p>
+                                    </div>
+                                    <div className="bg-white/70 dark:bg-slate-900/70 p-2 rounded-md text-center">
+                                      <span className="text-[10px] text-slate-400">Originality</span>
+                                      <p className="font-semibold text-slate-800 dark:text-slate-200">{meta.metrics.plagiarism ?? 'N/A'}%</p>
+                                    </div>
+                                    <div className="bg-white/70 dark:bg-slate-900/70 p-2 rounded-md text-center">
+                                      <span className="text-[10px] text-slate-400">Alignment</span>
+                                      <p className="font-semibold text-slate-800 dark:text-slate-200">{meta.metrics.report_alignment ?? 'N/A'}%</p>
+                                    </div>
+                                  </div>
+                                )}
+
+                                {meta.feedback && (
+                                  <div className="pt-2 text-slate-700 dark:text-slate-300 italic">
+                                    &ldquo;{meta.feedback}&rdquo;
+                                  </div>
+                                )}
+
+                                {/* ── Student Evaluation File Attachment Card ── */}
+                                {(notif.attachment_url || meta.attachment_url) && (
+                                  <div className="mt-3 p-3.5 bg-white dark:bg-slate-900/90 rounded-xl border border-indigo-200/80 dark:border-indigo-800/60 flex items-center justify-between gap-3 shadow-xs">
+                                    <div className="flex items-center gap-3 min-w-0">
+                                      <div className="w-9 h-9 rounded-lg bg-indigo-50 dark:bg-indigo-950/60 border border-indigo-200/50 dark:border-indigo-800/40 flex items-center justify-center text-indigo-600 dark:text-indigo-400 flex-shrink-0">
+                                        <PaperClipIcon className="w-4 h-4" />
+                                      </div>
+                                      <div className="min-w-0">
+                                        <span className="font-bold text-slate-800 dark:text-slate-100 block text-xs truncate">
+                                          {notif.attachment_name || meta.attachment_name || 'Faculty Evaluation Attachment'}
+                                        </span>
+                                        <span className="text-[10px] text-slate-500 dark:text-slate-400">
+                                          Attached evaluation review & feedback file
+                                        </span>
+                                      </div>
+                                    </div>
+                                    <motion.button
+                                      type="button"
+                                      whileHover={{ scale: 1.03 }}
+                                      whileTap={{ scale: 0.95 }}
+                                      onClick={(e) => handleDownloadAttachment(e, notif)}
+                                      className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-white bg-indigo-600 hover:bg-indigo-700 active:bg-indigo-800 rounded-lg shadow-xs transition-all flex-shrink-0"
+                                    >
+                                      <ArrowDownTrayIcon className="w-3.5 h-3.5" />
+                                      <span>Download</span>
+                                    </motion.button>
+                                  </div>
+                                )}
+                              </div>
+                            )}
+
+                            {/* Admin Platform Notation note */}
+                            {meta.admin_notation && (
+                              <div className="p-3 bg-amber-50 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-800/40 rounded-lg flex items-start gap-2 text-xs text-amber-800 dark:text-amber-300">
+                                <InformationCircleIcon className="w-4 h-4 text-amber-600 dark:text-amber-400 flex-shrink-0 mt-0.5" />
+                                <div>
+                                  <span className="font-semibold">Institutional Instruction: </span>
+                                  {meta.admin_notation}
+                                </div>
+                              </div>
+                            )}
+
+                            {/* Attachments / Direct Action Link */}
+                            <div className="flex flex-wrap items-center justify-between gap-3 pt-2">
+                              <div className="flex items-center gap-2">
+                                {(notif.attachment_url || meta.attachment_url) && (
+                                  <motion.button
+                                    type="button"
+                                    whileHover={{ scale: 1.02 }}
+                                    whileTap={{ scale: 0.96 }}
+                                    onClick={(e) => handleDownloadAttachment(e, notif)}
+                                    className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-indigo-600 dark:text-indigo-400 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-lg hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors shadow-xs"
+                                  >
+                                    <PaperClipIcon className="w-3.5 h-3.5" />
+                                    <span>{notif.attachment_name || meta.attachment_name || 'Download Attachment'}</span>
+                                    <ArrowDownTrayIcon className="w-3.5 h-3.5 opacity-70" />
+                                  </motion.button>
+                                )}
+                              </div>
+
+                              {notif.related_project_id && (
+                                <motion.button
+                                  whileHover={{ scale: 1.02 }}
+                                  whileTap={{ scale: 0.96 }}
+                                  onClick={() => navigate(`/projects/${notif.related_project_id}`)}
+                                  className="inline-flex items-center gap-1.5 px-4 py-2 text-xs font-semibold text-white bg-indigo-600 hover:bg-indigo-700 rounded-lg shadow-sm transition-all"
+                                >
+                                  <span>Open Project Workspace</span>
+                                  <ArrowTopRightOnSquareIcon className="w-3.5 h-3.5" />
+                                </motion.button>
                               )}
                             </div>
-
-                            {/* Sub scores if available */}
-                            {meta.metrics && (
-                              <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 pt-2 border-t border-indigo-200/50 dark:border-indigo-800/40">
-                                <div className="bg-white/70 dark:bg-slate-900/70 p-2 rounded-md text-center">
-                                  <span className="text-[10px] text-slate-400">Code Quality</span>
-                                  <p className="font-semibold text-slate-800 dark:text-slate-200">{meta.metrics.code_quality ?? 'N/A'}%</p>
-                                </div>
-                                <div className="bg-white/70 dark:bg-slate-900/70 p-2 rounded-md text-center">
-                                  <span className="text-[10px] text-slate-400">Documentation</span>
-                                  <p className="font-semibold text-slate-800 dark:text-slate-200">{meta.metrics.documentation ?? 'N/A'}%</p>
-                                </div>
-                                <div className="bg-white/70 dark:bg-slate-900/70 p-2 rounded-md text-center">
-                                  <span className="text-[10px] text-slate-400">Originality</span>
-                                  <p className="font-semibold text-slate-800 dark:text-slate-200">{meta.metrics.plagiarism ?? 'N/A'}%</p>
-                                </div>
-                                <div className="bg-white/70 dark:bg-slate-900/70 p-2 rounded-md text-center">
-                                  <span className="text-[10px] text-slate-400">Alignment</span>
-                                  <p className="font-semibold text-slate-800 dark:text-slate-200">{meta.metrics.report_alignment ?? 'N/A'}%</p>
-                                </div>
-                              </div>
-                            )}
-
-                            {meta.feedback && (
-                              <div className="pt-2 text-slate-700 dark:text-slate-300 italic">
-                                &ldquo;{meta.feedback}&rdquo;
-                              </div>
-                            )}
-
-                            {/* ── Student Evaluation File Attachment Card ── */}
-                            {(notif.attachment_url || meta.attachment_url) && (
-                              <div className="mt-3 p-3.5 bg-white dark:bg-slate-900/90 rounded-xl border border-indigo-200/80 dark:border-indigo-800/60 flex items-center justify-between gap-3 shadow-xs">
-                                <div className="flex items-center gap-3 min-w-0">
-                                  <div className="w-9 h-9 rounded-lg bg-indigo-50 dark:bg-indigo-950/60 border border-indigo-200/50 dark:border-indigo-800/40 flex items-center justify-center text-indigo-600 dark:text-indigo-400 flex-shrink-0">
-                                    <PaperClipIcon className="w-4 h-4" />
-                                  </div>
-                                  <div className="min-w-0">
-                                    <span className="font-bold text-slate-800 dark:text-slate-100 block text-xs truncate">
-                                      {notif.attachment_name || meta.attachment_name || 'Faculty Evaluation Attachment'}
-                                    </span>
-                                    <span className="text-[10px] text-slate-500 dark:text-slate-400">
-                                      Attached evaluation review & feedback file
-                                    </span>
-                                  </div>
-                                </div>
-                                <button
-                                  type="button"
-                                  onClick={(e) => handleDownloadAttachment(e, notif)}
-                                  className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-white bg-indigo-600 hover:bg-indigo-700 active:bg-indigo-800 rounded-lg shadow-xs hover:-translate-y-0.5 transition-all flex-shrink-0"
-                                >
-                                  <ArrowDownTrayIcon className="w-3.5 h-3.5" />
-                                  <span>Download</span>
-                                </button>
-                              </div>
-                            )}
                           </div>
-                        )}
-
-                        {/* Admin Platform Notation note */}
-                        {meta.admin_notation && (
-                          <div className="p-3 bg-amber-50 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-800/40 rounded-lg flex items-start gap-2 text-xs text-amber-800 dark:text-amber-300">
-                            <InformationCircleIcon className="w-4 h-4 text-amber-600 dark:text-amber-400 flex-shrink-0 mt-0.5" />
-                            <div>
-                              <span className="font-semibold">Institutional Instruction: </span>
-                              {meta.admin_notation}
-                            </div>
-                          </div>
-                        )}
-
-                        {/* Attachments / Direct Action Link */}
-                        <div className="flex flex-wrap items-center justify-between gap-3 pt-2">
-                          <div className="flex items-center gap-2">
-                            {(notif.attachment_url || meta.attachment_url) && (
-                              <button
-                                type="button"
-                                onClick={(e) => handleDownloadAttachment(e, notif)}
-                                className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-indigo-600 dark:text-indigo-400 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-lg hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors shadow-xs"
-                              >
-                                <PaperClipIcon className="w-3.5 h-3.5" />
-                                <span>{notif.attachment_name || meta.attachment_name || 'Download Attachment'}</span>
-                                <ArrowDownTrayIcon className="w-3.5 h-3.5 opacity-70" />
-                              </button>
-                            )}
-                          </div>
-
-                          {notif.related_project_id && (
-                            <button
-                              onClick={() => navigate(`/projects/${notif.related_project_id}`)}
-                              className="inline-flex items-center gap-1.5 px-4 py-2 text-xs font-semibold text-white bg-indigo-600 hover:bg-indigo-700 rounded-lg shadow-sm transition-all hover:-translate-y-0.5"
-                            >
-                              <span>Open Project Workspace</span>
-                              <ArrowTopRightOnSquareIcon className="w-3.5 h-3.5" />
-                            </button>
-                          )}
                         </div>
                       </div>
-                    )}
+                    </div>
                   </div>
                 );
               })}
@@ -873,14 +877,16 @@ const NotificationPanel = ({ defaultTab = 'all', compact = false }) => {
 
             {/* Submit Button */}
             <div className="pt-2 flex justify-end">
-              <button
+              <motion.button
                 type="submit"
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.96 }}
                 disabled={isSubmittingBroadcast}
-                className="flex items-center gap-2 px-6 py-2.5 text-sm font-semibold text-white bg-indigo-600 hover:bg-indigo-700 rounded-lg shadow-sm shadow-indigo-500/20 hover:-translate-y-0.5 transition-all disabled:opacity-50"
+                className="flex items-center gap-2 px-6 py-2.5 text-sm font-semibold text-white bg-indigo-600 hover:bg-indigo-700 active:bg-indigo-800 rounded-lg shadow-sm shadow-indigo-500/20 transition-all disabled:opacity-50"
               >
                 <PaperAirplaneIcon className="w-4 h-4" />
                 <span>{isSubmittingBroadcast ? 'Dispatching...' : 'Dispatch Real-Time Broadcast'}</span>
-              </button>
+              </motion.button>
             </div>
           </form>
         </div>
@@ -934,10 +940,13 @@ const NotificationPanel = ({ defaultTab = 'all', compact = false }) => {
                     </div>
 
                     <div className="text-right flex-shrink-0">
-                      <p className="text-xs text-slate-400">{new Date(b.created_at).toLocaleDateString()}</p>
                       <button
-                        onClick={() => setSelectedReceiptBroadcast(b)}
-                        className="mt-1 px-3 py-1.5 text-xs font-semibold text-indigo-600 dark:text-indigo-400 bg-indigo-50 dark:bg-indigo-900/20 hover:bg-indigo-100 rounded-md transition-colors inline-flex items-center gap-1"
+                        type="button"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setSelectedReceiptBroadcast(b);
+                        }}
+                        className="mt-1 px-3 py-1.5 text-xs font-semibold text-indigo-600 dark:text-indigo-400 bg-indigo-50 dark:bg-indigo-900/20 hover:bg-indigo-100 dark:hover:bg-indigo-900/40 active:scale-95 rounded-md transition-all inline-flex items-center gap-1 shadow-2xs cursor-pointer select-none"
                       >
                         <EyeIcon className="w-3.5 h-3.5" />
                         <span>View Read Receipts</span>
@@ -967,108 +976,129 @@ const NotificationPanel = ({ defaultTab = 'all', compact = false }) => {
             </div>
           )}
 
-          {/* Receipt Modal Portal */}
-          {selectedReceiptBroadcast &&
+          {/* Receipt Modal Portal with Smooth Spring Backdrop & Content */}
+          {typeof document !== 'undefined' &&
             createPortal(
-              <div
-                onClick={(e) => {
-                  if (e.target === e.currentTarget) setSelectedReceiptBroadcast(null);
-                }}
-                className="fixed inset-0 z-[9999] flex items-center justify-center p-4 sm:p-6 bg-slate-950/70 backdrop-blur-sm animate-in fade-in duration-200"
-              >
-                <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl shadow-2xl max-w-xl w-full p-6 space-y-4 max-h-[85vh] flex flex-col animate-in zoom-in-95 duration-150 font-sans">
-                  {/* Modal Header */}
-                  <div className="flex items-start justify-between border-b border-slate-100 dark:border-slate-800 pb-4">
-                    <div className="flex items-center gap-3">
-                      <div className="w-10 h-10 rounded-lg bg-indigo-50 dark:bg-indigo-900/30 flex items-center justify-center text-indigo-600 dark:text-indigo-400 flex-shrink-0">
-                        <EyeIcon className="w-5 h-5" />
-                      </div>
-                      <div>
-                        <div className="flex items-center gap-2">
-                          <h4 className="text-base font-bold text-slate-900 dark:text-white">
-                            Recipient Read Receipts
-                          </h4>
-                          <span className="text-[11px] font-semibold px-2 py-0.5 rounded-full bg-indigo-50 dark:bg-indigo-950 text-indigo-600 dark:text-indigo-400 border border-indigo-200/50 dark:border-indigo-800/50">
-                            {selectedReceiptBroadcast.total_read} / {selectedReceiptBroadcast.total_delivered} Read
-                          </span>
-                        </div>
-                        <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5 truncate max-w-sm">
-                          {selectedReceiptBroadcast.title}
-                        </p>
-                      </div>
-                    </div>
-                    <button
-                      onClick={() => setSelectedReceiptBroadcast(null)}
-                      className="p-1.5 rounded-lg text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
-                      title="Close"
+              <AnimatePresence>
+                {selectedReceiptBroadcast && (
+                  <motion.div
+                    key="read-receipt-modal-backdrop"
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    exit={{ opacity: 0 }}
+                    transition={{ duration: 0.18 }}
+                    onClick={(e) => {
+                      if (e.target === e.currentTarget) setSelectedReceiptBroadcast(null);
+                    }}
+                    className="fixed inset-0 z-[99999] flex items-center justify-center p-4 sm:p-6 bg-slate-950/75 backdrop-blur-sm"
+                  >
+                    <motion.div
+                      key="read-receipt-modal-card"
+                      initial={{ opacity: 0, scale: 0.95, y: 8 }}
+                      animate={{ opacity: 1, scale: 1, y: 0 }}
+                      exit={{ opacity: 0, scale: 0.96, y: 6 }}
+                      transition={{ duration: 0.22, ease: [0.16, 1, 0.3, 1] }}
+                      className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl shadow-2xl max-w-xl w-full p-6 space-y-4 max-h-[85vh] flex flex-col font-sans"
                     >
-                      <XMarkIcon className="w-5 h-5" />
-                    </button>
-                  </div>
-
-                  {/* Recipients List */}
-                  <div className="flex-1 overflow-y-auto divide-y divide-slate-100 dark:divide-slate-800 text-xs pr-1 scrollbar-none no-scrollbar">
-                    {selectedReceiptBroadcast.recipients && selectedReceiptBroadcast.recipients.length > 0 ? (
-                      selectedReceiptBroadcast.recipients.map((r) => {
-                        const initials = (r.recipient_name || 'U')
-                          .split(' ')
-                          .map((n) => n[0])
-                          .slice(0, 2)
-                          .join('');
-                        return (
-                          <div key={r.recipient_id} className="py-3 flex items-center justify-between gap-3">
-                            <div className="flex items-center gap-3 min-w-0">
-                              <div className="w-8 h-8 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 flex items-center justify-center font-semibold text-xs uppercase flex-shrink-0">
-                                {initials}
-                              </div>
-                              <div className="min-w-0">
-                                <p className="font-semibold text-slate-900 dark:text-white truncate">
-                                  {r.recipient_name}
-                                </p>
-                                <p className="text-[11px] text-slate-400 truncate">
-                                  {r.recipient_email} • <span className="capitalize">{r.recipient_role}</span>
-                                </p>
-                              </div>
-                            </div>
-
-                            <div className="text-right flex-shrink-0">
-                              {r.is_read ? (
-                                <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-emerald-50 dark:bg-emerald-950/30 text-emerald-600 dark:text-emerald-400 font-semibold border border-emerald-200/50 dark:border-emerald-800/50">
-                                  <CheckCircleIcon className="w-4 h-4" />
-                                  <span>
-                                    Read {r.read_at ? new Date(r.read_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : ''}
-                                  </span>
-                                </div>
-                              ) : (
-                                <span className="inline-flex items-center px-2.5 py-1 rounded-md bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400 font-medium">
-                                  Delivered (Unread)
-                                </span>
-                              )}
-                            </div>
+                      {/* Modal Header */}
+                      <div className="flex items-start justify-between border-b border-slate-100 dark:border-slate-800 pb-4">
+                        <div className="flex items-center gap-3">
+                          <div className="w-10 h-10 rounded-lg bg-indigo-50 dark:bg-indigo-900/30 flex items-center justify-center text-indigo-600 dark:text-indigo-400 flex-shrink-0">
+                            <EyeIcon className="w-5 h-5" />
                           </div>
-                        );
-                      })
-                    ) : (
-                      <div className="py-8 text-center text-slate-400">
-                        No recipient receipts found for this broadcast.
+                          <div>
+                            <div className="flex items-center gap-2">
+                              <h4 className="text-base font-bold text-slate-900 dark:text-white">
+                                Recipient Read Receipts
+                              </h4>
+                              <span className="text-[11px] font-semibold px-2 py-0.5 rounded-full bg-indigo-50 dark:bg-indigo-950 text-indigo-600 dark:text-indigo-400 border border-indigo-200/50 dark:border-indigo-800/50">
+                                {selectedReceiptBroadcast.total_read} / {selectedReceiptBroadcast.total_delivered} Read
+                              </span>
+                            </div>
+                            <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5 truncate max-w-sm">
+                              {selectedReceiptBroadcast.title}
+                            </p>
+                          </div>
+                        </div>
+                        <button
+                          type="button"
+                          onClick={() => setSelectedReceiptBroadcast(null)}
+                          className="p-1.5 rounded-lg text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 active:scale-90 transition-all"
+                          title="Close"
+                        >
+                          <XMarkIcon className="w-5 h-5" />
+                        </button>
                       </div>
-                    )}
-                  </div>
 
-                  {/* Modal Footer */}
-                  <div className="pt-3 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between">
-                    <span className="text-[11px] text-slate-400 font-medium">
-                      Audience: <strong className="text-slate-700 dark:text-slate-300 capitalize">{selectedReceiptBroadcast.target_audience}</strong>
-                    </span>
-                    <button
-                      onClick={() => setSelectedReceiptBroadcast(null)}
-                      className="px-4 py-2 text-xs font-semibold text-slate-700 dark:text-slate-300 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 rounded-lg transition-colors"
-                    >
-                      Close
-                    </button>
-                  </div>
-                </div>
-              </div>,
+                      {/* Recipients List */}
+                      <div className="flex-1 overflow-y-auto divide-y divide-slate-100 dark:divide-slate-800 text-xs pr-1 scrollbar-none no-scrollbar">
+                        {selectedReceiptBroadcast.recipients && selectedReceiptBroadcast.recipients.length > 0 ? (
+                          selectedReceiptBroadcast.recipients.map((r, rIdx) => {
+                            const initials = (r.recipient_name || 'U')
+                              .trim()
+                              .split(/\s+/)
+                              .filter(Boolean)
+                              .map((n) => n[0])
+                              .slice(0, 2)
+                              .join('')
+                              .toUpperCase();
+                            return (
+                              <div key={`${r.recipient_id || rIdx}-${rIdx}`} className="py-3 flex items-center justify-between gap-3">
+                                <div className="flex items-center gap-3 min-w-0">
+                                  <div className="w-8 h-8 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 flex items-center justify-center font-semibold text-xs uppercase flex-shrink-0">
+                                    {initials}
+                                  </div>
+                                  <div className="min-w-0">
+                                    <p className="font-semibold text-slate-900 dark:text-white truncate">
+                                      {r.recipient_name}
+                                    </p>
+                                    <p className="text-[11px] text-slate-400 truncate">
+                                      {r.recipient_email} • <span className="capitalize">{r.recipient_role}</span>
+                                    </p>
+                                  </div>
+                                </div>
+
+                                <div className="text-right flex-shrink-0">
+                                  {r.is_read ? (
+                                    <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-emerald-50 dark:bg-emerald-950/30 text-emerald-600 dark:text-emerald-400 font-semibold border border-emerald-200/50 dark:border-emerald-800/50">
+                                      <CheckCircleIcon className="w-4 h-4" />
+                                      <span>
+                                        Read {r.read_at ? new Date(r.read_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : ''}
+                                      </span>
+                                    </div>
+                                  ) : (
+                                    <span className="inline-flex items-center px-2.5 py-1 rounded-md bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400 font-medium">
+                                      Delivered (Unread)
+                                    </span>
+                                  )}
+                                </div>
+                              </div>
+                            );
+                          })
+                        ) : (
+                          <div className="py-8 text-center text-slate-400">
+                            No recipient receipts found for this broadcast.
+                          </div>
+                        )}
+                      </div>
+
+                      {/* Modal Footer */}
+                      <div className="pt-3 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between">
+                        <span className="text-[11px] text-slate-400 font-medium">
+                          Audience: <strong className="text-slate-700 dark:text-slate-300 capitalize">{selectedReceiptBroadcast.target_audience || 'All'}</strong>
+                        </span>
+                        <button
+                          type="button"
+                          onClick={() => setSelectedReceiptBroadcast(null)}
+                          className="px-4 py-1.5 text-xs font-semibold text-slate-700 dark:text-slate-300 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 active:scale-95 rounded-lg transition-all"
+                        >
+                          Close
+                        </button>
+                      </div>
+                    </motion.div>
+                  </motion.div>
+                )}
+              </AnimatePresence>,
               document.body
             )}
         </div>

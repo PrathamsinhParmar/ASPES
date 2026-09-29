@@ -778,7 +778,7 @@ const FeedbackGeneratorPage = () => {
                     Executive Diagnostic Verdict
                   </h2>
                   <p className="mt-1.5 text-base sm:text-lg font-bold text-amber-600 dark:text-amber-400 leading-snug">
-                    "{verdict}"
+                    &ldquo;{verdict}&rdquo;
                   </p>
                 </div>
 

@@ -96,6 +96,7 @@ reportlab==4.2.5                 # PDF generation for report downloads
 python-magic==0.4.27             # File type detection by content
 zipfile36==0.1.3                 # Zip file handling
 patool==2.3.0                    # Universal archive unpacker
+cloudinary>=1.40.0               # Cloud storage for project files and assets
 
 # ------------------------------------------------------------------------------
 # HTTP & Networking

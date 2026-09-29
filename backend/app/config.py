@@ -2,14 +2,20 @@
 Application configuration - reads from environment variables using pydantic-settings.
 """
 from functools import lru_cache
-from typing import List
+from typing import List, Optional
 
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
+from pathlib import Path
+
+BASE_DIR = Path(__file__).resolve().parent.parent
+ENV_FILE = str(BASE_DIR / ".env")
+
+
 class Settings(BaseSettings):
     model_config = SettingsConfigDict(
-        env_file=".env",
+        env_file=ENV_FILE,
         env_file_encoding="utf-8",
         case_sensitive=False,
         extra="ignore",
@@ -88,6 +94,13 @@ class Settings(BaseSettings):
     ALLOWED_EXTENSIONS: str = "pdf,docx,py,java,cpp,c,js,ts,zip"
     UPLOAD_DIR: str = "./uploads"
     TEMP_DIR: str = "./uploads/temp"
+
+    # Cloudinary Cloud Storage
+    CLOUDINARY_CLOUD_NAME: Optional[str] = None
+    CLOUDINARY_API_KEY: Optional[str] = None
+    CLOUDINARY_API_SECRET: Optional[str] = None
+    CLOUDINARY_SECURE: bool = True
+    CLOUDINARY_FOLDER_PREFIX: str = "aspes"
 
     # CORS
     ALLOWED_ORIGINS: List[str] = ["http://localhost:3000", "http://localhost:5173"]

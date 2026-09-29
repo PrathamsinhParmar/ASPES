@@ -267,16 +267,11 @@ async def upload_faculty_photo(
     if ext not in allowed_extensions:
         raise HTTPException(status_code=400, detail="Unsupported file format (only jpg, jpeg, png, gif allowed).")
     
-    # Save file
-    filename = f"{user_id}{ext}"
-    faculty_dir = Path(settings.UPLOAD_DIR) / "faculty"
-    faculty_dir.mkdir(parents=True, exist_ok=True)
-    file_path = faculty_dir / filename
-
-    with open(file_path, "wb") as buffer:
-        shutil.copyfileobj(file.file, buffer)
-
-    faculty.profile_photo = f"/uploads/faculty/{filename}"
+    # Save photo using FileService (Cloudinary if configured, local disk as fallback)
+    from app.services.file_service import FileService
+    fs = FileService()
+    saved_url = await fs.save_file(file, subfolder="faculty")
+    faculty.profile_photo = saved_url
     await db.commit()
     await db.refresh(faculty)
     return faculty
@@ -291,7 +286,6 @@ async def remove_faculty_photo(
     """
     Remove a profile photo for a faculty member.
     """
-    from app.config import settings
     if current_user.role != UserRole.ADMIN:
         raise HTTPException(status_code=403, detail="Admin access required")
 
@@ -301,13 +295,9 @@ async def remove_faculty_photo(
         raise HTTPException(status_code=404, detail="Faculty member not found")
 
     if faculty.profile_photo:
-        try:
-            relative_path = faculty.profile_photo.replace("/uploads/", "", 1)
-            file_path = Path(settings.UPLOAD_DIR) / relative_path
-            if file_path.exists():
-                file_path.unlink()
-        except Exception:
-            pass # ignore deletion errors
+        from app.services.file_service import FileService
+        fs = FileService()
+        fs.delete_file(faculty.profile_photo)
 
         faculty.profile_photo = None
         await db.commit()

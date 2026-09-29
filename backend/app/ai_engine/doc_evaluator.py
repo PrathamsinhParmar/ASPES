@@ -98,6 +98,29 @@ class DocumentationEvaluator:
     # ------------------------------------------------------------------
     def _extract_text(self, file_path: str) -> str:
         """Route to the correct parser based on file extension."""
+        # Handle remote Cloudinary URLs
+        if file_path.startswith("http://") or file_path.startswith("https://"):
+            try:
+                import urllib.request
+                import tempfile
+                clean_url = file_path.split("?")[0]
+                ext = Path(clean_url).suffix or ".pdf"
+                with tempfile.NamedTemporaryFile(delete=False, suffix=ext) as tf:
+                    temp_name = tf.name
+                    with urllib.request.urlopen(file_path, timeout=30) as response:
+                        tf.write(response.read())
+                try:
+                    return self._extract_text(temp_name)
+                finally:
+                    if os.path.exists(temp_name):
+                        try:
+                            os.unlink(temp_name)
+                        except Exception:
+                            pass
+            except Exception as e:
+                logger.error(f"Failed to fetch remote document from {file_path}: {e}")
+                return ""
+
         path = Path(file_path)
         suffix = path.suffix.lower()
 

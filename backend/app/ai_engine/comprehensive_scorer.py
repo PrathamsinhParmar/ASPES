@@ -268,6 +268,30 @@ class EnhancedProjectEvaluator:
         """
         if not file_path:
             return ""
+
+        # Handle remote Cloudinary URLs
+        if file_path.startswith("http://") or file_path.startswith("https://"):
+            try:
+                import urllib.request
+                import tempfile
+                clean_url = file_path.split("?")[0]
+                ext = os.path.splitext(clean_url)[1].lower() or ".zip"
+                with tempfile.NamedTemporaryFile(delete=False, suffix=ext) as tf:
+                    temp_name = tf.name
+                    with urllib.request.urlopen(file_path, timeout=30) as response:
+                        tf.write(response.read())
+                try:
+                    return cls.extract_code_from_path(temp_name, max_chars=max_chars)
+                finally:
+                    if os.path.exists(temp_name):
+                        try:
+                            os.unlink(temp_name)
+                        except Exception:
+                            pass
+            except Exception as remote_err:
+                logger.warning(f"Failed to fetch remote code from {file_path}: {remote_err}")
+                return ""
+
         if not os.path.isabs(file_path):
             candidate = os.path.join(os.getcwd(), file_path)
             if os.path.exists(candidate):
@@ -367,6 +391,21 @@ class EnhancedProjectEvaluator:
         
         code_path = project_data.get('code_file_path', '')
         
+        # If code_path is a remote URL, download it to a temporary file for analysis
+        _temp_remote_code_file = None
+        if code_path and (code_path.startswith("http://") or code_path.startswith("https://")):
+            try:
+                import urllib.request
+                clean_url = code_path.split("?")[0]
+                ext = os.path.splitext(clean_url)[1].lower() or ".zip"
+                with tempfile.NamedTemporaryFile(delete=False, suffix=ext) as tf:
+                    _temp_remote_code_file = tf.name
+                    with urllib.request.urlopen(code_path, timeout=60) as resp:
+                        tf.write(resp.read())
+                code_path = _temp_remote_code_file
+            except Exception as err:
+                logger.warning(f"Failed to fetch remote code archive {code_path}: {err}")
+
         # Pre-load ML models on the main thread safely to prevent race conditions during parallel execution
         try:
             from app.ai_engine.ai_code_detector import _get_ml_model
@@ -500,10 +539,15 @@ class EnhancedProjectEvaluator:
                 logger.error(f"Alignment analysis failed: {e}")
                 results['alignment'] = {}
 
-        # 4. Cleanup temp extraction directory
+        # 4. Cleanup temp extraction directory and remote temp code file
         if _temp_extract_dir:
             try:
                 shutil.rmtree(_temp_extract_dir, ignore_errors=True)
+            except Exception:
+                pass
+        if _temp_remote_code_file and os.path.exists(_temp_remote_code_file):
+            try:
+                os.unlink(_temp_remote_code_file)
             except Exception:
                 pass
 

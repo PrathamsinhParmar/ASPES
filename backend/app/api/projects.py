@@ -497,10 +497,16 @@ async def download_evaluation_file(
     if not (is_owner or is_faculty):
         raise HTTPException(status_code=403, detail="Not authorized to access this evaluation document")
 
-    if not project.evaluation or not project.evaluation.evaluation_file_url:
+    eval_url = project.evaluation.evaluation_file_url
+    if not eval_url:
         raise HTTPException(status_code=404, detail="No evaluation file attached to this project")
 
-    file_path = Path(project.evaluation.evaluation_file_url)
+    # If file is stored on Cloudinary CDN, redirect directly to secure URL
+    if eval_url.startswith("http://") or eval_url.startswith("https://"):
+        from fastapi.responses import RedirectResponse
+        return RedirectResponse(url=eval_url)
+
+    file_path = Path(eval_url)
     if not file_path.exists():
         # Check relative to base upload folder
         fallback_path = Path(settings.UPLOAD_DIR) / "evaluation_files" / file_path.name

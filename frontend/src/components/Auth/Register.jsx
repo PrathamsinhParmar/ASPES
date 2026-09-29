@@ -752,7 +752,7 @@ const Register = () => {
                   <Loader2 className="animate-spin h-4 w-4" />
                 ) : (
                   <>
-                    <span>Create Account</span>
+                    <span>Create Student Account</span>
                     <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
                   </>
                 )}

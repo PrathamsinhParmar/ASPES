@@ -19,10 +19,19 @@ ALLOWED_DOC_EXTENSIONS = {".pdf", ".md", ".txt", ".docx"}
 MAX_FILE_SIZE = settings.MAX_UPLOAD_SIZE
 
 
+from app.services.cloudinary_service import CloudinaryService
+
 class FileService:
     def __init__(self):
         self.upload_dir = Path(settings.UPLOAD_DIR)
         self.upload_dir.mkdir(parents=True, exist_ok=True)
+        self.temp_dir = Path(settings.TEMP_DIR)
+        self.temp_dir.mkdir(parents=True, exist_ok=True)
+        self.cloudinary = CloudinaryService()
+
+    def is_cloud_enabled(self) -> bool:
+        """Returns True if Cloudinary is configured and active."""
+        return self.cloudinary.is_configured()
 
     def validate_file(self, file: UploadFile, allowed_extensions: set) -> None:
         """
@@ -40,22 +49,24 @@ class FileService:
                 detail=f"Invalid file type. Allowed: {allowed_extensions}"
             )
 
-        # Size check will occur as we read it during write, but we can do a preliminary check if needed.
-        # MIME type validation is skipped for simplicity, but could be added using python-magic.
-
     async def save_file(self, file: UploadFile, subfolder: str) -> str:
         """
-        Creates subfolder if needed, generates a unique name, saves file,
-        and returns the full file path.
+        Saves file to Cloudinary if configured; otherwise saves to local filesystem.
+        Returns the public URL (Cloudinary) or local file path string.
         """
+        # If Cloudinary is configured, upload directly to cloud
+        if self.cloudinary.is_configured():
+            res = await self.cloudinary.upload_file(file, subfolder=subfolder)
+            return res["url"]
+
+        # Local storage fallback
         target_dir = self.upload_dir / subfolder
         target_dir.mkdir(parents=True, exist_ok=True)
 
         original_ext = Path(file.filename).suffix.lower() if file.filename else ""
         unique_name = f"{uuid.uuid4().hex}{original_ext}"
-        
         target_path = target_dir / unique_name
-        
+
         # Save file asynchronously
         bytes_written = 0
         async with aiofiles.open(target_path, "wb") as f:
@@ -69,7 +80,6 @@ class FileService:
                     )
                 await f.write(chunk)
 
-        # Reset file pointer if needed by caller later
         try:
             await file.seek(0)
         except Exception:
@@ -80,7 +90,7 @@ class FileService:
     async def save_project_files(self, code_file: UploadFile, doc_file: UploadFile) -> Tuple[str, str]:
         """
         Validates and saves both the code file and the document file.
-        Returns a tuple of their saved file paths.
+        Returns a tuple of their saved file paths or Cloudinary URLs.
         """
         self.validate_file(code_file, ALLOWED_CODE_EXTENSIONS)
         self.validate_file(doc_file, ALLOWED_DOC_EXTENSIONS)
@@ -88,19 +98,33 @@ class FileService:
         # Use a single subfolder for both files related to this upload session
         session_id = uuid.uuid4().hex
         
-        code_path = await self.save_file(code_file, subfolder=session_id)
-        doc_path = await self.save_file(doc_file, subfolder=session_id)
+        code_path = await self.save_file(code_file, subfolder=f"projects/{session_id}")
+        doc_path = await self.save_file(doc_file, subfolder=f"projects/{session_id}")
         
         return code_path, doc_path
 
-    def delete_file(self, file_path: str) -> bool:
+    async def ensure_local_copy(self, file_path_or_url: str, suffix: str = "") -> str:
         """
-        Deletes a file from disk if it exists.
-        Returns True on success, False if file doesn't exist.
+        Ensures a local file copy exists on disk for processing by the AI engine.
+        If file_path_or_url is a remote Cloudinary URL, downloads it to temp.
+        If it's already a local file, returns the local path.
         """
-        path = Path(file_path)
-        
-        # Prevent path traversal attacks
+        return await CloudinaryService.download_to_temp(file_path_or_url, suffix=suffix)
+
+    def delete_file(self, file_path_or_url: str) -> bool:
+        """
+        Deletes a file from Cloudinary (if remote URL) or from disk (if local).
+        Returns True on success, False otherwise.
+        """
+        if not file_path_or_url:
+            return False
+
+        # If Cloudinary URL, destroy via Cloudinary API
+        if file_path_or_url.startswith("http://") or file_path_or_url.startswith("https://"):
+            return self.cloudinary.delete_file(file_path_or_url)
+
+        # Local filesystem deletion
+        path = Path(file_path_or_url)
         try:
             path.relative_to(self.upload_dir)
         except ValueError:
@@ -109,7 +133,6 @@ class FileService:
         if path.exists():
             try:
                 path.unlink()
-                # Optionally delete empty parent directory via path.parent.rmdir()
                 return True
             except OSError:
                 return False

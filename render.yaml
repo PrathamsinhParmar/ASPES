@@ -1,0 +1,47 @@
+# Render Blueprint for ASPES (AI Smart Academic Project Evaluation System)
+# Docs: https://render.com/docs/blueprint-spec
+
+services:
+  - type: web
+    name: aspes-backend
+    env: python
+    rootDir: backend
+    buildCommand: bash build.sh
+    startCommand: uvicorn app.main:app --host 0.0.0.0 --port $PORT
+    plan: free
+    healthCheckPath: /api/docs
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.11.9
+      - key: ENVIRONMENT
+        value: production
+      - key: DEBUG
+        value: "False"
+      - key: SECRET_KEY
+        generateValue: true
+      - key: ALGORITHM
+        value: HS256
+      - key: ACCESS_TOKEN_EXPIRE_MINUTES
+        value: "30"
+      - key: REFRESH_TOKEN_EXPIRE_DAYS
+        value: "7"
+      - key: DATABASE_URL
+        fromDatabase:
+          name: aspes-postgres
+          property: connectionString
+      - key: ALLOWED_ORIGINS
+        value: "http://localhost:3000,http://localhost:5173"
+      - key: CLOUDINARY_CLOUD_NAME
+        sync: false
+      - key: CLOUDINARY_API_KEY
+        sync: false
+      - key: CLOUDINARY_API_SECRET
+        sync: false
+      - key: GEMINI_API_KEY
+        sync: false
+
+databases:
+  - name: aspes-postgres
+    databaseName: aspes_db
+    user: aspes_user
+    plan: free

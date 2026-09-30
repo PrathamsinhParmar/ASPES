@@ -10,9 +10,15 @@ from app.config import settings
 # ── URL normalisation ──────────────────────────────────────────────────────
 DATABASE_URL = settings.DATABASE_URL
 
-# postgresql:// → postgresql+asyncpg://
-if DATABASE_URL.startswith("postgresql://"):
+# URL normalisation for SQLAlchemy asyncpg
+if DATABASE_URL.startswith("postgres://"):
+    DATABASE_URL = DATABASE_URL.replace("postgres://", "postgresql+asyncpg://", 1)
+elif DATABASE_URL.startswith("postgresql://"):
     DATABASE_URL = DATABASE_URL.replace("postgresql://", "postgresql+asyncpg://", 1)
+
+# asyncpg expects ?ssl= rather than ?sslmode=
+if "sslmode=" in DATABASE_URL:
+    DATABASE_URL = DATABASE_URL.replace("sslmode=", "ssl=")
 
 # ── Engine kwargs differ between SQLite and PostgreSQL ────────────────────
 IS_SQLITE = DATABASE_URL.startswith("sqlite")

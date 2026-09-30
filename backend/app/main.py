@@ -124,9 +124,30 @@ app.mount("/uploads", SafeStaticFiles(directory=settings.UPLOAD_DIR), name="uplo
 # ---------------------------------------------------------------------------
 # Middleware & CORS
 # ---------------------------------------------------------------------------
+# Configure CORS origins dynamically
+cors_origins = (
+    list(settings.ALLOWED_ORIGINS)
+    if isinstance(settings.ALLOWED_ORIGINS, list)
+    else [o.strip() for o in str(settings.ALLOWED_ORIGINS).split(",") if o.strip()]
+)
+for dev_origin in [
+    "http://localhost:3000",
+    "http://localhost:3001",
+    "http://localhost:5173",
+    "http://127.0.0.1:3000",
+    "http://127.0.0.1:3001",
+    "http://127.0.0.1:5173",
+]:
+    if dev_origin not in cors_origins:
+        cors_origins.append(dev_origin)
+
+if settings.FRONTEND_URL and settings.FRONTEND_URL not in cors_origins:
+    cors_origins.append(settings.FRONTEND_URL.rstrip("/"))
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:3000", "http://localhost:3001", "http://localhost:5173", "http://127.0.0.1:3000", "http://127.0.0.1:3001"],
+    allow_origins=cors_origins,
+    allow_origin_regex=r"^https:\/\/.*\.vercel\.app$",
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],

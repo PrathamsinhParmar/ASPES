@@ -89,24 +89,78 @@ class FeedbackGenerator:
         logger.info("%s Starting feedback generation", log_prefix)
         metrics = metrics or {}
 
-        # 1. Basic size validation before extraction
-        code_zip_path = Path(code_zip)
-        report_path = Path(report_file)
-
-        if code_zip_path.exists() and code_zip_path.stat().st_size > self.max_zip_bytes:
-            logger.warning(
-                "%s Zip exceeds max size: %d bytes", log_prefix, code_zip_path.stat().st_size
-            )
-            # We don't hard crash here, safe_extract_zip has a separate uncompressed check,
-            # but we can log heavily.
-
-        if report_path.exists() and report_path.stat().st_size > self.max_report_bytes:
-            logger.warning(
-                "%s Report exceeds max size: %d bytes", log_prefix, report_path.stat().st_size
-            )
-
         with TemporaryDirectory(prefix="aspes_feedback_") as tmpdir:
             tmp_path = Path(tmpdir)
+            code_zip_path = Path(code_zip)
+            report_path = Path(report_file)
+
+            # If code_zip is a remote URL (e.g. Cloudinary), fetch it locally first
+            clean_code_str = str(code_zip).replace("\\", "/")
+            if clean_code_str.startswith("https:/") and not clean_code_str.startswith("https://"):
+                clean_code_str = "https://" + clean_code_str[7:].lstrip("/")
+            elif clean_code_str.startswith("http:/") and not clean_code_str.startswith("http://"):
+                clean_code_str = "http://" + clean_code_str[6:].lstrip("/")
+
+            if clean_code_str.startswith(("http://", "https://")):
+                local_code = tmp_path / "remote_code.zip"
+                try:
+                    import urllib.request
+                    fetch_url = clean_code_str
+                    try:
+                        from app.services.cloudinary_service import CloudinaryService
+                        cs = CloudinaryService()
+                        if cs.is_configured() and "cloudinary.com" in clean_code_str:
+                            fetch_url = cs.get_download_url(clean_code_str, attachment=False)
+                    except Exception:
+                        pass
+                    req = urllib.request.Request(fetch_url, headers={"User-Agent": "ASPES-AI/1.0"})
+                    with urllib.request.urlopen(req, timeout=60) as resp:
+                        local_code.write_bytes(resp.read())
+                    code_zip_path = local_code
+                    logger.info("%s Downloaded remote code archive (%d bytes)", log_prefix, local_code.stat().st_size)
+                except Exception as dl_err:
+                    logger.warning("%s Failed to download remote code archive: %s", log_prefix, dl_err)
+
+            # If report_file is a remote URL (e.g. Cloudinary), fetch it locally first
+            clean_report_str = str(report_file).replace("\\", "/")
+            if clean_report_str.startswith("https:/") and not clean_report_str.startswith("https://"):
+                clean_report_str = "https://" + clean_report_str[7:].lstrip("/")
+            elif clean_report_str.startswith("http:/") and not clean_report_str.startswith("http://"):
+                clean_report_str = "http://" + clean_report_str[6:].lstrip("/")
+
+            if clean_report_str.startswith(("http://", "https://")):
+                clean_url = clean_report_str.split("?")[0]
+                import os
+                ext = os.path.splitext(clean_url)[1].lower() or ".pdf"
+                local_report = tmp_path / f"remote_report{ext}"
+                try:
+                    import urllib.request
+                    fetch_url = clean_report_str
+                    try:
+                        from app.services.cloudinary_service import CloudinaryService
+                        cs = CloudinaryService()
+                        if cs.is_configured() and "cloudinary.com" in clean_report_str:
+                            fetch_url = cs.get_download_url(clean_report_str, attachment=False)
+                    except Exception:
+                        pass
+                    req = urllib.request.Request(fetch_url, headers={"User-Agent": "ASPES-AI/1.0"})
+                    with urllib.request.urlopen(req, timeout=60) as resp:
+                        local_report.write_bytes(resp.read())
+                    report_path = local_report
+                    logger.info("%s Downloaded remote report (%d bytes)", log_prefix, local_report.stat().st_size)
+                except Exception as dl_err:
+                    logger.warning("%s Failed to download remote report: %s", log_prefix, dl_err)
+
+            # 1. Basic size validation before extraction
+            if code_zip_path.exists() and code_zip_path.stat().st_size > self.max_zip_bytes:
+                logger.warning(
+                    "%s Zip exceeds max size: %d bytes", log_prefix, code_zip_path.stat().st_size
+                )
+
+            if report_path.exists() and report_path.stat().st_size > self.max_report_bytes:
+                logger.warning(
+                    "%s Report exceeds max size: %d bytes", log_prefix, report_path.stat().st_size
+                )
 
             # 2. Extract content safely
             logger.debug("%s Extracting zip and report", log_prefix)

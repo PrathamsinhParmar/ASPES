@@ -106,6 +106,10 @@ async def upload_project(
     return new_project
 
 
+# In-memory tracking of actively running evaluation tasks to prevent duplicate concurrent runs
+_ACTIVE_EVALUATION_TASKS = set()
+
+
 async def _run_evaluation_inline(project_id: str, evaluation_id: str):
     """
     Runs the full AI evaluation pipeline inline (no Celery needed).
@@ -116,6 +120,7 @@ async def _run_evaluation_inline(project_id: str, evaluation_id: str):
     from datetime import datetime
 
     logger = logging.getLogger("aspes.evaluation")
+    _ACTIVE_EVALUATION_TASKS.add(evaluation_id)
 
     # Lazy imports to avoid circular dependency at module load time
     from app.database.connection import AsyncSessionLocal
@@ -243,6 +248,8 @@ async def _run_evaluation_inline(project_id: str, evaluation_id: str):
                 await db.commit()
         except Exception as inner_e:
             logger.error(f"[Inline Eval] Could not update failure status: {inner_e}")
+    finally:
+        _ACTIVE_EVALUATION_TASKS.discard(evaluation_id)
 
 
 
@@ -360,6 +367,13 @@ async def get_project_details(
     # Convert ORM to Pydantic model so FastAPI serialization succeeds
     from app.schemas.project import ProjectWithEvaluation
     
+    # Auto-resume interrupted evaluation if it was stuck in PROCESSING
+    if project.evaluation and project.evaluation.status == EvaluationStatus.PROCESSING:
+        eval_id_str = str(project.evaluation.id)
+        if eval_id_str not in _ACTIVE_EVALUATION_TASKS:
+            logger.info(f"Auto-resuming orphaned in-progress evaluation {eval_id_str} for project {project.id}")
+            asyncio.create_task(_run_evaluation_inline(str(project.id), eval_id_str))
+
     # Detach cyclic relationship if present to prevent jsonable_encoder from crashing
     if project.evaluation:
         # Pydantic validation handles the ORM object, but we overwrite the nested project with None

@@ -24,6 +24,7 @@ export const NotificationProvider = ({ children }) => {
   const wsRef = useRef(null);
   const reconnectTimeoutRef = useRef(null);
   const pollIntervalRef = useRef(null);
+  const retryCountRef = useRef(0);
 
   // Derive WebSocket URL from API base URL or window.location
   const getWsUrl = useCallback(() => {
@@ -76,6 +77,7 @@ export const NotificationProvider = ({ children }) => {
 
       ws.onopen = () => {
         setIsConnected(true);
+        retryCountRef.current = 0;
         // Send ping every 30s to keep connection alive
         const pingInterval = setInterval(() => {
           if (ws.readyState === WebSocket.OPEN) {
@@ -130,15 +132,19 @@ export const NotificationProvider = ({ children }) => {
       ws.onclose = () => {
         setIsConnected(false);
         wsRef.current = null;
-        // Reconnect after 4s
+        // Reconnect with exponential backoff (4s, 8s, 16s, up to 30s)
+        const delay = Math.min(30000, 4000 * Math.pow(1.5, retryCountRef.current || 0));
+        retryCountRef.current = (retryCountRef.current || 0) + 1;
         reconnectTimeoutRef.current = setTimeout(() => {
           connectWs();
-        }, 4000);
+        }, delay);
       };
 
       ws.onerror = (err) => {
-        console.warn('Notification WS Error, falling back to polling:', err);
-        ws.close();
+        // Log once gracefully and rely on onclose for backoff reconnect
+        if ((retryCountRef.current || 0) <= 1) {
+          console.warn('Notification WS Error, falling back to polling:', err);
+        }
       };
     } catch (e) {
       console.warn('Failed to open WS:', e);

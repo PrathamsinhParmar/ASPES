@@ -2,9 +2,12 @@
 API Router - Notifications System
 Handles live WebSocket subscription, CRUD notifications, Admin Broadcasts, and Audit Logs.
 """
+import logging
 import uuid
 from datetime import datetime, timezone
 from typing import List, Optional
+
+logger = logging.getLogger(__name__)
 
 from fastapi import (
     APIRouter,
@@ -66,29 +69,47 @@ async def notification_websocket(websocket: WebSocket, token: Optional[str] = Qu
         await websocket.close(code=status.WS_1008_POLICY_VIOLATION)
         return
 
-    # Authenticate token and extract user
-    user_id_str = verify_token(token)
-    if not user_id_str:
-        await websocket.close(code=status.WS_1008_POLICY_VIOLATION)
+    # Authenticate token and extract user ID from payload dict
+    try:
+        payload = verify_token(token)
+        user_id_str = payload.get("sub")
+        if not user_id_str:
+            await websocket.close(code=status.WS_1008_POLICY_VIOLATION)
+            return
+        user_id = uuid.UUID(str(user_id_str))
+    except Exception as auth_err:
+        logger.warning(f"WebSocket auth failed: {auth_err}")
+        try:
+            await websocket.close(code=status.WS_1008_POLICY_VIOLATION)
+        except Exception:
+            pass
         return
 
     # Fetch user from database to verify role
-    async with AsyncSessionLocal() as db:
-        res = await db.execute(select(User).where(User.id == uuid.UUID(user_id_str)))
-        user = res.scalar_one_or_none()
-        if not user or not user.is_active:
-            await websocket.close(code=status.WS_1008_POLICY_VIOLATION)
-            return
-        user_role = user.role.value
-        user_name = user.full_name
+    try:
+        async with AsyncSessionLocal() as db:
+            res = await db.execute(select(User).where(User.id == user_id))
+            user = res.scalar_one_or_none()
+            if not user or not user.is_active:
+                await websocket.close(code=status.WS_1008_POLICY_VIOLATION)
+                return
+            user_role = user.role.value
+            user_name = user.full_name or user.username
+    except Exception as db_err:
+        logger.error(f"WebSocket DB user lookup error: {db_err}")
+        try:
+            await websocket.close(code=status.WS_1011_INTERNAL_ERROR)
+        except Exception:
+            pass
+        return
 
-    await manager.connect(user_id_str, user_role, websocket)
+    await manager.connect(str(user_id), user_role, websocket)
 
     # Send welcome acknowledgment with unread count
     try:
         async with AsyncSessionLocal() as db:
             unread_stmt = select(func.count(Notification.id)).where(
-                Notification.recipient_id == uuid.UUID(user_id_str),
+                Notification.recipient_id == user_id,
                 Notification.is_read == False,
                 Notification.is_archived == False,
             )
@@ -106,9 +127,10 @@ async def notification_websocket(websocket: WebSocket, token: Optional[str] = Qu
             if data == "ping":
                 await websocket.send_text("pong")
     except WebSocketDisconnect:
-        manager.disconnect(user_id_str, websocket)
-    except Exception:
-        manager.disconnect(user_id_str, websocket)
+        manager.disconnect(str(user_id), websocket)
+    except Exception as ws_err:
+        logger.info(f"WebSocket connection closed: {ws_err}")
+        manager.disconnect(str(user_id), websocket)
 
 
 # ---------------------------------------------------------------------------

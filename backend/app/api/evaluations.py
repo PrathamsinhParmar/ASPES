@@ -227,11 +227,12 @@ async def finalize_evaluation(
 @router.post("/{evaluation_id}/reprocess")
 async def reprocess_evaluation(
     evaluation_id: uuid.UUID,
-    current_user: User = Depends(require_role(UserRole.ADMIN)),
+    current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db)
 ):
     """
-    Reset evaluation and re-trigger async analysis (Admin only).
+    Reset evaluation and re-trigger analysis.
+    Allowed for the project owner, assigned faculty, or admin.
     """
     stmt = select(Evaluation).options(selectinload(Evaluation.project)).where(Evaluation.id == evaluation_id)
     result = await db.execute(stmt)
@@ -240,6 +241,9 @@ async def reprocess_evaluation(
     if not evaluation:
         raise HTTPException(status_code=404, detail="Evaluation not found")
         
+    if current_user.role == UserRole.STUDENT and evaluation.project.owner_id != current_user.id:
+        raise HTTPException(status_code=403, detail="Not authorized to reprocess this evaluation")
+        
     # Reset
     evaluation.status = EvaluationStatus.PENDING
     evaluation.is_finalized = False
@@ -247,10 +251,13 @@ async def reprocess_evaluation(
     
     await db.commit()
     
-    # Re-trigger Task
-    task = evaluate_project_async.delay(str(evaluation.project_id))
+    # Re-trigger Evaluation inline (resilient across environments with or without Celery/Redis)
+    import asyncio
+    from app.api.projects import _run_evaluation_inline
+    asyncio.create_task(_run_evaluation_inline(str(evaluation.project_id), str(evaluation.id)))
     
     return {
         "detail": "Reprocessing triggered successfully",
-        "task_id": task.id
+        "evaluation_id": str(evaluation.id),
+        "status": "pending"
     }

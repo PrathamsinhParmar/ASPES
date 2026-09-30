@@ -63,6 +63,25 @@ async def lifespan(app: FastAPI):
     except Exception as e:
         logger.warning(f"Seeding note: {e}")
 
+    # 3. Auto-recover any orphaned evaluations stuck in 'processing' from server restarts
+    try:
+        from app.database.connection import AsyncSessionLocal
+        from app.models.evaluation import Evaluation, EvaluationStatus
+        from sqlalchemy import select
+        import asyncio
+
+        async with AsyncSessionLocal() as db:
+            stuck_evals = (await db.execute(
+                select(Evaluation).where(Evaluation.status == EvaluationStatus.PROCESSING)
+            )).scalars().all()
+
+            for ev in stuck_evals:
+                logger.info(f"🔄 Recovering orphaned evaluation {ev.id} for project {ev.project_id}")
+                from app.api.projects import _run_evaluation_inline
+                asyncio.create_task(_run_evaluation_inline(str(ev.project_id), str(ev.id)))
+    except Exception as recover_err:
+        logger.warning(f"Orphaned evaluation recovery note: {recover_err}")
+
     logger.info(f"CORS Allowed Origins ({type(settings.ALLOWED_ORIGINS)}): {settings.ALLOWED_ORIGINS}")
 
     # Most heavy work is in Celery. Loading models in API can cause slow startup and high memory.

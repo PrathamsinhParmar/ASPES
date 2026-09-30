@@ -50,6 +50,16 @@ from app.config import settings
 
 logger = logging.getLogger(__name__)
 
+# Ensure aiohttp compatibility with google-genai SDK across different aiohttp versions
+try:
+    import aiohttp
+    if not hasattr(aiohttp, "ClientConnectorDNSError"):
+        class _ClientConnectorDNSError(aiohttp.ClientConnectorError):
+            pass
+        aiohttp.ClientConnectorDNSError = _ClientConnectorDNSError
+except Exception:
+    pass
+
 # ---------------------------------------------------------------------------
 # Lazy Redis client (shared across rate limiter + daily-counter)
 # ---------------------------------------------------------------------------

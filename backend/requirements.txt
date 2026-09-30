@@ -12,6 +12,7 @@ uvicorn[standard]==0.30.1        # ASGI server with websocket + http2 support
 httpx==0.27.0                    # Async HTTP client (testing + outbound requests)
 python-multipart==0.0.9          # For form data / file uploads
 aiofiles==23.2.1                 # Async file I/O
+aiohttp>=3.10.0                  # Async HTTP client for google-genai SDK
 
 # ------------------------------------------------------------------------------
 # Data Validation & Settings

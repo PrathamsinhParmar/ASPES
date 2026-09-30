@@ -1,9 +1,11 @@
 """
 Application configuration - reads from environment variables using pydantic-settings.
 """
+import json
 from functools import lru_cache
-from typing import List, Optional
+from typing import List, Optional, Union
 
+from pydantic import field_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
@@ -103,7 +105,24 @@ class Settings(BaseSettings):
     CLOUDINARY_FOLDER_PREFIX: str = "aspes"
 
     # CORS
-    ALLOWED_ORIGINS: List[str] = ["http://localhost:3000", "http://localhost:5173"]
+    ALLOWED_ORIGINS: Union[List[str], str] = ["http://localhost:3000", "http://localhost:5173"]
+
+    @field_validator("ALLOWED_ORIGINS", mode="after")
+    @classmethod
+    def assemble_cors_origins(cls, v: Union[str, List[str]]) -> List[str]:
+        if isinstance(v, str):
+            clean_val = v.strip()
+            if clean_val.startswith("[") and clean_val.endswith("]"):
+                try:
+                    loaded = json.loads(clean_val)
+                    if isinstance(loaded, list):
+                        return [str(x).strip() for x in loaded if str(x).strip()]
+                except Exception:
+                    pass
+            return [x.strip() for x in clean_val.split(",") if x.strip()]
+        elif isinstance(v, list):
+            return [str(x).strip() for x in v if str(x).strip()]
+        return ["http://localhost:3000", "http://localhost:5173"]
 
     # Email
     SMTP_HOST: str = "smtp.gmail.com"

@@ -33,25 +33,36 @@ async def lifespan(app: FastAPI):
     Path(settings.TEMP_DIR).mkdir(parents=True, exist_ok=True)
 
     # 1. Database Setup
+    import app.models  # Registers all models (User, Project, etc.) in Base.metadata
     async with engine.begin() as conn:
-        # In production, use alembic upgrade head
-        # For dev, we ensure tables exist
         await conn.run_sync(Base.metadata.create_all)
-        def migrate_sqlite_columns(sync_conn):
-            try:
-                cursor = sync_conn.connection.cursor()
-                cursor.execute("PRAGMA table_info(evaluations)")
-                existing_cols = [row[1] for row in cursor.fetchall()]
-                if "evaluation_file_url" not in existing_cols:
-                    cursor.execute("ALTER TABLE evaluations ADD COLUMN evaluation_file_url VARCHAR(1024)")
-                if "evaluation_file_name" not in existing_cols:
-                    cursor.execute("ALTER TABLE evaluations ADD COLUMN evaluation_file_name VARCHAR(255)")
-                if "status_label" not in existing_cols:
-                    cursor.execute("ALTER TABLE evaluations ADD COLUMN status_label VARCHAR(100)")
-            except Exception as e:
-                logger.warning(f"Column migration check note: {e}")
-        await conn.run_sync(migrate_sqlite_columns)
+        
+        from app.database.connection import IS_SQLITE
+        if IS_SQLITE:
+            def migrate_sqlite_columns(sync_conn):
+                try:
+                    cursor = sync_conn.connection.cursor()
+                    cursor.execute("PRAGMA table_info(evaluations)")
+                    existing_cols = [row[1] for row in cursor.fetchall()]
+                    if "evaluation_file_url" not in existing_cols:
+                        cursor.execute("ALTER TABLE evaluations ADD COLUMN evaluation_file_url VARCHAR(1024)")
+                    if "evaluation_file_name" not in existing_cols:
+                        cursor.execute("ALTER TABLE evaluations ADD COLUMN evaluation_file_name VARCHAR(255)")
+                    if "status_label" not in existing_cols:
+                        cursor.execute("ALTER TABLE evaluations ADD COLUMN status_label VARCHAR(100)")
+                except Exception as e:
+                    logger.warning(f"Column migration check note: {e}")
+            await conn.run_sync(migrate_sqlite_columns)
     logger.info("✅ Database tables synced")
+
+    # 2. Seed initial admin and faculty users if not present
+    try:
+        from app.seed_data import seed_data
+        await seed_data()
+        logger.info("✅ Database default seed verified")
+    except Exception as e:
+        logger.warning(f"Seeding note: {e}")
+
     logger.info(f"CORS Allowed Origins ({type(settings.ALLOWED_ORIGINS)}): {settings.ALLOWED_ORIGINS}")
 
     # Most heavy work is in Celery. Loading models in API can cause slow startup and high memory.
@@ -166,12 +177,24 @@ async def log_requests(request: Request, call_next):
 # ---------------------------------------------------------------------------
 # Exception Handlers
 # ---------------------------------------------------------------------------
+def _get_cors_headers(request: Request) -> dict:
+    origin = request.headers.get("origin")
+    if origin and ("vercel.app" in origin or "localhost" in origin or origin in cors_origins):
+        return {
+            "Access-Control-Allow-Origin": origin,
+            "Access-Control-Allow-Credentials": "true",
+            "Access-Control-Allow-Headers": "*",
+            "Access-Control-Allow-Methods": "*",
+        }
+    return {}
+
 @app.exception_handler(Exception)
 async def global_exception_handler(request: Request, exc: Exception):
     logger.error(f"Global Error: {str(exc)}", exc_info=True)
     return JSONResponse(
         status_code=500,
         content={"detail": "An internal server error occurred. Please contact support."},
+        headers=_get_cors_headers(request),
     )
 
 from fastapi.exceptions import RequestValidationError
@@ -181,6 +204,7 @@ async def validation_exception_handler(request: Request, exc: RequestValidationE
     return JSONResponse(
         status_code=400,
         content={"detail": "Validation Error", "errors": exc.errors()},
+        headers=_get_cors_headers(request),
     )
 
 # ---------------------------------------------------------------------------

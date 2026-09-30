@@ -26,13 +26,24 @@ import {
   CheckBadgeIcon,
   AcademicCapIcon,
   SparklesIcon,
-  ClockIcon
+  ClockIcon,
+  DocumentDuplicateIcon
 } from '@heroicons/react/24/outline';
+import ReactMarkdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
 import { format } from 'date-fns';
 import { toast } from 'react-toastify';
 import ReportModal from '../components/Report/ReportModal';
 import { formatLanguageName, formatStatus } from '../utils/languageFormatter';
 import { getVerdictTagConfig } from '../components/Dashboard/FacultyDashboard';
+import { 
+  getFileUrl, 
+  getFileExtension, 
+  isMarkdownFile, 
+  isPdfFile, 
+  isWordFile, 
+  isTextFile 
+} from '../utils/fileUrl';
 
 const POLL_INTERVAL_MS = 3000; // Poll every 3 seconds
 
@@ -47,6 +58,10 @@ const ProjectDetailPage = () => {
   const { user } = useAuth();
   
   const [reportBlobUrl, setReportBlobUrl] = useState(null);
+  const [reportTextContent, setReportTextContent] = useState('');
+  const [reportFileType, setReportFileType] = useState('');
+  const [markdownViewMode, setMarkdownViewMode] = useState('preview'); // 'preview' | 'raw'
+  const [copiedReportText, setCopiedReportText] = useState(false);
   const [reportLoading, setReportLoading] = useState(false);
 
   const [evalNotes, setEvalNotes] = useState('');
@@ -58,16 +73,7 @@ const ProjectDetailPage = () => {
   const [downloadingEvaluationDoc, setDownloadingEvaluationDoc] = useState(false);
   const [reportModalOpen, setReportModalOpen] = useState(false);
 
-  // File URL Helper
-  const getUploadUrl = (path) => {
-    if (!path) return '';
-    const normalizedPath = path.replace(/\\/g, '/');
-    const baseUrl = process.env.REACT_APP_API_URL 
-      ? process.env.REACT_APP_API_URL.replace('/api/v1', '') 
-      : '';
-    const finalPath = normalizedPath.startsWith('uploads/') ? normalizedPath : `uploads/${normalizedPath}`;
-    return `${baseUrl}/${finalPath}`;
-  };
+
 
   const handleDownloadSource = async () => {
     const path = project?.code_file_path;
@@ -78,11 +84,8 @@ const ProjectDetailPage = () => {
     setDownloadingSource(true);
     toast.info('Starting download...', { autoClose: 2000 });
     try {
-      const url = getUploadUrl(path);
-      const response = await fetch(url);
-      if (!response.ok) throw new Error('File not found');
-      const blob = await response.blob();
-      const downloadUrl = window.URL.createObjectURL(blob);
+      const blob = await projectService.downloadSourceCode(id);
+      const downloadUrl = window.URL.createObjectURL(new Blob([blob]));
       const a = document.createElement('a');
       a.href = downloadUrl;
       const fileName = path.split(/[/\\]/).pop() || 'source_bundle.zip';
@@ -91,9 +94,28 @@ const ProjectDetailPage = () => {
       a.click();
       window.URL.revokeObjectURL(downloadUrl);
       document.body.removeChild(a);
+      toast.success('Source code archive downloaded successfully!');
     } catch (error) {
-      console.error("Download error:", error);
-      toast.error('Failed to download source file. It might be missing or corrupted.');
+      console.warn("API download error, falling back to direct URL:", error);
+      try {
+        const url = getFileUrl(path);
+        const response = await fetch(url);
+        if (!response.ok) throw new Error('File not found');
+        const blob = await response.blob();
+        const downloadUrl = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = downloadUrl;
+        const fileName = path.split(/[/\\]/).pop() || 'source_bundle.zip';
+        a.download = fileName;
+        document.body.appendChild(a);
+        a.click();
+        window.URL.revokeObjectURL(downloadUrl);
+        document.body.removeChild(a);
+        toast.success('Source code archive downloaded successfully!');
+      } catch (err2) {
+        console.error("Download error:", err2);
+        toast.error('Failed to download source file. It might be missing or corrupted.');
+      }
     } finally {
       setDownloadingSource(false);
     }
@@ -104,32 +126,92 @@ const ProjectDetailPage = () => {
       toast.error('Technical report not available.');
       return;
     }
+    const path = project.report_file_path;
+    const isMd = isMarkdownFile(path);
+    const isTxt = isTextFile(path);
+    const isPdf = isPdfFile(path);
+    const ext = getFileExtension(path);
+    setReportFileType(ext);
     setViewerOpen(true);
-    if (!reportBlobUrl) {
+
+    if (!reportBlobUrl && !reportTextContent) {
       try {
         setReportLoading(true);
-        const url = getUploadUrl(project.report_file_path);
-        const response = await fetch(url);
-        if (!response.ok) throw new Error('File not found');
-        const blob = await response.blob();
-        setReportBlobUrl(window.URL.createObjectURL(blob));
+        const blob = await projectService.downloadReportFile(id, true);
+        if (isMd || isTxt) {
+          const text = await blob.text();
+          setReportTextContent(text);
+          setReportBlobUrl(null);
+        } else if (isPdf) {
+          const blobUrl = window.URL.createObjectURL(new Blob([blob], { type: 'application/pdf' }));
+          setReportBlobUrl(blobUrl);
+          setReportTextContent('');
+        } else {
+          // Word (.docx, .doc) or other documents
+          const blobUrl = window.URL.createObjectURL(blob);
+          setReportBlobUrl(blobUrl);
+          setReportTextContent('');
+        }
       } catch (err) {
-        toast.error('Failed to load report document.');
-        setViewerOpen(false);
+        console.warn('API report fetch failed, trying direct URL:', err);
+        try {
+          const url = getFileUrl(path);
+          const response = await fetch(url);
+          if (!response.ok) throw new Error('File not found');
+          const blob = await response.blob();
+          if (isMd || isTxt) {
+            const text = await blob.text();
+            setReportTextContent(text);
+            setReportBlobUrl(null);
+          } else if (isPdf) {
+            setReportBlobUrl(window.URL.createObjectURL(new Blob([blob], { type: 'application/pdf' })));
+            setReportTextContent('');
+          } else {
+            setReportBlobUrl(window.URL.createObjectURL(blob));
+            setReportTextContent('');
+          }
+        } catch (fetchErr) {
+          console.error("Report viewer error:", fetchErr);
+          toast.error('Failed to load report document.');
+          setViewerOpen(false);
+        }
       } finally {
         setReportLoading(false);
       }
     }
   };
 
+  const handleOpenEvaluationFile = async () => {
+    try {
+      setDownloadingEvaluationDoc(true);
+      const blob = await projectService.downloadEvaluationFile(id, true);
+      const ext = getFileExtension(project?.evaluation?.evaluation_file_url || project?.evaluation?.evaluation_file_name);
+      let mimeType = 'application/octet-stream';
+      if (ext === 'pdf') mimeType = 'application/pdf';
+      else if (ext === 'txt') mimeType = 'text/plain';
+      else if (ext === 'md' || ext === 'markdown') mimeType = 'text/markdown';
+      const fileBlob = new Blob([blob], { type: mimeType });
+      const blobUrl = window.URL.createObjectURL(fileBlob);
+      window.open(blobUrl, '_blank');
+    } catch (err) {
+      console.warn('API inline fetch failed, fallback to direct url:', err);
+      const direct = getFileUrl(project?.evaluation?.evaluation_file_url);
+      if (direct) window.open(direct, '_blank');
+    } finally {
+      setDownloadingEvaluationDoc(false);
+    }
+  };
+
   const handleDownloadEvaluationFile = async () => {
     try {
       setDownloadingEvaluationDoc(true);
-      const blob = await projectService.downloadEvaluationFile(id);
+      toast.info('Downloading official evaluation file...', { autoClose: 2000 });
+      const blob = await projectService.downloadEvaluationFile(id, false);
+      const ext = getFileExtension(project?.evaluation?.evaluation_file_url || project?.evaluation?.evaluation_file_name);
       const url = window.URL.createObjectURL(new Blob([blob]));
       const a = document.createElement('a');
       a.href = url;
-      a.download = project?.evaluation?.evaluation_file_name || 'evaluation_document';
+      a.download = project?.evaluation?.evaluation_file_name || `evaluation_document_${id}.${ext || 'pdf'}`;
       document.body.appendChild(a);
       a.click();
       a.remove();
@@ -138,7 +220,8 @@ const ProjectDetailPage = () => {
     } catch (err) {
       console.warn('Endpoint download failed, trying direct URL:', err);
       if (project?.evaluation?.evaluation_file_url) {
-        window.open(getUploadUrl(project.evaluation.evaluation_file_url), '_blank');
+        const directUrl = getFileUrl(project.evaluation.evaluation_file_url);
+        window.open(directUrl, '_blank');
       } else {
         toast.error('Unable to download evaluation file.');
       }
@@ -725,9 +808,10 @@ const ProjectDetailPage = () => {
                       {/* Secondary Preview / Open */}
                       <button
                         type="button"
-                        onClick={() => window.open(getUploadUrl(project.evaluation.evaluation_file_url), '_blank')}
-                        className="inline-flex items-center gap-1 px-2.5 py-1.5 text-[11px] font-semibold text-slate-700 dark:text-slate-200 bg-white/90 dark:bg-slate-800/90 hover:bg-slate-100 dark:hover:bg-slate-700 border border-slate-200/80 dark:border-slate-700/80 rounded-lg shadow-2xs hover:shadow-xs transition-all"
-                        title="Open in new browser tab"
+                        onClick={handleOpenEvaluationFile}
+                        disabled={downloadingEvaluationDoc}
+                        className="inline-flex items-center gap-1 px-2.5 py-1.5 text-[11px] font-semibold text-slate-700 dark:text-slate-200 bg-white/90 dark:bg-slate-800/90 hover:bg-slate-100 dark:hover:bg-slate-700 border border-slate-200/80 dark:border-slate-700/80 rounded-lg shadow-2xs hover:shadow-xs transition-all disabled:opacity-60 cursor-pointer"
+                        title="Open document preview in new tab"
                       >
                         <ArrowTopRightOnSquareIcon className="w-3 h-3 text-slate-500" />
                         <span>Open</span>
@@ -1095,54 +1179,205 @@ const ProjectDetailPage = () => {
       </div>
 
       {viewerOpen && (
-        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-slate-900/80 backdrop-blur-sm p-4 lg:p-10">
-          <div className="bg-white dark:bg-slate-900 rounded-xl shadow-2xl w-full max-w-5xl h-full pb-0 sm:h-[90vh] flex flex-col overflow-hidden border border-slate-200 dark:border-slate-800 animate-in zoom-in-95 duration-200">
-            <div className="flex flex-wrap items-center justify-between p-4 sm:p-6 border-b border-slate-100 dark:border-slate-800 bg-slate-50 dark:bg-slate-900/50">
-              <div className="flex items-center gap-3 w-full sm:w-auto mb-4 sm:mb-0">
-                <div className="p-2 bg-purple-100 dark:bg-purple-900/30 text-purple-600 dark:text-purple-400 rounded-xl">
-                  <DocumentIcon className="w-6 h-6" />
+        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-slate-900/80 backdrop-blur-sm p-3 sm:p-6 lg:p-10">
+          <div className="bg-white dark:bg-slate-900 rounded-2xl shadow-2xl w-full max-w-5xl h-full sm:h-[90vh] flex flex-col overflow-hidden border border-slate-200 dark:border-slate-800 animate-in zoom-in-95 duration-200">
+            {/* Header */}
+            <div className="flex flex-wrap items-center justify-between p-4 sm:p-5 border-b border-slate-200 dark:border-slate-800 bg-slate-50/80 dark:bg-slate-900/80 backdrop-blur-xs gap-3">
+              <div className="flex items-center gap-3 min-w-0">
+                <div className={`p-2.5 rounded-xl shadow-xs ${
+                  isMarkdownFile(project?.report_file_path)
+                    ? 'bg-emerald-100 dark:bg-emerald-950/50 text-emerald-600 dark:text-emerald-400'
+                    : isPdfFile(project?.report_file_path)
+                    ? 'bg-red-100 dark:bg-red-950/50 text-red-600 dark:text-red-400'
+                    : isWordFile(project?.report_file_path)
+                    ? 'bg-blue-100 dark:bg-blue-950/50 text-blue-600 dark:text-blue-400'
+                    : 'bg-purple-100 dark:bg-purple-950/50 text-purple-600 dark:text-purple-400'
+                }`}>
+                  <DocumentTextIcon className="w-5 h-5" />
                 </div>
-                <div>
-                  <h3 className="text-lg font-bold text-slate-900 dark:text-white leading-tight">Technical Report Viewer</h3>
-                  <p className="text-xs font-bold text-slate-500 uppercase tracking-widest truncate max-w-[200px] sm:max-w-md">
+                <div className="min-w-0">
+                  <div className="flex items-center gap-2 flex-wrap">
+                    <h3 className="text-base sm:text-lg font-bold text-slate-900 dark:text-white leading-tight">
+                      Technical Report Viewer
+                    </h3>
+                    <span className="px-2 py-0.5 rounded text-[10px] font-extrabold uppercase bg-slate-200 dark:bg-slate-800 text-slate-700 dark:text-slate-300">
+                      {reportFileType || getFileExtension(project?.report_file_path) || 'DOCUMENT'}
+                    </span>
+                  </div>
+                  <p className="text-xs font-semibold text-slate-500 dark:text-slate-400 truncate max-w-xs sm:max-w-md mt-0.5 font-mono">
                     {project?.report_file_path?.split(/[/\\]/).pop() || "Document"}
                   </p>
                 </div>
               </div>
-              <div className="flex items-center gap-3 w-full sm:w-auto justify-end">
+
+              <div className="flex items-center gap-2 sm:gap-3 w-full sm:w-auto justify-end flex-wrap">
+                {/* Markdown View Mode Toggle */}
+                {isMarkdownFile(project?.report_file_path) && (
+                  <div className="flex items-center bg-slate-200 dark:bg-slate-800 p-0.5 rounded-lg text-xs font-medium">
+                    <button
+                      onClick={() => setMarkdownViewMode('preview')}
+                      className={`px-2.5 py-1 rounded-md transition-all ${
+                        markdownViewMode === 'preview'
+                          ? 'bg-white dark:bg-slate-700 text-slate-900 dark:text-white font-bold shadow-xs'
+                          : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
+                      }`}
+                    >
+                      Formatted
+                    </button>
+                    <button
+                      onClick={() => setMarkdownViewMode('raw')}
+                      className={`px-2.5 py-1 rounded-md transition-all ${
+                        markdownViewMode === 'raw'
+                          ? 'bg-white dark:bg-slate-700 text-slate-900 dark:text-white font-bold shadow-xs'
+                          : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
+                      }`}
+                    >
+                      Raw Markdown
+                    </button>
+                  </div>
+                )}
+
+                {/* Copy Text Button (for Markdown/Text) */}
+                {(isMarkdownFile(project?.report_file_path) || isTextFile(project?.report_file_path)) && reportTextContent && (
+                  <button
+                    onClick={() => {
+                      navigator.clipboard.writeText(reportTextContent);
+                      setCopiedReportText(true);
+                      toast.success('Report content copied to clipboard!');
+                      setTimeout(() => setCopiedReportText(false), 2000);
+                    }}
+                    className="inline-flex items-center gap-1.5 px-3 py-2 bg-white dark:bg-slate-800 hover:bg-slate-100 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 text-xs font-semibold rounded-lg border border-slate-200 dark:border-slate-700 transition-colors shadow-2xs"
+                    title="Copy full report text"
+                  >
+                    <DocumentDuplicateIcon className="w-4 h-4 text-slate-500" />
+                    <span>{copiedReportText ? 'Copied!' : 'Copy'}</span>
+                  </button>
+                )}
+
+                {/* Download Button */}
                 <button 
-                  onClick={() => {
-                    const a = document.createElement('a');
-                    a.href = reportBlobUrl || getUploadUrl(project?.report_file_path);
-                    a.download = project?.report_file_path?.split(/[/\\]/).pop() || 'technical_report.pdf';
-                    document.body.appendChild(a);
-                    a.click();
-                    document.body.removeChild(a);
+                  onClick={async () => {
+                    try {
+                      const blob = await projectService.downloadReportFile(id, false);
+                      const downloadUrl = window.URL.createObjectURL(new Blob([blob]));
+                      const a = document.createElement('a');
+                      a.href = downloadUrl;
+                      a.download = project?.report_file_path?.split(/[/\\]/).pop() || 'technical_report.pdf';
+                      document.body.appendChild(a);
+                      a.click();
+                      document.body.removeChild(a);
+                      window.URL.revokeObjectURL(downloadUrl);
+                      toast.success('Report downloaded successfully!');
+                    } catch (e) {
+                      const a = document.createElement('a');
+                      a.href = reportBlobUrl || getFileUrl(project?.report_file_path);
+                      a.download = project?.report_file_path?.split(/[/\\]/).pop() || 'technical_report.pdf';
+                      document.body.appendChild(a);
+                      a.click();
+                      document.body.removeChild(a);
+                    }
                   }}
-                  className="flex-1 sm:flex-none flex justify-center items-center gap-2 px-5 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-semibold rounded-lg transition-all shadow-sm hover:shadow-md hover:-translate-y-0.5 active:translate-y-0"
+                  className="flex items-center gap-1.5 px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-semibold rounded-lg transition-all shadow-xs hover:shadow-indigo-500/20 hover:-translate-y-0.5 active:translate-y-0"
                 >
                   <ArrowDownTrayIcon className="w-4 h-4" />
-                  <span>Download File</span>
+                  <span>Download</span>
                 </button>
+
+                {/* Close Button */}
                 <button 
                   onClick={() => setViewerOpen(false)}
-                  className="p-2.5 bg-white dark:bg-slate-800 hover:bg-red-50 dark:hover:bg-red-900/20 text-slate-400 hover:text-red-500 rounded-lg transition-colors border border-slate-200 dark:border-slate-700 shadow-sm"
+                  className="p-2 bg-white dark:bg-slate-800 hover:bg-rose-50 dark:hover:bg-rose-950/40 text-slate-400 hover:text-rose-600 dark:hover:text-rose-400 rounded-lg transition-colors border border-slate-200 dark:border-slate-700 shadow-2xs"
+                  title="Close viewer"
                 >
                   <XMarkIcon className="w-5 h-5" />
                 </button>
               </div>
             </div>
-            <div className="flex-1 bg-slate-100/50 dark:bg-[#0d1117] p-2 sm:p-4 overflow-hidden relative rounded-b-xl flex flex-col justify-center items-center">
+
+            {/* Viewer Body */}
+            <div className="flex-1 bg-slate-100/60 dark:bg-[#0c1017] p-2 sm:p-4 overflow-hidden relative flex flex-col justify-center items-center">
               {reportLoading ? (
-                <div className="flex flex-col items-center justify-center space-y-4">
-                  <div className="w-12 h-12 border-4 border-indigo-500 border-t-transparent rounded-full animate-spin"></div>
-                  <p className="text-sm text-slate-500 font-semibold uppercase tracking-widest">Loading Report...</p>
+                <div className="flex flex-col items-center justify-center space-y-3">
+                  <div className="w-10 h-10 border-4 border-indigo-500 border-t-transparent rounded-full animate-spin"></div>
+                  <p className="text-xs text-slate-500 dark:text-slate-400 font-bold uppercase tracking-wider">
+                    Loading Report Document...
+                  </p>
+                </div>
+              ) : isMarkdownFile(project?.report_file_path) ? (
+                /* Markdown Document Viewer */
+                <div className="w-full h-full bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 shadow-inner overflow-y-auto p-4 sm:p-8">
+                  {markdownViewMode === 'preview' ? (
+                    <article className="prose prose-slate dark:prose-invert max-w-none prose-headings:font-bold prose-headings:tracking-tight prose-h1:text-2xl prose-h2:text-xl prose-h3:text-lg prose-pre:bg-slate-900 prose-pre:text-slate-100 prose-pre:border prose-pre:border-slate-800 prose-table:border-collapse prose-th:bg-slate-100 dark:prose-th:bg-slate-800/80 prose-th:p-2.5 prose-th:text-xs prose-td:p-2.5 prose-td:text-xs prose-td:border prose-td:border-slate-200 dark:prose-td:border-slate-800">
+                      <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                        {reportTextContent}
+                      </ReactMarkdown>
+                    </article>
+                  ) : (
+                    <pre className="font-mono text-xs text-slate-800 dark:text-slate-200 whitespace-pre-wrap leading-relaxed select-text">
+                      {reportTextContent}
+                    </pre>
+                  )}
+                </div>
+              ) : isTextFile(project?.report_file_path) ? (
+                /* Plain Text Viewer */
+                <div className="w-full h-full bg-slate-950 text-slate-200 font-mono text-xs leading-relaxed select-text p-4 rounded-xl border border-slate-800 shadow-inner overflow-auto">
+                  <pre className="whitespace-pre-wrap">{reportTextContent}</pre>
+                </div>
+              ) : isWordFile(project?.report_file_path) ? (
+                /* Word Document (.docx / .doc) Card */
+                <div className="flex flex-col items-center justify-center p-6 sm:p-10 text-center max-w-md mx-auto space-y-4 bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-lg">
+                  <div className="w-16 h-16 rounded-2xl bg-blue-50 dark:bg-blue-950/60 border border-blue-200 dark:border-blue-800/60 text-blue-600 dark:text-blue-400 flex items-center justify-center shadow-md">
+                    <DocumentIcon className="w-8 h-8" />
+                  </div>
+                  <div>
+                    <h4 className="text-base sm:text-lg font-bold text-slate-900 dark:text-white">
+                      Microsoft Word Document
+                    </h4>
+                    <p className="text-xs font-mono text-slate-500 dark:text-slate-400 mt-1 truncate max-w-xs">
+                      {project?.report_file_path?.split(/[/\\]/).pop() || 'Document.docx'}
+                    </p>
+                    <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-2 leading-relaxed">
+                      Word files cannot be rendered natively inside the browser PDF plugin. Download the document to review in Microsoft Word, LibreOffice, or Google Docs.
+                    </p>
+                  </div>
+                  <div className="flex flex-col sm:flex-row items-center gap-2.5 pt-2 w-full">
+                    <button
+                      onClick={async () => {
+                        const blob = await projectService.downloadReportFile(id, false);
+                        const downloadUrl = window.URL.createObjectURL(new Blob([blob]));
+                        const a = document.createElement('a');
+                        a.href = downloadUrl;
+                        a.download = project?.report_file_path?.split(/[/\\]/).pop() || 'technical_report.docx';
+                        document.body.appendChild(a);
+                        a.click();
+                        document.body.removeChild(a);
+                        window.URL.revokeObjectURL(downloadUrl);
+                        toast.success('Document downloaded successfully!');
+                      }}
+                      className="w-full inline-flex items-center justify-center gap-2 px-4 py-2.5 bg-blue-600 hover:bg-blue-700 active:bg-blue-800 text-white text-xs font-bold rounded-lg shadow-sm hover:shadow-md transition-all"
+                    >
+                      <ArrowDownTrayIcon className="w-4 h-4" />
+                      <span>Download Word File</span>
+                    </button>
+                    {getFileUrl(project?.report_file_path).startsWith('http') && (
+                      <a
+                        href={`https://docs.google.com/viewer?url=${encodeURIComponent(getFileUrl(project?.report_file_path))}&embedded=true`}
+                        target="_blank"
+                        rel="noreferrer"
+                        className="w-full inline-flex items-center justify-center gap-1.5 px-3 py-2.5 bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 text-xs font-semibold rounded-lg border border-slate-200 dark:border-slate-700 transition-colors"
+                      >
+                        <ArrowTopRightOnSquareIcon className="w-3.5 h-3.5" />
+                        <span>Online Preview</span>
+                      </a>
+                    )}
+                  </div>
                 </div>
               ) : (
+                /* PDF and Fallback Viewer */
                 <iframe 
                   src={reportBlobUrl || ''} 
                   title="Document Viewer" 
-                  className="w-full h-full rounded-lg border border-slate-200 dark:border-slate-800 shadow-inner bg-white dark:bg-slate-900"
+                  className="w-full h-full rounded-xl border border-slate-200 dark:border-slate-800 shadow-inner bg-white dark:bg-slate-900"
                 />
               )}
             </div>

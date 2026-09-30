@@ -91,7 +91,7 @@ class Settings(BaseSettings):
 
     # File uploads
     MAX_UPLOAD_SIZE: int = 52_428_800  # 50 MB
-    ALLOWED_EXTENSIONS: str = "pdf,docx,py,java,cpp,c,js,ts,zip"
+    ALLOWED_EXTENSIONS: str = "pdf,docx,doc,md,markdown,txt,rst,rtf,odt,py,js,jsx,ts,tsx,java,cpp,c,cs,html,css,php,go,rs,zip,tar,gz"
     UPLOAD_DIR: str = "./uploads"
     TEMP_DIR: str = "./uploads/temp"
 

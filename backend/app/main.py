@@ -85,9 +85,41 @@ app = FastAPI(
 )
 
 # ---------------------------------------------------------------------------
-# Static Files
+# Static Files with Safe Path & Remote Redirect Handler
 # ---------------------------------------------------------------------------
-app.mount("/uploads", StaticFiles(directory=settings.UPLOAD_DIR), name="uploads")
+class SafeStaticFiles(StaticFiles):
+    async def get_response(self, path: str, scope):
+        # Intercept accidental remote URL path prefixes (e.g. uploads/https:/... or uploads/https://...)
+        clean_path = path.replace("\\", "/")
+        if "res.cloudinary.com" in clean_path or clean_path.startswith("http:/") or clean_path.startswith("https:/") or clean_path.startswith("http://") or clean_path.startswith("https://"):
+            if "res.cloudinary.com" in clean_path:
+                idx = clean_path.find("res.cloudinary.com")
+                target_url = "https://" + clean_path[idx:]
+            elif clean_path.startswith("https:/") and not clean_path.startswith("https://"):
+                target_url = "https://" + clean_path[7:].lstrip("/")
+            elif clean_path.startswith("http:/") and not clean_path.startswith("http://"):
+                target_url = "http://" + clean_path[6:].lstrip("/")
+            else:
+                target_url = clean_path
+
+            from app.services.cloudinary_service import CloudinaryService
+            cs = CloudinaryService()
+            if cs.is_configured() and "cloudinary.com" in target_url:
+                target_url = cs.get_download_url(target_url, attachment=False)
+
+            from fastapi.responses import RedirectResponse
+            return RedirectResponse(url=target_url, status_code=307)
+
+        try:
+            return await super().get_response(path, scope)
+        except (OSError, ValueError) as exc:
+            logger.warning(f"Static file access error for {path}: {exc}")
+            return JSONResponse(
+                status_code=404,
+                content={"detail": f"File '{path}' not found on server"}
+            )
+
+app.mount("/uploads", SafeStaticFiles(directory=settings.UPLOAD_DIR), name="uploads")
 
 # ---------------------------------------------------------------------------
 # Middleware & CORS

@@ -6,6 +6,7 @@ Supports: PDF, Markdown, Plain Text, DOCX.
 Checks completeness, clarity, structure, and readability.
 """
 import logging
+import os
 import re
 from pathlib import Path
 from typing import Any, Dict, List, Optional
@@ -99,15 +100,29 @@ class DocumentationEvaluator:
     def _extract_text(self, file_path: str) -> str:
         """Route to the correct parser based on file extension."""
         # Handle remote Cloudinary URLs
-        if file_path.startswith("http://") or file_path.startswith("https://"):
+        clean_path = file_path.replace("\\", "/")
+        if clean_path.startswith("https:/") and not clean_path.startswith("https://"):
+            clean_path = "https://" + clean_path[7:].lstrip("/")
+        elif clean_path.startswith("http:/") and not clean_path.startswith("http://"):
+            clean_path = "http://" + clean_path[6:].lstrip("/")
+
+        if clean_path.startswith("http://") or clean_path.startswith("https://"):
             try:
                 import urllib.request
                 import tempfile
-                clean_url = file_path.split("?")[0]
+                from app.services.cloudinary_service import CloudinaryService
+
+                fetch_url = clean_path
+                cs = CloudinaryService()
+                if cs.is_configured() and "cloudinary.com" in clean_path:
+                    fetch_url = cs.get_download_url(clean_path, attachment=False)
+
+                clean_url = clean_path.split("?")[0]
                 ext = Path(clean_url).suffix or ".pdf"
                 with tempfile.NamedTemporaryFile(delete=False, suffix=ext) as tf:
                     temp_name = tf.name
-                    with urllib.request.urlopen(file_path, timeout=30) as response:
+                    req = urllib.request.Request(fetch_url, headers={"User-Agent": "ASPES-AI/1.0"})
+                    with urllib.request.urlopen(req, timeout=45) as response:
                         tf.write(response.read())
                 try:
                     return self._extract_text(temp_name)
@@ -118,7 +133,7 @@ class DocumentationEvaluator:
                         except Exception:
                             pass
             except Exception as e:
-                logger.error(f"Failed to fetch remote document from {file_path}: {e}")
+                logger.error(f"Failed to fetch remote document from {clean_path}: {e}")
                 return ""
 
         path = Path(file_path)
@@ -127,15 +142,40 @@ class DocumentationEvaluator:
         try:
             if suffix == ".pdf":
                 return self._extract_pdf(file_path)
-            elif suffix in {".md", ".txt", ".rst"}:
+            elif suffix in {".md", ".markdown", ".txt", ".rst"}:
                 return self._extract_plain(file_path)
             elif suffix == ".docx":
                 return self._extract_docx(file_path)
+            elif suffix == ".doc":
+                return self._extract_doc(file_path)
             else:
                 # Try plain text as fallback
                 return self._extract_plain(file_path)
         except Exception as e:
             logger.error(f"Failed to extract text from {file_path}: {e}")
+            return ""
+
+    def _extract_doc(self, file_path: str) -> str:
+        """Extract text from legacy .doc file using docx fallback or binary string scanning."""
+        # 1. Try reading as docx (many .doc files are just renamed .docx)
+        try:
+            text = self._extract_docx(file_path)
+            if text and text.strip():
+                return text
+        except Exception:
+            pass
+
+        # 2. Extract printable strings from binary .doc (OLE format)
+        try:
+            with open(file_path, "rb") as f:
+                content = f.read()
+            # Find contiguous readable text sequences (ASCII / Unicode)
+            ascii_strings = re.findall(rb"[\x20-\x7E\t\r\n]{4,}", content)
+            decoded = [s.decode("latin-1", errors="ignore") for s in ascii_strings]
+            meaningful = [s for s in decoded if any(c.isalpha() for c in s)]
+            return "\n".join(meaningful)
+        except Exception as e:
+            logger.warning(f"Legacy .doc extraction fallback failed: {e}")
             return ""
 
     def _extract_pdf(self, file_path: str) -> str:

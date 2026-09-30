@@ -353,6 +353,15 @@ async def notify_student_on_faculty_evaluation(
         if not evaluation_file_name:
             evaluation_file_name = getattr(evaluation_record, "evaluation_file_name", None)
 
+    if evaluation_file_url:
+        clean_url = evaluation_file_url.replace("\\", "/")
+        if clean_url.startswith("https:/") and not clean_url.startswith("https://"):
+            evaluation_file_url = "https://" + clean_url[7:].lstrip("/")
+        elif clean_url.startswith("http:/") and not clean_url.startswith("http://"):
+            evaluation_file_url = "http://" + clean_url[6:].lstrip("/")
+        else:
+            evaluation_file_url = clean_url
+
     metadata = {
         "project_id": str(project.id),
         "project_title": project.title,

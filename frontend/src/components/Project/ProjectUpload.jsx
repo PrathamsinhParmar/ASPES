@@ -208,15 +208,48 @@ const ProjectUpload = () => {
   };
 
   const { getRootProps: getCodeRootProps, getInputProps: getCodeInputProps, isDragActive: isCodeDragActive } = useDropzone({
-    accept: { 'application/zip': ['.zip'], 'text/x-python': ['.py'], 'text/javascript': ['.js', '.jsx'], 'text/x-java': ['.java'], 'text/x-c++src': ['.cpp', '.cc'] },
+    accept: {
+      'application/zip': ['.zip'],
+      'application/x-zip-compressed': ['.zip'],
+      'application/x-tar': ['.tar', '.tar.gz', '.tgz'],
+      'application/gzip': ['.gz'],
+      'text/x-python': ['.py'],
+      'text/javascript': ['.js', '.jsx'],
+      'text/typescript': ['.ts', '.tsx'],
+      'text/x-java': ['.java'],
+      'text/x-c++src': ['.cpp', '.cc', '.cxx'],
+      'text/x-c': ['.c', '.h'],
+      'text/html': ['.html', '.htm'],
+      'text/css': ['.css'],
+      'application/octet-stream': ['.zip', '.tar', '.gz', '.tgz', '.rar', '.7z', '.py', '.js', '.jsx', '.ts', '.tsx', '.java', '.cpp', '.c', '.cs', '.sql'],
+    },
     maxFiles: 1, maxSize: 50 * 1024 * 1024,
-    onDrop: (acceptedFiles) => { if (acceptedFiles?.length) setCodeFile(acceptedFiles[0]); }
+    onDrop: (acceptedFiles, fileRejections) => {
+      if (acceptedFiles?.length) setCodeFile(acceptedFiles[0]);
+      else if (fileRejections?.length) {
+        toast.error(`Code file rejected: ${fileRejections[0]?.errors[0]?.message || 'Invalid format or too large'}`);
+      }
+    }
   });
 
   const { getRootProps: getDocRootProps, getInputProps: getDocInputProps, isDragActive: isDocDragActive } = useDropzone({
-    accept: { 'application/pdf': ['.pdf'], 'text/markdown': ['.md'], 'text/plain': ['.txt'] },
-    maxFiles: 1, maxSize: 10 * 1024 * 1024,
-    onDrop: (acceptedFiles) => { if (acceptedFiles?.length) setDocFile(acceptedFiles[0]); }
+    accept: {
+      'application/pdf': ['.pdf'],
+      'text/markdown': ['.md', '.markdown'],
+      'text/plain': ['.txt', '.rst'],
+      'application/msword': ['.doc'],
+      'application/vnd.openxmlformats-officedocument.wordprocessingml.document': ['.docx'],
+      'application/rtf': ['.rtf'],
+      'application/vnd.oasis.opendocument.text': ['.odt'],
+      'application/octet-stream': ['.md', '.markdown', '.doc', '.docx', '.rst', '.odt'],
+    },
+    maxFiles: 1, maxSize: 50 * 1024 * 1024,
+    onDrop: (acceptedFiles, fileRejections) => {
+      if (acceptedFiles?.length) setDocFile(acceptedFiles[0]);
+      else if (fileRejections?.length) {
+        toast.error(`Document rejected: ${fileRejections[0]?.errors[0]?.message || 'Invalid format or too large'}`);
+      }
+    }
   });
 
   const onSubmit = async (data) => {
@@ -610,7 +643,7 @@ const ProjectUpload = () => {
                         <div className="text-center">
                           <CloudArrowUpIcon className="w-8 h-8 text-slate-400 mx-auto mb-2" />
                           <p className="text-xs font-semibold text-slate-700 dark:text-slate-300">Drop Source Code</p>
-                          <p className="text-[10px] text-slate-400 font-medium mt-0.5">ZIP, PY, JS, JAVA, TS, CPP</p>
+                          <p className="text-[10px] text-slate-400 font-medium mt-0.5">ZIP, TAR, PY, JS, JAVA, TS, CPP (up to 50MB)</p>
                         </div>
                       )}
                     </div>
@@ -631,7 +664,7 @@ const ProjectUpload = () => {
                         <div className="text-center">
                           <DocumentTextIcon className="w-8 h-8 text-slate-400 mx-auto mb-2" />
                           <p className="text-xs font-semibold text-slate-700 dark:text-slate-300">Drop Project Report</p>
-                          <p className="text-[10px] text-slate-400 font-medium mt-0.5">PDF, DOCX, MD, TXT</p>
+                          <p className="text-[10px] text-slate-400 font-medium mt-0.5">PDF, DOCX, DOC, MD, TXT (up to 50MB)</p>
                         </div>
                       )}
                     </div>

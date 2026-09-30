@@ -34,7 +34,13 @@ class CloudinaryService:
     """Enterprise Cloudinary storage manager with raw asset and image support."""
 
     IMAGE_EXTENSIONS = {".png", ".jpg", ".jpeg", ".gif", ".webp", ".svg", ".bmp"}
-    RAW_EXTENSIONS = {".zip", ".py", ".js", ".jsx", ".ts", ".tsx", ".java", ".cpp", ".c", ".pdf", ".docx", ".doc", ".txt", ".md", ".rst"}
+    RAW_EXTENSIONS = {
+        ".zip", ".tar", ".gz", ".tgz", ".rar", ".7z",
+        ".py", ".js", ".jsx", ".ts", ".tsx", ".java", ".cpp", ".c", ".cs",
+        ".html", ".css", ".php", ".go", ".rs", ".rb", ".json", ".sql",
+        ".pdf", ".docx", ".doc", ".txt", ".md", ".markdown", ".rst", ".rtf", ".odt",
+        ".pptx", ".ppt"
+    }
 
     def __init__(self):
         self.cloud_name = settings.CLOUDINARY_CLOUD_NAME
@@ -176,29 +182,71 @@ class CloudinaryService:
             logger.error(f"Failed to delete Cloudinary asset {public_id}: {e}")
             return False
 
+    def get_download_url(self, public_id_or_url: str, attachment: bool = False) -> str:
+        """
+        Generates a secure, signed download URL for an asset via Cloudinary Admin API.
+        This bypasses public CDN delivery restrictions (such as 'Blocked for delivery'
+        or 'Customer is marked as untrusted' on PDF/ZIP files on free plans).
+        """
+        if not self.is_configured() or not public_id_or_url:
+            return public_id_or_url
+
+        try:
+            # Normalize single slash if present
+            clean_input = public_id_or_url.replace("\\", "/")
+            if clean_input.startswith("https:/") and not clean_input.startswith("https://"):
+                clean_input = "https://" + clean_input[7:].lstrip("/")
+            elif clean_input.startswith("http:/") and not clean_input.startswith("http://"):
+                clean_input = "http://" + clean_input[6:].lstrip("/")
+
+            public_id, res_type = self._extract_public_id_and_type(clean_input)
+            # Determine format/extension
+            ext = Path(public_id).suffix.lstrip(".")
+            if not ext and "." in clean_input:
+                ext = Path(clean_input.split("?")[0]).suffix.lstrip(".")
+
+            import cloudinary.utils
+            signed_url = cloudinary.utils.private_download_url(
+                public_id,
+                ext or "raw",
+                resource_type=res_type,
+                type="upload",
+                attachment=attachment
+            )
+            return signed_url
+        except Exception as e:
+            logger.warning(f"Could not generate signed download URL for {public_id_or_url}: {e}")
+            return public_id_or_url
+
     def _extract_public_id_and_type(self, identifier: str) -> Tuple[str, str]:
         """
         Extracts public_id and resource_type from a Cloudinary URL or direct public_id.
         """
-        if not identifier.startswith("http://") and not identifier.startswith("https://"):
-            res_type = self._determine_resource_type(identifier)
-            return identifier, res_type
+        clean_id = identifier.replace("\\", "/")
+        if clean_id.startswith("https:/") and not clean_id.startswith("https://"):
+            clean_id = "https://" + clean_id[7:].lstrip("/")
+        elif clean_id.startswith("http:/") and not clean_id.startswith("http://"):
+            clean_id = "http://" + clean_id[6:].lstrip("/")
+
+        if not clean_id.startswith("http://") and not clean_id.startswith("https://"):
+            res_type = self._determine_resource_type(clean_id)
+            return clean_id, res_type
 
         # Parse URL: e.g. https://res.cloudinary.com/<cloud>/raw/upload/v12345/aspes/projects/abc.zip
         res_type = "raw"
-        if "/image/upload/" in identifier:
+        if "/image/upload/" in clean_id:
             res_type = "image"
-        elif "/raw/upload/" in identifier:
+        elif "/raw/upload/" in clean_id:
             res_type = "raw"
-        elif "/video/upload/" in identifier:
+        elif "/video/upload/" in clean_id:
             res_type = "video"
 
-        match = re.search(r"/(?:image|raw|video)/upload/(?:v\d+/)?(.+)$", identifier)
+        match = re.search(r"/(?:image|raw|video)/upload/(?:s--[^/]+--/)?(?:v\d+/)?([^?]+)", clean_id)
         if match:
             extracted_id = match.group(1)
             return extracted_id, res_type
 
-        return identifier, res_type
+        return clean_id, res_type
 
     @staticmethod
     async def download_to_temp(file_path_or_url: str, suffix: str = "") -> str:
@@ -209,6 +257,12 @@ class CloudinaryService:
         """
         if not file_path_or_url:
             return ""
+
+        # Normalize single slash if present
+        if file_path_or_url.startswith("https:/") and not file_path_or_url.startswith("https://"):
+            file_path_or_url = "https://" + file_path_or_url[7:].lstrip("/")
+        elif file_path_or_url.startswith("http:/") and not file_path_or_url.startswith("http://"):
+            file_path_or_url = "http://" + file_path_or_url[6:].lstrip("/")
 
         # If it's a local file that already exists, return it
         if not file_path_or_url.startswith("http://") and not file_path_or_url.startswith("https://"):
@@ -227,10 +281,17 @@ class CloudinaryService:
         temp_dir.mkdir(parents=True, exist_ok=True)
         temp_file_path = temp_dir / f"aspes_remote_{uuid.uuid4().hex}{suffix}"
 
-        logger.info(f"Downloading remote asset from {file_path_or_url} to local temp {temp_file_path}")
+        # If it's a Cloudinary URL, use authenticated signed URL so CDN access restrictions don't block backend download
+        fetch_url = file_path_or_url
+        if "cloudinary.com" in file_path_or_url:
+            cs = CloudinaryService()
+            if cs.is_configured():
+                fetch_url = cs.get_download_url(file_path_or_url, attachment=False)
+
+        logger.info(f"Downloading remote asset from {fetch_url} to local temp {temp_file_path}")
 
         async with httpx.AsyncClient(timeout=60.0, follow_redirects=True) as client:
-            resp = await client.get(file_path_or_url)
+            resp = await client.get(fetch_url)
             if resp.status_code != 200:
                 raise HTTPException(
                     status_code=status.HTTP_502_BAD_GATEWAY,

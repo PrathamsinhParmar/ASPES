@@ -14,8 +14,14 @@ from fastapi import HTTPException, UploadFile, status
 from app.config import settings
 
 UPLOAD_DIR = Path(settings.UPLOAD_DIR)
-ALLOWED_CODE_EXTENSIONS = {".py", ".js", ".java", ".cpp", ".c", ".zip"}
-ALLOWED_DOC_EXTENSIONS = {".pdf", ".md", ".txt", ".docx"}
+ALLOWED_CODE_EXTENSIONS = {
+    ".py", ".js", ".jsx", ".ts", ".tsx", ".java", ".cpp", ".c", ".cs",
+    ".html", ".css", ".php", ".go", ".rs", ".rb", ".json", ".sql",
+    ".zip", ".tar", ".gz", ".tgz", ".rar", ".7z"
+}
+ALLOWED_DOC_EXTENSIONS = {
+    ".pdf", ".md", ".markdown", ".txt", ".docx", ".doc", ".rst", ".rtf", ".odt"
+}
 MAX_FILE_SIZE = settings.MAX_UPLOAD_SIZE
 
 
@@ -46,7 +52,7 @@ class FileService:
         if suffix not in allowed_extensions:
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST,
-                detail=f"Invalid file type. Allowed: {allowed_extensions}"
+                detail=f"Invalid file type '{suffix}'. Allowed: {sorted(list(allowed_extensions))}"
             )
 
     async def save_file(self, file: UploadFile, subfolder: str) -> str:
@@ -57,7 +63,12 @@ class FileService:
         # If Cloudinary is configured, upload directly to cloud
         if self.cloudinary.is_configured():
             res = await self.cloudinary.upload_file(file, subfolder=subfolder)
-            return res["url"]
+            raw_url = res["url"]
+            if raw_url.startswith("https:/") and not raw_url.startswith("https://"):
+                raw_url = "https://" + raw_url[7:].lstrip("/")
+            elif raw_url.startswith("http:/") and not raw_url.startswith("http://"):
+                raw_url = "http://" + raw_url[6:].lstrip("/")
+            return raw_url
 
         # Local storage fallback
         target_dir = self.upload_dir / subfolder
@@ -102,6 +113,12 @@ class FileService:
         doc_path = await self.save_file(doc_file, subfolder=f"projects/{session_id}")
         
         return code_path, doc_path
+
+    def get_download_url(self, file_path_or_url: str, attachment: bool = False) -> str:
+        """Returns signed Cloudinary download URL if remote, or the path string itself."""
+        if file_path_or_url and (file_path_or_url.startswith("http://") or file_path_or_url.startswith("https://")):
+            return self.cloudinary.get_download_url(file_path_or_url, attachment=attachment)
+        return file_path_or_url
 
     async def ensure_local_copy(self, file_path_or_url: str, suffix: str = "") -> str:
         """

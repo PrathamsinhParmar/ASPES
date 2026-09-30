@@ -54,8 +54,22 @@ export const projectService = {
     return response.data;
   },
 
-  downloadEvaluationFile: async (id) => {
-    const response = await api.get(`/projects/${id}/evaluation/download`, {
+  downloadEvaluationFile: async (id, inline = false) => {
+    const response = await api.get(`/projects/${id}/evaluation/download?inline=${inline}`, {
+      responseType: 'blob'
+    });
+    return response.data;
+  },
+
+  downloadSourceCode: async (id) => {
+    const response = await api.get(`/projects/${id}/download-source`, {
+      responseType: 'blob'
+    });
+    return response.data;
+  },
+
+  downloadReportFile: async (id, inline = false) => {
+    const response = await api.get(`/projects/${id}/view-report?inline=${inline}`, {
       responseType: 'blob'
     });
     return response.data;

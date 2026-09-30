@@ -270,15 +270,29 @@ class EnhancedProjectEvaluator:
             return ""
 
         # Handle remote Cloudinary URLs
-        if file_path.startswith("http://") or file_path.startswith("https://"):
+        clean_path = file_path.replace("\\", "/")
+        if clean_path.startswith("https:/") and not clean_path.startswith("https://"):
+            clean_path = "https://" + clean_path[7:].lstrip("/")
+        elif clean_path.startswith("http:/") and not clean_path.startswith("http://"):
+            clean_path = "http://" + clean_path[6:].lstrip("/")
+
+        if clean_path.startswith("http://") or clean_path.startswith("https://"):
             try:
                 import urllib.request
                 import tempfile
-                clean_url = file_path.split("?")[0]
+                from app.services.cloudinary_service import CloudinaryService
+
+                fetch_url = clean_path
+                cs = CloudinaryService()
+                if cs.is_configured() and "cloudinary.com" in clean_path:
+                    fetch_url = cs.get_download_url(clean_path, attachment=False)
+
+                clean_url = clean_path.split("?")[0]
                 ext = os.path.splitext(clean_url)[1].lower() or ".zip"
                 with tempfile.NamedTemporaryFile(delete=False, suffix=ext) as tf:
                     temp_name = tf.name
-                    with urllib.request.urlopen(file_path, timeout=30) as response:
+                    req = urllib.request.Request(fetch_url, headers={"User-Agent": "ASPES-AI/1.0"})
+                    with urllib.request.urlopen(req, timeout=45) as response:
                         tf.write(response.read())
                 try:
                     return cls.extract_code_from_path(temp_name, max_chars=max_chars)
@@ -289,7 +303,7 @@ class EnhancedProjectEvaluator:
                         except Exception:
                             pass
             except Exception as remote_err:
-                logger.warning(f"Failed to fetch remote code from {file_path}: {remote_err}")
+                logger.warning(f"Failed to fetch remote code from {clean_path}: {remote_err}")
                 return ""
 
         if not os.path.isabs(file_path):

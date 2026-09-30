@@ -25,6 +25,7 @@ import { useNotifications } from '../../context/NotificationContext';
 import NotificationPanel from '../Notification/NotificationPanel';
 import { format } from 'date-fns';
 import toast from 'react-hot-toast';
+import { getFileUrl, getFileExtension } from '../../utils/fileUrl';
 
 // Helper to determine badge colors and icons based on Faculty Evaluation Verdict
 export const getVerdictTagConfig = (verdictRaw) => {
@@ -254,11 +255,12 @@ const FacultyDashboard = () => {
     const projectId = evaluatingRecord?.project_id || evaluatingRecord?.project?.id || evaluatingRecord?.id;
     if (!projectId) return;
     try {
-      const blob = await projectService.downloadEvaluationFile(projectId);
+      const blob = await projectService.downloadEvaluationFile(projectId, false);
       const url = window.URL.createObjectURL(blob);
+      const ext = existingFileUrl ? getFileExtension(existingFileUrl) : 'pdf';
       const a = document.createElement('a');
       a.href = url;
-      a.download = evaluatingRecord?.evaluation?.evaluation_file_name || evaluatingRecord?.evaluation_file_name || `evaluation_document_${projectId}.pdf`;
+      a.download = evaluatingRecord?.evaluation?.evaluation_file_name || evaluatingRecord?.evaluation_file_name || `evaluation_document_${projectId}.${ext || 'pdf'}`;
       document.body.appendChild(a);
       a.click();
       window.URL.revokeObjectURL(url);
@@ -266,6 +268,11 @@ const FacultyDashboard = () => {
       toast.success('Downloaded evaluation document.');
     } catch (err) {
       console.error('Failed to download evaluation file:', err);
+      if (existingFileUrl) {
+        const safeUrl = getFileUrl(existingFileUrl);
+        window.open(safeUrl, '_blank');
+        return;
+      }
       toast.error('Failed to download evaluation document.');
     }
   };
@@ -908,7 +915,7 @@ const FacultyDashboard = () => {
                       type="file"
                       className="hidden"
                       onChange={handleFileChange}
-                      accept=".pdf,.docx,.doc,.txt,.zip,.py,.java,.cpp,.c,.js"
+                      accept=".pdf,.docx,.doc,.txt,.md,.markdown,.rst,.rtf,.odt,.zip,.tar,.gz,.py,.java,.cpp,.c,.js"
                     />
                     <ArrowUpTrayIcon className="w-8 h-8 text-indigo-500 mx-auto mb-2 opacity-80" />
                     <p className="text-xs font-semibold text-slate-800 dark:text-slate-200">
@@ -916,7 +923,7 @@ const FacultyDashboard = () => {
                       <span className="text-indigo-600 dark:text-indigo-400 underline">{existingFileUrl ? 'browse files' : 'browse'}</span>
                     </p>
                     <p className="text-[11px] text-slate-400 dark:text-slate-500 mt-1">
-                      Supports PDF, DOCX, ZIP, TXT, Code files (up to 50 MB)
+                      Supports PDF, Word (DOC/DOCX), Markdown (MD), Text, ZIP & Code files (up to 50 MB)
                     </p>
                   </div>
                 ) : (

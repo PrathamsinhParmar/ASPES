@@ -7,6 +7,7 @@ import notificationService from '../../services/notificationService';
 import { projectService } from '../../services/projectService';
 import { useNavigate } from 'react-router-dom';
 import { formatLanguageName } from '../../utils/languageFormatter';
+import { getFileUrl } from '../../utils/fileUrl';
 import {
   BellIcon,
   CheckCircleIcon,
@@ -114,9 +115,8 @@ const NotificationPanel = ({ defaultTab = 'all', compact = false }) => {
     }
 
     if (attachUrl) {
-      const cleanPath = attachUrl.replace(/\\/g, '/').replace(/^\.?\//, '');
-      const fullUrl = `${API_BASE_URL}/${cleanPath}`;
-      window.open(fullUrl, '_blank');
+      const safeUrl = getFileUrl(attachUrl);
+      window.open(safeUrl, '_blank');
     } else {
       toast.error('Attachment link unavailable.');
     }

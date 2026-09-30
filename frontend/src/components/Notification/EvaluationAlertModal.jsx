@@ -1,6 +1,8 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useNotifications } from '../../context/NotificationContext';
+import { projectService } from '../../services/projectService';
+import { getFileUrl } from '../../utils/fileUrl';
 import {
   CheckCircleIcon,
   ExclamationCircleIcon,
@@ -38,6 +40,34 @@ const EvaluationAlertModal = () => {
     dismissEvaluationAlert();
     if (notif.related_project_id) {
       navigate(`/projects/${notif.related_project_id}`);
+    }
+  };
+
+  const handleDownloadAttachment = async (e) => {
+    e?.stopPropagation();
+    const attachUrl = notif.attachment_url || meta.attachment_url;
+    const attachName = notif.attachment_name || meta.attachment_name || 'evaluation_document.pdf';
+
+    if (notif.related_project_id) {
+      try {
+        const blob = await projectService.downloadEvaluationFile(notif.related_project_id, false);
+        const url = window.URL.createObjectURL(new Blob([blob]));
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = attachName;
+        document.body.appendChild(link);
+        link.click();
+        link.remove();
+        window.URL.revokeObjectURL(url);
+        return;
+      } catch (err) {
+        console.warn('API file download fallback to direct URL:', err);
+      }
+    }
+
+    if (attachUrl) {
+      const safeUrl = getFileUrl(attachUrl);
+      window.open(safeUrl, '_blank');
     }
   };
 
@@ -164,16 +194,14 @@ const EvaluationAlertModal = () => {
                   </span>
                 </div>
               </div>
-              <a
-                href={`${API_BASE_URL}/${(notif.attachment_url || meta.attachment_url).replace(/\\/g, '/').replace(/^\.?\//, '')}`}
-                download={notif.attachment_name || meta.attachment_name || true}
-                target="_blank"
-                rel="noreferrer"
-                className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-white bg-indigo-600 hover:bg-indigo-700 rounded-lg shadow-xs hover:-translate-y-0.5 transition-all flex-shrink-0"
+              <button
+                type="button"
+                onClick={handleDownloadAttachment}
+                className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-white bg-indigo-600 hover:bg-indigo-700 active:bg-indigo-800 rounded-lg shadow-xs hover:-translate-y-0.5 transition-all flex-shrink-0 cursor-pointer"
               >
                 <ArrowDownTrayIcon className="w-3.5 h-3.5" />
                 <span>Download</span>
-              </a>
+              </button>
             </div>
           )}
 

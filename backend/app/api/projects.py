@@ -429,10 +429,16 @@ async def evaluate_project_by_faculty(
         fs = FileService()
         try:
             saved_path_str = await fs.save_file(evaluation_file, subfolder="evaluation_files")
-            posix_path = Path(saved_path_str).as_posix()
-            project.evaluation.evaluation_file_url = posix_path
+            clean_url = saved_path_str.replace("\\", "/")
+            if clean_url.startswith("https:/") and not clean_url.startswith("https://"):
+                clean_url = "https://" + clean_url[7:].lstrip("/")
+            elif clean_url.startswith("http:/") and not clean_url.startswith("http://"):
+                clean_url = "http://" + clean_url[6:].lstrip("/")
+            elif not (clean_url.startswith("http://") or clean_url.startswith("https://")):
+                clean_url = Path(saved_path_str).as_posix()
+            project.evaluation.evaluation_file_url = clean_url
             project.evaluation.evaluation_file_name = evaluation_file.filename
-            saved_file_url = posix_path
+            saved_file_url = clean_url
             saved_file_name = evaluation_file.filename
         except Exception as upload_err:
             raise HTTPException(
@@ -475,22 +481,99 @@ async def evaluate_project_by_faculty(
     return validated
 
 
+async def _stream_remote_storage_file(
+    raw_url: str,
+    filename: str,
+    inline: bool = False,
+    override_media_type: Optional[str] = None
+):
+    """
+    Streams a remote file (Cloudinary asset) directly through the backend API.
+    Bypasses CORS issues, cross-origin redirection blocks, and untrusted CDN delivery restrictions.
+    """
+    from fastapi.responses import StreamingResponse
+    from app.services.cloudinary_service import CloudinaryService
+    import httpx
+
+    clean_url = raw_url.replace("\\", "/")
+    if clean_url.startswith("https:/") and not clean_url.startswith("https://"):
+        clean_url = "https://" + clean_url[7:].lstrip("/")
+    elif clean_url.startswith("http:/") and not clean_url.startswith("http://"):
+        clean_url = "http://" + clean_url[6:].lstrip("/")
+
+    cs = CloudinaryService()
+    fetch_url = clean_url
+    if cs.is_configured() and "cloudinary.com" in clean_url:
+        fetch_url = cs.get_download_url(clean_url, attachment=not inline)
+
+    # Determine media type
+    suffix = Path(filename).suffix.lower()
+    if override_media_type:
+        media_type = override_media_type
+    elif suffix == ".pdf":
+        media_type = "application/pdf"
+    elif suffix in (".md", ".markdown"):
+        media_type = "text/markdown; charset=utf-8"
+    elif suffix == ".txt":
+        media_type = "text/plain; charset=utf-8"
+    elif suffix == ".docx":
+        media_type = "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+    elif suffix == ".doc":
+        media_type = "application/msword"
+    elif suffix in (".zip", ".tar", ".gz"):
+        media_type = "application/zip"
+    else:
+        media_type = "application/octet-stream"
+
+    client = httpx.AsyncClient(follow_redirects=True, timeout=60.0)
+    req = client.build_request("GET", fetch_url)
+    resp = await client.send(req, stream=True)
+
+    if resp.status_code != 200:
+        await resp.aclose()
+        await client.aclose()
+        raise HTTPException(
+            status_code=502,
+            detail=f"Failed to fetch asset from cloud storage (HTTP {resp.status_code})"
+        )
+
+    async def file_chunks():
+        try:
+            async for chunk in resp.aiter_bytes(chunk_size=65536):
+                yield chunk
+        finally:
+            await resp.aclose()
+            await client.aclose()
+
+    disposition = "inline" if inline else "attachment"
+    return StreamingResponse(
+        file_chunks(),
+        media_type=media_type,
+        headers={
+            "Content-Disposition": f"{disposition}; filename=\"{filename}\"",
+            "Access-Control-Expose-Headers": "Content-Disposition"
+        }
+    )
+
+
 @router.get("/{project_id}/evaluation/download")
 async def download_evaluation_file(
     project_id: uuid.UUID,
+    inline: bool = Query(False),
     current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db)
 ):
     """
-    Download the file uploaded by faculty during project evaluation.
+    Download or view inline the file uploaded by faculty during project evaluation.
     Accessible to project student owner, faculty, and administrators.
+    Streams directly to the client without CORS or redirect issues.
     """
     stmt = select(Project).options(selectinload(Project.evaluation)).where(Project.id == project_id)
     result = await db.execute(stmt)
     project = result.scalar_one_or_none()
     
-    if not project:
-        raise HTTPException(status_code=404, detail="Project not found")
+    if not project or not project.evaluation:
+        raise HTTPException(status_code=404, detail="Project or evaluation not found")
 
     is_owner = project.owner_id == current_user.id
     is_faculty = project.faculty_id == current_user.id or current_user.role in (UserRole.PROFESSOR, UserRole.ADMIN)
@@ -501,14 +584,25 @@ async def download_evaluation_file(
     if not eval_url:
         raise HTTPException(status_code=404, detail="No evaluation file attached to this project")
 
-    # If file is stored on Cloudinary CDN, redirect directly to secure URL
-    if eval_url.startswith("http://") or eval_url.startswith("https://"):
-        from fastapi.responses import RedirectResponse
-        return RedirectResponse(url=eval_url)
+    # Normalize if stored with single slash
+    if eval_url.startswith("https:/") and not eval_url.startswith("https://"):
+        eval_url = "https://" + eval_url[7:].lstrip("/")
+    elif eval_url.startswith("http:/") and not eval_url.startswith("http://"):
+        eval_url = "http://" + eval_url[6:].lstrip("/")
 
+    filename = project.evaluation.evaluation_file_name or Path(eval_url.split("?")[0]).name or "evaluation_document.pdf"
+
+    # If Cloudinary / remote URL: stream directly
+    if eval_url.startswith("http://") or eval_url.startswith("https://"):
+        return await _stream_remote_storage_file(
+            raw_url=eval_url,
+            filename=filename,
+            inline=inline
+        )
+
+    # Local file fallback
     file_path = Path(eval_url)
     if not file_path.exists():
-        # Check relative to base upload folder
         fallback_path = Path(settings.UPLOAD_DIR) / "evaluation_files" / file_path.name
         if fallback_path.exists():
             file_path = fallback_path
@@ -516,10 +610,153 @@ async def download_evaluation_file(
             raise HTTPException(status_code=404, detail="Evaluation file not found on disk")
 
     from fastapi.responses import FileResponse
+    disposition = "inline" if inline else "attachment"
     return FileResponse(
         path=str(file_path),
-        filename=project.evaluation.evaluation_file_name or file_path.name,
-        media_type="application/octet-stream"
+        filename=filename,
+        media_type="application/octet-stream" if not inline else None,
+        headers={"Content-Disposition": f"{disposition}; filename=\"{filename}\""}
+    )
+
+
+@router.get("/{project_id}/download-source")
+async def download_project_source(
+    project_id: uuid.UUID,
+    current_user: User = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db)
+):
+    """
+    Download student's uploaded source code zip archive.
+    Accessible to project student owner, faculty, and administrators.
+    """
+    stmt = select(Project).where(Project.id == project_id)
+    result = await db.execute(stmt)
+    project = result.scalar_one_or_none()
+
+    if not project:
+        raise HTTPException(status_code=404, detail="Project not found")
+
+    is_owner = project.owner_id == current_user.id
+    is_faculty = project.faculty_id == current_user.id or current_user.role in (UserRole.PROFESSOR, UserRole.ADMIN)
+    if not (is_owner or is_faculty):
+        raise HTTPException(status_code=403, detail="Not authorized to access project source")
+
+    if not project.code_file_path:
+        raise HTTPException(status_code=404, detail="No source code bundle attached to this project")
+
+    code_path = project.code_file_path
+
+    # Normalize if stored with single slash
+    if code_path.startswith("https:/") and not code_path.startswith("https://"):
+        code_path = "https://" + code_path[7:].lstrip("/")
+    elif code_path.startswith("http:/") and not code_path.startswith("http://"):
+        code_path = "http://" + code_path[6:].lstrip("/")
+
+    filename = Path(code_path.split("?")[0]).name or "source_code.zip"
+    if not filename.endswith(".zip") and "." not in filename:
+        filename = f"{filename}.zip"
+
+    # If Cloudinary / remote URL: stream directly
+    if code_path.startswith("http://") or code_path.startswith("https://"):
+        return await _stream_remote_storage_file(
+            raw_url=code_path,
+            filename=filename,
+            inline=False,
+            override_media_type="application/zip"
+        )
+
+    # Local file fallback
+    file_path = Path(code_path)
+    if not file_path.exists():
+        fallback = Path(settings.UPLOAD_DIR) / file_path.name
+        if fallback.exists():
+            file_path = fallback
+        else:
+            raise HTTPException(status_code=404, detail="Source code file not found on disk")
+
+    from fastapi.responses import FileResponse
+    return FileResponse(
+        path=str(file_path),
+        filename=filename,
+        media_type="application/zip"
+    )
+
+
+@router.get("/{project_id}/view-report")
+async def view_project_report(
+    project_id: uuid.UUID,
+    inline: bool = Query(True),
+    current_user: User = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db)
+):
+    """
+    View or download student's project technical report (PDF, Markdown, Word, TXT).
+    Accessible to project owner, faculty, and admins.
+    inline=True serves for browser/viewer preview; inline=False forces attachment download.
+    """
+    stmt = select(Project).where(Project.id == project_id)
+    result = await db.execute(stmt)
+    project = result.scalar_one_or_none()
+
+    if not project:
+        raise HTTPException(status_code=404, detail="Project not found")
+
+    is_owner = project.owner_id == current_user.id
+    is_faculty = project.faculty_id == current_user.id or current_user.role in (UserRole.PROFESSOR, UserRole.ADMIN)
+    if not (is_owner or is_faculty):
+        raise HTTPException(status_code=403, detail="Not authorized to access project report")
+
+    if not project.report_file_path:
+        raise HTTPException(status_code=404, detail="No report document attached to this project")
+
+    report_path = project.report_file_path
+
+    # Normalize if stored with single slash
+    if report_path.startswith("https:/") and not report_path.startswith("https://"):
+        report_path = "https://" + report_path[7:].lstrip("/")
+    elif report_path.startswith("http:/") and not report_path.startswith("http://"):
+        report_path = "http://" + report_path[6:].lstrip("/")
+
+    filename = Path(report_path.split("?")[0]).name or "technical_report.pdf"
+
+    # If Cloudinary / remote URL: stream directly
+    if report_path.startswith("http://") or report_path.startswith("https://"):
+        return await _stream_remote_storage_file(
+            raw_url=report_path,
+            filename=filename,
+            inline=inline
+        )
+
+    # Local file fallback
+    file_path = Path(report_path)
+    if not file_path.exists():
+        fallback = Path(settings.UPLOAD_DIR) / file_path.name
+        if fallback.exists():
+            file_path = fallback
+        else:
+            raise HTTPException(status_code=404, detail="Report file not found on disk")
+
+    from fastapi.responses import FileResponse
+    suffix = file_path.suffix.lower()
+    if suffix == ".pdf":
+        media_type = "application/pdf"
+    elif suffix in (".md", ".markdown"):
+        media_type = "text/markdown; charset=utf-8"
+    elif suffix == ".txt":
+        media_type = "text/plain; charset=utf-8"
+    elif suffix == ".docx":
+        media_type = "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+    elif suffix == ".doc":
+        media_type = "application/msword"
+    else:
+        media_type = "application/octet-stream"
+
+    headers = {"Content-Disposition": f"{'inline' if inline else 'attachment'}; filename=\"{file_path.name}\""}
+    return FileResponse(
+        path=str(file_path),
+        filename=file_path.name,
+        media_type=media_type,
+        headers=headers
     )
 
 @router.put("/{project_id}", response_model=ProjectResponse)

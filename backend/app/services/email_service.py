@@ -217,13 +217,26 @@ def send_faculty_registration_email(
     msg.add_alternative(html_content, subtype='html')
 
     try:
-        with smtplib.SMTP(settings.SMTP_HOST, settings.SMTP_PORT, timeout=10) as server:
+        if settings.SMTP_PORT == 465:
+            server = smtplib.SMTP_SSL(settings.SMTP_HOST, settings.SMTP_PORT, timeout=15)
+        else:
+            server = smtplib.SMTP(settings.SMTP_HOST, settings.SMTP_PORT, timeout=15)
+            server.ehlo()
             if settings.SMTP_USE_TLS:
                 server.starttls()
-            if settings.SMTP_PASSWORD:
-                server.login(settings.SMTP_USERNAME, settings.SMTP_PASSWORD)
-            server.send_message(msg)
-            
-        logger.info(f"Welcome email successfully sent to faculty: {faculty_email}")
+                server.ehlo()
+
+        if settings.SMTP_USERNAME and settings.SMTP_PASSWORD:
+            server.login(settings.SMTP_USERNAME, settings.SMTP_PASSWORD)
+
+        server.send_message(msg)
+        server.quit()
+        logger.info(f"✅ Welcome email successfully sent to faculty: {faculty_email}")
+    except smtplib.SMTPAuthenticationError as auth_err:
+        logger.error(
+            f"❌ Failed to send faculty email to {faculty_email}: "
+            f"SMTP Authentication Error (535 Bad Credentials). "
+            f"Please verify that a valid 16-character Google App Password is set in SMTP_PASSWORD on Render: {auth_err}"
+        )
     except Exception as e:
-        logger.error(f"Failed to send faculty registration email to {faculty_email}: {str(e)}")
+        logger.error(f"❌ Failed to send faculty registration email to {faculty_email}: {str(e)}")

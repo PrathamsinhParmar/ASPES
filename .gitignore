@@ -37,6 +37,7 @@ backend/logs/
 backend/models/
 !backend/app/models/
 !backend/app/models/**
+backend/app/models/__pycache__/
 
 # Docker volumes
 postgres_data/

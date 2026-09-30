@@ -56,6 +56,7 @@ logs/
 /models/
 !app/models/
 !app/models/**
+app/models/__pycache__/
 *.bin
 *.pt
 *.pth

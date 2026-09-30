@@ -13,9 +13,14 @@ sys.path.insert(0, os.path.realpath(os.path.join(os.path.dirname(__file__), '..'
 from app.database.connection import Base
 from app.config import settings
 # Import all models here for autogenerate to work
-from app.models.user import User
-from app.models.project import Project
-from app.models.evaluation import Evaluation
+from app.models import (
+    User,
+    Project,
+    Evaluation,
+    Group,
+    Notification,
+    NotificationAuditLog,
+)
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.
@@ -30,8 +35,16 @@ if config.config_file_name is not None:
 # for 'autogenerate' support
 target_metadata = Base.metadata
 
-# Set sqlalchemy.url from settings
-config.set_main_option("sqlalchemy.url", settings.DATABASE_URL)
+# Set sqlalchemy.url from settings, ensuring synchronous driver for Alembic
+sync_db_url = settings.DATABASE_URL
+if sync_db_url.startswith("sqlite+aiosqlite://"):
+    sync_db_url = sync_db_url.replace("sqlite+aiosqlite://", "sqlite://", 1)
+elif sync_db_url.startswith("postgresql+asyncpg://"):
+    sync_db_url = sync_db_url.replace("postgresql+asyncpg://", "postgresql://", 1)
+elif sync_db_url.startswith("postgres://"):
+    sync_db_url = sync_db_url.replace("postgres://", "postgresql://", 1)
+
+config.set_main_option("sqlalchemy.url", sync_db_url)
 
 def run_migrations_offline() -> None:
     """Run migrations in 'offline' mode."""

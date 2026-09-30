@@ -53,7 +53,9 @@ logs/
 *.log
 
 # ML Model cache (large files)
-models/
+/models/
+!app/models/
+!app/models/**
 *.bin
 *.pt
 *.pth

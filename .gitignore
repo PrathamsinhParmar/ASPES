@@ -35,6 +35,8 @@ venv/
 backend/uploads/
 backend/logs/
 backend/models/
+!backend/app/models/
+!backend/app/models/**
 
 # Docker volumes
 postgres_data/

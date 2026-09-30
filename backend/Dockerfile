@@ -36,5 +36,4 @@ RUN mkdir -p uploads/temp logs
 EXPOSE 8000
 
 # Entrypoint script to handle migrations and start app
-# Note: In a real production setup, migrations would be handled differently
-CMD ["sh", "-c", "python -m alembic upgrade head && uvicorn app.main:app --host 0.0.0.0 --port 8000"]
+CMD ["sh", "-c", "(python -m alembic upgrade head || true) && uvicorn app.main:app --host 0.0.0.0 --port ${PORT:-8000}"]

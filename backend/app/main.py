@@ -177,7 +177,7 @@ if settings.FRONTEND_URL and settings.FRONTEND_URL not in cors_origins:
 app.add_middleware(
     CORSMiddleware,
     allow_origins=cors_origins,
-    allow_origin_regex=r"^https:\/\/.*\.vercel\.app$",
+    allow_origin_regex=r"^https:\/\/.*(\.vercel\.app|\.trycloudflare\.com)$",
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -198,7 +198,7 @@ async def log_requests(request: Request, call_next):
 # ---------------------------------------------------------------------------
 def _get_cors_headers(request: Request) -> dict:
     origin = request.headers.get("origin")
-    if origin and ("vercel.app" in origin or "localhost" in origin or origin in cors_origins):
+    if origin and ("vercel.app" in origin or "trycloudflare.com" in origin or "localhost" in origin or "127.0.0.1" in origin or origin in cors_origins):
         return {
             "Access-Control-Allow-Origin": origin,
             "Access-Control-Allow-Credentials": "true",

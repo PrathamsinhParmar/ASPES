@@ -31,14 +31,46 @@ export const NotificationProvider = ({ children }) => {
     const token = localStorage.getItem('token');
     if (!token) return null;
     
-    const apiBase = process.env.REACT_APP_API_URL || 'http://localhost:8000/api/v1';
-    let wsBase = apiBase.replace(/^http/, 'ws');
-    if (wsBase.endsWith('/api/v1')) {
-      wsBase = wsBase + '/notifications/ws';
-    } else {
-      wsBase = wsBase.replace(/\/$/, '') + '/api/v1/notifications/ws';
+    if (typeof window !== 'undefined') {
+      const { hostname, protocol, host } = window.location;
+      const isLocalhost = hostname === 'localhost' || hostname === '127.0.0.1';
+      const wsProtocol = protocol === 'https:' ? 'wss:' : 'ws:';
+      const envApi = (process.env.REACT_APP_API_URL || '').trim();
+
+      // Cloudflare tunnel / ngrok / external tunnel:
+      if (!isLocalhost && (
+        hostname.includes('trycloudflare.com') ||
+        hostname.includes('loca.lt') ||
+        hostname.includes('ngrok')
+      )) {
+        if (envApi && !envApi.includes('localhost') && !envApi.includes('127.0.0.1')) {
+          let wsBase = envApi.replace(/^http/, 'ws').replace(/\/api\/v1\/?$/, '');
+          return `${wsBase}/api/v1/notifications/ws?token=${encodeURIComponent(token)}`;
+        }
+        return `${wsProtocol}//${host}/api/v1/notifications/ws?token=${encodeURIComponent(token)}`;
+      }
+
+      // If page is loaded over HTTPS, must use secure wss through proxy to prevent mixed content
+      if (protocol === 'https:' && (envApi.startsWith('http://localhost') || envApi.startsWith('http://127.0.0.1'))) {
+        return `${wsProtocol}//${host}/api/v1/notifications/ws?token=${encodeURIComponent(token)}`;
+      }
+
+      // Remote backend (e.g. Render https://aspes-backend.onrender.com)
+      if (envApi && !envApi.includes('localhost') && !envApi.includes('127.0.0.1')) {
+        let wsBase = envApi.replace(/^http/, 'ws').replace(/\/api\/v1\/?$/, '');
+        return `${wsBase}/api/v1/notifications/ws?token=${encodeURIComponent(token)}`;
+      }
+
+      // Local dev fallback
+      const localBase = envApi || 'http://localhost:8000/api/v1';
+      if (localBase.startsWith('/')) {
+        return `${wsProtocol}//${host}${localBase.replace(/\/api\/v1\/?$/, '')}/api/v1/notifications/ws?token=${encodeURIComponent(token)}`;
+      }
+      let wsBase = localBase.replace(/^http/, 'ws').replace(/\/api\/v1\/?$/, '');
+      return `${wsBase}/api/v1/notifications/ws?token=${encodeURIComponent(token)}`;
     }
-    return `${wsBase}?token=${encodeURIComponent(token)}`;
+
+    return null;
   }, []);
 
   // Fetch unread count & recent notifications

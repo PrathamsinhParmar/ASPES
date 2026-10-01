@@ -35,14 +35,35 @@ export const getFileUrl = (path) => {
 
   // Local filesystem path mounted under /uploads
   const cleanRelative = normalized.replace(/^\.?\/+/, '');
-  const baseUrl = (process.env.REACT_APP_API_URL || 'http://localhost:8000/api/v1')
-    .replace(/\/api\/v1\/?$/, '');
+  
+  let baseUrl = '';
+  if (typeof window !== 'undefined') {
+    const { hostname, protocol, origin } = window.location;
+    const isLocalhost = hostname === 'localhost' || hostname === '127.0.0.1';
+    const envApi = (process.env.REACT_APP_API_URL || '').trim();
+
+    if (!isLocalhost && (hostname.includes('trycloudflare.com') || hostname.includes('loca.lt') || hostname.includes('ngrok'))) {
+      if (envApi && !envApi.includes('localhost') && !envApi.includes('127.0.0.1')) {
+        baseUrl = envApi.replace(/\/api\/v1\/?$/, '');
+      } else {
+        baseUrl = origin; // use current tunnel origin so /uploads is proxied
+      }
+    } else if (protocol === 'https:' && (envApi.startsWith('http://localhost') || envApi.startsWith('http://127.0.0.1'))) {
+      baseUrl = origin;
+    } else if (envApi) {
+      baseUrl = envApi.replace(/\/api\/v1\/?$/, '');
+    } else {
+      baseUrl = isLocalhost ? 'http://localhost:8000' : origin;
+    }
+  } else {
+    baseUrl = (process.env.REACT_APP_API_URL || 'http://localhost:8000/api/v1').replace(/\/api\/v1\/?$/, '');
+  }
 
   const finalRelative = cleanRelative.startsWith('uploads/') 
     ? cleanRelative 
     : `uploads/${cleanRelative}`;
 
-  return `${baseUrl}/${finalRelative}`;
+  return `${baseUrl ? baseUrl.replace(/\/$/, '') : ''}/${finalRelative}`;
 };
 
 /**

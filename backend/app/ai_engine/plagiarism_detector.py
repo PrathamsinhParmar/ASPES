@@ -53,6 +53,13 @@ def _get_sbert() -> Any:
     with _sbert_lock:
         if _sbert_load_attempted:  # re-check after acquiring the lock
             return _sbert_model
+
+        if os.environ.get("RENDER") or os.environ.get("ENABLE_HEAVY_ML", "false").lower() != "true":
+            logger.info("Sentence-BERT disabled on memory-constrained environment. Using structural plagiarism heuristic.")
+            _sbert_model = None
+            _sbert_load_attempted = True
+            return None
+
         try:
             from sentence_transformers import SentenceTransformer
             _sbert_model = SentenceTransformer(_SBERT_MODEL_NAME)

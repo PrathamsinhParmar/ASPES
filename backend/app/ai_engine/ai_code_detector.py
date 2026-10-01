@@ -37,6 +37,12 @@ def _get_ml_model():
     if _ml_model_instance is not None:
         return _ml_tokenizer_instance, _ml_model_instance
 
+    # On memory-constrained hosts (e.g. Render 512MB RAM free tier), avoid loading 500MB RoBERTa into PyTorch
+    import os
+    if os.environ.get("RENDER") or os.environ.get("ENABLE_HEAVY_ML", "false").lower() != "true":
+        logger.info("Heavy PyTorch transformer loading disabled to respect memory limits. Using heuristic AI detection.")
+        return None, None
+
     try:
         import torch
         from transformers import AutoModelForSequenceClassification, AutoTokenizer

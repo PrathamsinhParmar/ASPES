@@ -63,12 +63,11 @@ async def lifespan(app: FastAPI):
     except Exception as e:
         logger.warning(f"Seeding note: {e}")
 
-    # 3. Auto-recover any orphaned evaluations stuck in 'processing' from server restarts
+    # 3. Clean up any evaluations left in 'processing' before restart
     try:
         from app.database.connection import AsyncSessionLocal
         from app.models.evaluation import Evaluation, EvaluationStatus
         from sqlalchemy import select
-        import asyncio
 
         async with AsyncSessionLocal() as db:
             stuck_evals = (await db.execute(
@@ -76,11 +75,12 @@ async def lifespan(app: FastAPI):
             )).scalars().all()
 
             for ev in stuck_evals:
-                logger.info(f"🔄 Recovering orphaned evaluation {ev.id} for project {ev.project_id}")
-                from app.api.projects import _run_evaluation_inline
-                asyncio.create_task(_run_evaluation_inline(str(ev.project_id), str(ev.id)))
+                logger.info(f"Marking interrupted evaluation {ev.id} as failed (ready for retry)")
+                ev.status = EvaluationStatus.FAILED
+            if stuck_evals:
+                await db.commit()
     except Exception as recover_err:
-        logger.warning(f"Orphaned evaluation recovery note: {recover_err}")
+        logger.warning(f"Orphaned evaluation cleanup note: {recover_err}")
 
     logger.info(f"CORS Allowed Origins ({type(settings.ALLOWED_ORIGINS)}): {settings.ALLOWED_ORIGINS}")
 

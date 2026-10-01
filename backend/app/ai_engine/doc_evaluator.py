@@ -24,6 +24,10 @@ def _get_sbert():
     global _sbert_model
     if _sbert_model is not None:
         return _sbert_model
+
+    if os.environ.get("RENDER") or os.environ.get("ENABLE_HEAVY_ML", "false").lower() != "true":
+        return None
+
     try:
         from sentence_transformers import SentenceTransformer
         _sbert_model = SentenceTransformer("all-MiniLM-L6-v2")

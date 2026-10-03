@@ -315,8 +315,8 @@ const HomePage = () => {
   return (
     <>
       <SEO
-        title="ASPES – AI-Powered Academic Project Evaluation & Plagiarism Detection System"
-        description="ASPES automates grading of student programming projects using AI — code quality analysis, AI-code detection, plagiarism checks, and GPT-4 feedback in seconds. Try the live demo."
+        title="ASPES – AI-Powered Academic Project Evaluation System"
+        description="ASPES automates student code grading with AI: AST syntax audits, multi-vector AI code detection, plagiarism checks, and instant rubric feedback. Try live demo."
         canonicalPath="/"
         keywords="AI project evaluation system, automated code grading, AI plagiarism detection, AI-generated code detector, academic integrity tool, automated programming assignment grading, ASPES"
       />
@@ -1345,12 +1345,12 @@ const HomePage = () => {
                 <Link to="/" className="inline-block">
                   <img
                     src="/ASPESLight.png"
-                    alt="ASPES"
+                    alt="ASPES - AI Smart Project Evaluation System"
                     className="h-9 w-auto dark:hidden object-contain"
                   />
                   <img
                     src="/ASPESDark.png"
-                    alt="ASPES"
+                    alt="ASPES - AI Smart Project Evaluation System"
                     className="h-9 w-auto hidden dark:block object-contain"
                   />
                 </Link>
@@ -1360,9 +1360,9 @@ const HomePage = () => {
               </div>
 
               <div>
-                <h4 className="text-xs font-mono font-bold text-slate-900 dark:text-white uppercase tracking-wider mb-3">
+                <h3 className="text-xs font-mono font-bold text-slate-900 dark:text-white uppercase tracking-wider mb-3">
                   Architecture & Portals
-                </h4>
+                </h3>
                 <ul className="space-y-2 text-xs sm:text-sm text-slate-600 dark:text-slate-400">
                   <li><Link to="/how-it-works" className="hover:text-[#5E60CE] dark:hover:text-[#7275E0] transition-colors">6-Layer AI Pipeline</Link></li>
                   <li><a href="#journeys" className="hover:text-[#5E60CE] dark:hover:text-[#7275E0] transition-colors">Faculty Portal</a></li>
@@ -1372,9 +1372,9 @@ const HomePage = () => {
               </div>
 
               <div>
-                <h4 className="text-xs font-mono font-bold text-slate-900 dark:text-white uppercase tracking-wider mb-3">
+                <h3 className="text-xs font-mono font-bold text-slate-900 dark:text-white uppercase tracking-wider mb-3">
                   Academic Governance
-                </h4>
+                </h3>
                 <ul className="space-y-2 text-xs sm:text-sm text-slate-600 dark:text-slate-400">
                   <li><span className="text-slate-500">Zero Code Retention Policy</span></li>
                   <li><span className="text-slate-500">FERPA / Academic Privacy</span></li>

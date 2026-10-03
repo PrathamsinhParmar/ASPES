@@ -24,20 +24,20 @@ const baseHtml = fs.readFileSync(indexPath, 'utf-8');
 const routes = [
   {
     path: '/how-it-works',
-    title: 'How It Works – ASPES | 6-Layer AI Code Grading & Plagiarism Architecture',
-    description: 'Explore the 6-layer ASPES AI project evaluation pipeline: Neural AST parsing, multi-model AI code detection, semantic plagiarism search, and narrative feedback.',
+    title: 'How It Works – ASPES | 6-Layer AI Project Evaluation System',
+    description: 'Explore how ASPES evaluates student code: 6-layer neural pipeline with AST parsing, multi-vector AI detection, cross-repo plagiarism checks, and rubric grading.',
     canonical: 'https://aspeskpgu.vercel.app/how-it-works'
   },
   {
     path: '/login',
     title: 'Login – ASPES | AI Project Evaluation System',
-    description: 'Sign in to the ASPES academic portal to access automated code evaluations, AI-generated code detection scores, and university project reports.',
+    description: 'Sign in to the ASPES academic portal to review student code evaluations, inspect multi-vector AI detection telemetry, and access automated rubric scorecards.',
     canonical: 'https://aspeskpgu.vercel.app/login'
   },
   {
     path: '/register',
     title: 'Register – ASPES | AI Project Evaluation System',
-    description: 'Create an ASPES student or faculty account. Submit codebases for automated AST grading, multi-model AI plagiarism detection, and comprehensive feedback.',
+    description: 'Create an ASPES university account to submit student repositories, execute automated AST code analysis, detect AI-generated code, and streamline project grading.',
     canonical: 'https://aspeskpgu.vercel.app/register'
   }
 ];

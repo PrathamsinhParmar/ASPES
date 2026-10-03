@@ -7,7 +7,7 @@ const LoginPage = () => {
     <>
       <SEO
         title="Login – ASPES | AI Project Evaluation System"
-        description="Sign in to the ASPES academic portal to access automated code evaluations, AI-generated code detection scores, and university project reports."
+        description="Sign in to the ASPES academic portal to review student code evaluations, inspect multi-vector AI detection telemetry, and access automated rubric scorecards."
         canonicalPath="/login"
         keywords="ASPES login, AI project evaluation login, university code grader portal, academic plagiarism detection login"
       />

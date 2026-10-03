@@ -1416,8 +1416,13 @@ const HomePage = () => {
               <div>
                 © {new Date().getFullYear()} ASPES (AI Smart Project Evaluation System). All rights reserved.
               </div>
-              <div className="flex items-center gap-4">
-                <span>System Status: <span className="text-emerald-500 font-semibold font-mono">100% Operational</span></span>
+              <div className="flex flex-wrap items-center gap-5 font-medium">
+                <Link to="/" className="hover:text-[#5E60CE] dark:hover:text-[#7275E0] transition-colors">Home</Link>
+                <Link to="/how-it-works" className="hover:text-[#5E60CE] dark:hover:text-[#7275E0] transition-colors">How It Works</Link>
+                <Link to="/login" className="hover:text-[#5E60CE] dark:hover:text-[#7275E0] transition-colors">Sign In</Link>
+                <Link to="/register" className="hover:text-[#5E60CE] dark:hover:text-[#7275E0] transition-colors">Register</Link>
+                <span className="hidden md:inline text-slate-300 dark:text-slate-700">|</span>
+                <span>Status: <span className="text-emerald-500 font-semibold font-mono">100% Operational</span></span>
               </div>
             </div>
           </div>

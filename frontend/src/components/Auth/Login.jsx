@@ -646,6 +646,16 @@ const Login = () => {
               className="font-semibold text-indigo-600 dark:text-indigo-400 hover:text-indigo-500 dark:hover:text-indigo-300 transition-colors"
             >
               Create an account
+          </div>
+
+          {/* Secondary Public Navigation */}
+          <div className="mt-5 flex items-center justify-center gap-4 text-xs text-slate-500 dark:text-slate-400">
+            <Link to="/" className="hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors">
+              ← Back to Home
+            </Link>
+            <span className="text-slate-300 dark:text-slate-700">•</span>
+            <Link to="/how-it-works" className="hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors">
+              How It Works
             </Link>
           </div>
         </div>

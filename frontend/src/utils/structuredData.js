@@ -10,8 +10,8 @@ export const SITE_URL = 'https://aspeskpgu.vercel.app';
  * 1. Organization Schema
  * Establishes brand authority, logo, and core description site-wide.
  */
-export const getOrganizationSchema = () => ({
-  '@context': 'https://schema.org',
+export const getOrganizationSchema = (isGraphNode = false) => ({
+  ...(isGraphNode ? {} : { '@context': 'https://schema.org' }),
   '@type': 'Organization',
   '@id': `${SITE_URL}/#organization`,
   name: 'ASPES',
@@ -29,8 +29,8 @@ export const getOrganizationSchema = () => ({
  * 2. WebSite Schema
  * Identifies the web presence and root URL for search engine site names.
  */
-export const getWebSiteSchema = () => ({
-  '@context': 'https://schema.org',
+export const getWebSiteSchema = (isGraphNode = false) => ({
+  ...(isGraphNode ? {} : { '@context': 'https://schema.org' }),
   '@type': 'WebSite',
   '@id': `${SITE_URL}/#website`,
   name: 'ASPES - AI Smart Project Evaluation System',
@@ -45,8 +45,8 @@ export const getWebSiteSchema = () => ({
  * 3. SoftwareApplication Schema
  * Signals to Google that ASPES is a usable software tool, enabling rich application snippets.
  */
-export const getSoftwareApplicationSchema = () => ({
-  '@context': 'https://schema.org',
+export const getSoftwareApplicationSchema = (isGraphNode = false) => ({
+  ...(isGraphNode ? {} : { '@context': 'https://schema.org' }),
   '@type': 'SoftwareApplication',
   '@id': `${SITE_URL}/#software`,
   name: 'ASPES',
@@ -82,8 +82,8 @@ export const getSoftwareApplicationSchema = () => ({
  * Formats hierarchy for deep navigation pages (e.g., /how-it-works, /login).
  * @param {Array<{ name: string, path: string }>} items
  */
-export const getBreadcrumbSchema = (items = []) => ({
-  '@context': 'https://schema.org',
+export const getBreadcrumbSchema = (items = [], isGraphNode = false) => ({
+  ...(isGraphNode ? {} : { '@context': 'https://schema.org' }),
   '@type': 'BreadcrumbList',
   itemListElement: items.map((item, index) => ({
     '@type': 'ListItem',
@@ -98,9 +98,10 @@ export const getBreadcrumbSchema = (items = []) => ({
  * Powers FAQ rich snippets in Google Search Results.
  * @param {Array<{ q: string, a: string }>} faqList
  */
-export const getFAQPageSchema = (faqList = []) => ({
-  '@context': 'https://schema.org',
+export const getFAQPageSchema = (faqList = [], isGraphNode = false) => ({
+  ...(isGraphNode ? {} : { '@context': 'https://schema.org' }),
   '@type': 'FAQPage',
+  '@id': `${SITE_URL}/#faq`,
   mainEntity: faqList.map((item) => ({
     '@type': 'Question',
     name: item.q,
@@ -118,10 +119,10 @@ export const getFAQPageSchema = (faqList = []) => ({
 export const getHomePageStructuredData = (faqList = []) => ({
   '@context': 'https://schema.org',
   '@graph': [
-    getOrganizationSchema(),
-    getWebSiteSchema(),
-    getSoftwareApplicationSchema(),
-    ...(faqList && faqList.length > 0 ? [getFAQPageSchema(faqList)] : [])
+    getOrganizationSchema(true),
+    getWebSiteSchema(true),
+    getSoftwareApplicationSchema(true),
+    ...(faqList && faqList.length > 0 ? [getFAQPageSchema(faqList, true)] : [])
   ]
 });
 
@@ -132,11 +133,11 @@ export const getHomePageStructuredData = (faqList = []) => ({
 export const getHowItWorksStructuredData = () => ({
   '@context': 'https://schema.org',
   '@graph': [
-    getOrganizationSchema(),
+    getOrganizationSchema(true),
     getBreadcrumbSchema([
       { name: 'Home', path: '/' },
       { name: 'How It Works', path: '/how-it-works' }
-    ]),
+    ], true),
     {
       '@type': 'TechArticle',
       '@id': `${SITE_URL}/how-it-works#article`,

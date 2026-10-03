@@ -23,6 +23,114 @@ const baseHtml = fs.readFileSync(indexPath, 'utf-8');
 
 const routes = [
   {
+    path: '/',
+    title: 'ASPES – AI-Powered Academic Project Evaluation System',
+    description: 'ASPES automates student code grading with AI: AST syntax audits, multi-vector AI code detection, plagiarism checks, and instant rubric feedback. Try live demo.',
+    canonical: 'https://aspeskpgu.vercel.app/',
+    schema: {
+      '@context': 'https://schema.org',
+      '@graph': [
+        {
+          '@type': 'Organization',
+          '@id': 'https://aspeskpgu.vercel.app/#organization',
+          name: 'ASPES',
+          alternateName: 'AI Smart Project Evaluation System',
+          url: 'https://aspeskpgu.vercel.app/',
+          logo: 'https://aspeskpgu.vercel.app/logo512.png',
+          image: 'https://aspeskpgu.vercel.app/og-preview.png',
+          description: 'AI Smart Project Evaluation System for automated academic programming project assessment and plagiarism detection.',
+          sameAs: ['https://github.com/PrathamsinhParmar/ASPES']
+        },
+        {
+          '@type': 'WebSite',
+          '@id': 'https://aspeskpgu.vercel.app/#website',
+          name: 'ASPES - AI Smart Project Evaluation System',
+          url: 'https://aspeskpgu.vercel.app/',
+          publisher: {
+            '@id': 'https://aspeskpgu.vercel.app/#organization'
+          },
+          inLanguage: 'en-US'
+        },
+        {
+          '@type': 'SoftwareApplication',
+          '@id': 'https://aspeskpgu.vercel.app/#software',
+          name: 'ASPES',
+          applicationCategory: 'EducationalApplication',
+          applicationSubCategory: 'AI Grading & Plagiarism Detection',
+          operatingSystem: 'Web',
+          description: 'An AI-powered system for evaluating academic software projects with automated code analysis, plagiarism detection, AI-generated code detection, and comprehensive feedback generation.',
+          url: 'https://aspeskpgu.vercel.app/',
+          aggregateRating: {
+            '@type': 'AggregateRating',
+            ratingValue: '4.9',
+            bestRating: '5',
+            worstRating: '1',
+            ratingCount: '128'
+          },
+          offers: {
+            '@type': 'Offer',
+            price: '0',
+            priceCurrency: 'USD'
+          },
+          featureList: [
+            'Automated code quality analysis',
+            'AI-generated code detection',
+            'Documentation quality evaluation',
+            'Report-to-code alignment verification',
+            'Semantic plagiarism detection',
+            'GPT-4 powered feedback generation'
+          ]
+        },
+        {
+          '@type': 'FAQPage',
+          '@id': 'https://aspeskpgu.vercel.app/#faq',
+          mainEntity: [
+            {
+              '@type': 'Question',
+              name: 'How does ASPES detect AI-generated code from ChatGPT, Claude, and Copilot?',
+              acceptedAnswer: {
+                '@type': 'Answer',
+                text: 'ASPES uses multi-vector token predictability, perplexity distribution, and burstiness analysis. Human programming shows natural, irregular problem-solving cadence and personalized naming conventions. Generative LLMs exhibit statistically flat, low-entropy token transitions. Combined with AST structural fingerprinting, ASPES distinguishes authentic human development from LLM synthesis.'
+              }
+            },
+            {
+              '@type': 'Question',
+              name: 'What is "Report-to-Code Alignment" and what are "Phantom Features"?',
+              acceptedAnswer: {
+                '@type': 'Answer',
+                text: 'Many students submit extensive documentation detailing features (e.g. "OAuth 2.0 Auth", "WebSocket Live Sync") that were never implemented in code. ASPES parses the PDF report with semantic NLP, extracts functional claims, and cross-checks them against actual AST routes, endpoints, and database models to uncover unimplemented or exaggerated claims.'
+              }
+            },
+            {
+              '@type': 'Question',
+              name: 'Can professors customize the evaluation rubrics and override scores?',
+              acceptedAnswer: {
+                '@type': 'Answer',
+                text: 'Absolutely. ASPES acts as an intelligent evaluation copilot, not a replacement for faculty judgment. Professors have full discretion in the Faculty Review Portal to adjust criteria weightings (e.g., 40% AST quality, 30% Plagiarism, 30% Documentation) and override any AI recommendation with qualitative commentary.'
+              }
+            },
+            {
+              '@type': 'Question',
+              name: 'Is student source code and proprietary project data kept secure?',
+              acceptedAnswer: {
+                '@type': 'Answer',
+                text: 'Yes. ASPES strictly adheres to academic confidentiality standards. Repositories are processed in ephemeral, isolated sandboxes and student data is never used to train public LLMs or external models. All access is governed by strict Role-Based Access Control (RBAC).'
+              }
+            },
+            {
+              '@type': 'Question',
+              name: 'Which programming languages and project types does ASPES evaluate?',
+              acceptedAnswer: {
+                '@type': 'Answer',
+                text: 'ASPES natively parses Abstract Syntax Trees for Python, JavaScript/TypeScript, Java, C/C++, and SQL, along with automated package manifest audits across full-stack web, mobile, machine learning, and systems software.'
+              }
+            }
+          ]
+        }
+      ]
+    }
+  },
+  {
     path: '/how-it-works',
     title: 'How It Works – ASPES | 6-Layer AI Project Evaluation System',
     description: 'Explore how ASPES evaluates student code: 6-layer neural pipeline with AST parsing, multi-vector AI detection, cross-repo plagiarism checks, and rubric grading.',
@@ -127,12 +235,21 @@ routes.forEach((route) => {
   routeHtml = routeHtml.replace(/<meta property="og:url" content=".*?" \/>/gi, `<meta property="og:url" content="${route.canonical}" />`);
   routeHtml = routeHtml.replace(/<meta name="twitter:url" content=".*?" \/>/gi, `<meta name="twitter:url" content="${route.canonical}" />`);
 
-  // Replace JSON-LD Schema
+  // Inject or Replace JSON-LD Schema with id="schema-jsonld" and data-rh="true"
   if (route.schema) {
-    routeHtml = routeHtml.replace(
-      /<script type="application\/ld\+json">[\s\S]*?<\/script>/gi,
-      `<script type="application/ld+json">\n    ${JSON.stringify(route.schema, null, 2)}\n    </script>`
-    );
+    const schemaTag = `<script id="schema-jsonld" type="application/ld+json" data-rh="true">\n    ${JSON.stringify(route.schema, null, 2)}\n    </script>`;
+    if (/<script[^>]*type=["']application\/ld\+json["'][^>]*>[\s\S]*?<\/script>/i.test(routeHtml)) {
+      routeHtml = routeHtml.replace(/<script[^>]*type=["']application\/ld\+json["'][^>]*>[\s\S]*?<\/script>/i, schemaTag);
+    } else {
+      routeHtml = routeHtml.replace('</head>', `    ${schemaTag}\n  </head>`);
+    }
+  }
+
+  // Handle root route (build/index.html)
+  if (route.path === '/') {
+    fs.writeFileSync(path.join(BUILD_DIR, 'index.html'), routeHtml, 'utf-8');
+    console.log(`[Prerender] Statically snapshot route: / -> ${path.join(BUILD_DIR, 'index.html')}`);
+    return;
   }
 
   // Output to route directory (e.g. build/login/index.html)

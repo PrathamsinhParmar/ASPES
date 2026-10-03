@@ -70,7 +70,7 @@ const SEO = ({
 
       {/* Structured Data (JSON-LD) */}
       {jsonLd && (
-        <script type="application/ld+json">
+        <script id="schema-jsonld" type="application/ld+json">
           {JSON.stringify(jsonLd)}
         </script>
       )}

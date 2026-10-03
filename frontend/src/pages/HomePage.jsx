@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import SEO from '../components/Common/SEO';
+import Footer from '../components/Common/Footer';
 import { getHomePageStructuredData } from '../utils/structuredData';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
@@ -1351,86 +1352,7 @@ const HomePage = () => {
         {/* ===================================================================== */}
         {/* INSTITUTIONAL FOOTER                                                  */}
         {/* ===================================================================== */}
-        <footer className="mt-14 sm:mt-18 border-t border-slate-200/80 dark:border-slate-800/80 bg-white/70 dark:bg-[#0B0F19]/70 backdrop-blur-xl py-8 sm:py-10 transition-all">
-          <div className="max-w-7xl 2xl:max-w-[1536px] mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6 sm:gap-8 mb-8">
-              <div className="md:col-span-2 space-y-3">
-                <Link to="/" className="inline-block">
-                  <picture>
-                    <source srcSet="/ASPESLight.webp" type="image/webp" />
-                    <img
-                      src="/ASPESLight.png"
-                      alt="ASPES - AI Smart Project Evaluation System"
-                      width="150"
-                      height="36"
-                      loading="lazy"
-                      decoding="async"
-                      className="h-9 w-auto dark:hidden object-contain"
-                    />
-                  </picture>
-                  <picture>
-                    <source srcSet="/ASPESDark.webp" type="image/webp" />
-                    <img
-                      src="/ASPESDark.png"
-                      alt="ASPES - AI Smart Project Evaluation System"
-                      width="150"
-                      height="36"
-                      loading="lazy"
-                      decoding="async"
-                      className="h-9 w-auto hidden dark:block object-contain"
-                    />
-                  </picture>
-                </Link>
-                <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 max-w-md leading-relaxed">
-                  ASPES is an autonomous academic evaluation system designed for university computer science and engineering coursework. Combining 6-layer neural inspection with human-in-the-loop faculty control.
-                </p>
-              </div>
-
-              <div>
-                <h3 className="text-xs font-mono font-bold text-slate-900 dark:text-white uppercase tracking-wider mb-3">
-                  Architecture & Portals
-                </h3>
-                <ul className="space-y-2 text-xs sm:text-sm text-slate-600 dark:text-slate-400">
-                  <li><Link to="/how-it-works" className="hover:text-[#5E60CE] dark:hover:text-[#7275E0] transition-colors">6-Layer AI Pipeline</Link></li>
-                  <li><a href="#journeys" className="hover:text-[#5E60CE] dark:hover:text-[#7275E0] transition-colors">Faculty Portal</a></li>
-                  <li><a href="#journeys" className="hover:text-[#5E60CE] dark:hover:text-[#7275E0] transition-colors">Student Diagnostic Hub</a></li>
-                  <li><a href="#journeys" className="hover:text-[#5E60CE] dark:hover:text-[#7275E0] transition-colors">Admin Telemetry</a></li>
-                </ul>
-              </div>
-
-              <div>
-                <h3 className="text-xs font-mono font-bold text-slate-900 dark:text-white uppercase tracking-wider mb-3">
-                  Academic Governance
-                </h3>
-                <ul className="space-y-2 text-xs sm:text-sm text-slate-600 dark:text-slate-400">
-                  <li><span className="text-slate-500">Zero Code Retention Policy</span></li>
-                  <li><span className="text-slate-500">FERPA / Academic Privacy</span></li>
-                  <li><span className="text-slate-500">Deterministic Marking Engine</span></li>
-                  <li><span className="text-slate-500">ABET & NBA Dossier Ready</span></li>
-                </ul>
-              </div>
-            </div>
-
-            <div className="pt-8 border-t border-slate-200/60 dark:border-slate-800/60 flex flex-col sm:flex-row items-center justify-between text-xs text-slate-500 dark:text-slate-400 gap-4">
-              <div className="space-y-1">
-                <p className="text-sm text-gray-500">
-                  ASPES — AI Smart Project Evaluation System. Developed at Drs. Kiran &amp; Pallavi Patel Global University (KPGU), Krishna School of Emerging Technology &amp; Applied Research.
-                </p>
-                <div>
-                  © {new Date().getFullYear()} ASPES (AI Smart Project Evaluation System). All rights reserved.
-                </div>
-              </div>
-              <div className="flex flex-wrap items-center gap-5 font-medium">
-                <Link to="/" className="hover:text-[#5E60CE] dark:hover:text-[#7275E0] transition-colors">Home</Link>
-                <Link to="/how-it-works" className="hover:text-[#5E60CE] dark:hover:text-[#7275E0] transition-colors">How It Works</Link>
-                <Link to="/login" className="hover:text-[#5E60CE] dark:hover:text-[#7275E0] transition-colors">Sign In</Link>
-                <Link to="/register" className="hover:text-[#5E60CE] dark:hover:text-[#7275E0] transition-colors">Register</Link>
-                <span className="hidden md:inline text-slate-300 dark:text-slate-700">|</span>
-                <span>Status: <span className="text-emerald-500 font-semibold font-mono">100% Operational</span></span>
-              </div>
-            </div>
-          </div>
-        </footer>
+        <Footer />
       </div>
     </>
   );

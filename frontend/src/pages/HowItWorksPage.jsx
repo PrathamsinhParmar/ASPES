@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import SEO from '../components/Common/SEO';
+import Footer from '../components/Common/Footer';
 import { getHowItWorksStructuredData } from '../utils/structuredData';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
@@ -659,50 +660,7 @@ const HowItWorksPage = () => {
         {/* ========================================================================= */}
         {/* FOOTER                                                                    */}
         {/* ========================================================================= */}
-        <footer className="mt-14 sm:mt-18 border-t border-slate-200/80 dark:border-slate-800/80 py-8 bg-white/70 dark:bg-[#0B0F19]/70 backdrop-blur-xl text-xs text-slate-500 dark:text-slate-400 relative z-10">
-          <div className="max-w-7xl 2xl:max-w-[1536px] mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-center sm:text-left">
-            <div className="flex items-center gap-3">
-              <picture>
-                <source srcSet="/ASPESLight.webp" type="image/webp" />
-                <img
-                  src="/ASPESLight.png"
-                  alt="ASPES - AI Smart Project Evaluation System"
-                  width="130"
-                  height="32"
-                  loading="lazy"
-                  decoding="async"
-                  className="h-8 w-auto dark:hidden object-contain"
-                />
-              </picture>
-              <picture>
-                <source srcSet="/ASPESDark.webp" type="image/webp" />
-                <img
-                  src="/ASPESDark.png"
-                  alt="ASPES - AI Smart Project Evaluation System"
-                  width="130"
-                  height="32"
-                  loading="lazy"
-                  decoding="async"
-                  className="h-8 w-auto hidden dark:block object-contain"
-                />
-              </picture>
-              <div className="space-y-1">
-                <p className="text-sm text-gray-500">
-                  ASPES — AI Smart Project Evaluation System. Developed at Drs. Kiran &amp; Pallavi Patel Global University (KPGU), Krishna School of Emerging Technology &amp; Applied Research.
-                </p>
-                <div>
-                  © {new Date().getFullYear()} ASPES Platform. Academic AI Evaluation Infrastructure.
-                </div>
-              </div>
-            </div>
-
-            <div className="flex gap-6 font-semibold">
-              <Link to="/" className="hover:text-[#5E60CE] dark:hover:text-[#7275E0] transition-colors">Home</Link>
-              <Link to="/login" className="hover:text-[#5E60CE] dark:hover:text-[#7275E0] transition-colors">Sign In</Link>
-              <Link to="/register" className="hover:text-[#5E60CE] dark:hover:text-[#7275E0] transition-colors">Register</Link>
-            </div>
-          </div>
-        </footer>
+        <Footer />
       </div>
     </>
   );

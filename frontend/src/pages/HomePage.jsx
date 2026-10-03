@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import SEO from '../components/Common/SEO';
+import { getHomePageStructuredData } from '../utils/structuredData';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   Code2,
@@ -319,6 +320,7 @@ const HomePage = () => {
         description="ASPES automates student code grading with AI: AST syntax audits, multi-vector AI code detection, plagiarism checks, and instant rubric feedback. Try live demo."
         canonicalPath="/"
         keywords="AI project evaluation system, automated code grading, AI plagiarism detection, AI-generated code detector, academic integrity tool, automated programming assignment grading, ASPES"
+        schema={getHomePageStructuredData(faqItems)}
       />
 
       <div className="min-h-screen bg-[#FBFBFA] dark:bg-[#0B0F19] text-slate-900 dark:text-slate-100 font-sans selection:bg-[#5E60CE] selection:text-white transition-colors duration-500 overflow-x-hidden">

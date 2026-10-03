@@ -1,8 +1,10 @@
 import React from 'react';
 import { Helmet } from 'react-helmet-async';
 
-const DEFAULT_TITLE = 'ASPES – AI-Powered Academic Project Evaluation & Plagiarism Detection System';
-const DEFAULT_DESCRIPTION = 'ASPES automates grading of student programming projects using AI — code quality analysis, AI-code detection, plagiarism checks, and GPT-4 feedback in seconds. Try the live demo.';
+import { getOrganizationSchema } from '../../utils/structuredData';
+
+const DEFAULT_TITLE = 'ASPES – AI-Powered Academic Project Evaluation System';
+const DEFAULT_DESCRIPTION = 'ASPES automates student code grading with AI: AST syntax audits, multi-vector AI code detection, plagiarism checks, and instant rubric feedback. Try live demo.';
 const SITE_URL = 'https://aspeskpgu.vercel.app';
 const DEFAULT_OG_IMAGE = `${SITE_URL}/og-preview.png`;
 
@@ -28,6 +30,9 @@ const SEO = ({
     : SITE_URL;
 
   const imageUrl = ogImage.startsWith('http') ? ogImage : `${SITE_URL}${ogImage.startsWith('/') ? ogImage : `/${ogImage}`}`;
+
+  // Structured data: use provided schema, or fallback to Organization schema for indexed pages
+  const jsonLd = schema || (!noindex ? getOrganizationSchema() : null);
 
   return (
     <Helmet>
@@ -63,10 +68,10 @@ const SEO = ({
       <meta name="twitter:description" content={description} />
       <meta name="twitter:image" content={imageUrl} />
 
-      {/* Structured Data (JSON-LD) if provided */}
-      {schema && (
+      {/* Structured Data (JSON-LD) */}
+      {jsonLd && (
         <script type="application/ld+json">
-          {JSON.stringify(schema)}
+          {JSON.stringify(jsonLd)}
         </script>
       )}
     </Helmet>

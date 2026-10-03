@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import SEO from '../components/Common/SEO';
+import { getHowItWorksStructuredData } from '../utils/structuredData';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   Code2,
@@ -173,10 +174,11 @@ const HowItWorksPage = () => {
   return (
     <>
       <SEO
-        title="How It Works – ASPES | 6-Layer AI Code Grading & Plagiarism Architecture"
-        description="Explore the 6-layer ASPES AI project evaluation pipeline: Neural AST parsing, multi-model AI code detection, semantic plagiarism search, and narrative feedback."
+        title="How It Works – ASPES | 6-Layer AI Project Evaluation System"
+        description="Explore how ASPES evaluates student code: 6-layer neural pipeline with AST parsing, multi-vector AI detection, cross-repo plagiarism checks, and rubric grading."
         canonicalPath="/how-it-works"
         keywords="how AI detects plagiarism in code, automated code grading architecture, AI project evaluation system, AST code analysis, AI code detector for students"
+        schema={getHowItWorksStructuredData()}
       />
 
       <div className="min-h-screen bg-[#FDFCFB] dark:bg-[#0B0F19] text-slate-900 dark:text-slate-100 selection:bg-indigo-500 selection:text-white transition-colors duration-500 overflow-x-hidden">

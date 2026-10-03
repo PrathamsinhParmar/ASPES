@@ -1,5 +1,6 @@
 import { Routes, Route, Navigate } from 'react-router-dom';
 import { lazy, Suspense } from 'react';
+import { Analytics } from '@vercel/analytics/react';
 import { useAuth } from './context/AuthContext';
 
 // Layouts
@@ -112,6 +113,35 @@ function App() {
           </Routes>
         </Suspense>
       </ErrorBoundary>
+      <Analytics
+        beforeSend={(event) => {
+          // Privacy protection: strictly suppress tracking on private student & faculty dashboards
+          try {
+            const url = new URL(event.url);
+            const path = url.pathname;
+            const isPrivate = [
+              '/dashboard',
+              '/projects',
+              '/evaluations',
+              '/faculty',
+              '/groups',
+              '/profile',
+              '/assigned',
+              '/review-portal',
+              '/notifications',
+            ].some((prefix) => path.startsWith(prefix));
+
+            if (isPrivate) {
+              return null;
+            }
+          } catch (e) {
+            if (event.url && (event.url.includes('/dashboard') || event.url.includes('/evaluations'))) {
+              return null;
+            }
+          }
+          return event;
+        }}
+      />
     </NotificationProvider>
   </ThemeProvider>
   );

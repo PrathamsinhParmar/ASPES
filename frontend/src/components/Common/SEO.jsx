@@ -34,8 +34,19 @@ const SEO = ({
   // Structured data: use provided schema, or fallback to Organization schema for indexed pages
   const jsonLd = schema || (!noindex ? getOrganizationSchema() : null);
 
+  const googleSiteVerification = process.env.REACT_APP_GOOGLE_SITE_VERIFICATION;
+  const bingSiteVerification = process.env.REACT_APP_BING_SITE_VERIFICATION;
+
   return (
     <Helmet>
+      {/* Search Engine Verification Tags */}
+      {googleSiteVerification && (
+        <meta name="google-site-verification" content={googleSiteVerification} />
+      )}
+      {bingSiteVerification && (
+        <meta name="msvalidate.01" content={bingSiteVerification} />
+      )}
+
       {/* Primary HTML Meta Tags */}
       <title>{fullTitle}</title>
       <meta name="title" content={fullTitle} />

@@ -18,6 +18,8 @@ import EvaluationAlertModal from './components/Notification/EvaluationAlertModal
 import LoadingSpinner from './components/Common/LoadingSpinner';
 
 // Pages (lazy-loaded for performance)
+const HomePage       = lazy(() => import('./pages/HomePage'));
+const HowItWorksPage = lazy(() => import('./pages/HowItWorksPage'));
 const LoginPage      = lazy(() => import('./pages/LoginPage'));
 const RegisterPage   = lazy(() => import('./pages/RegisterPage'));
 const DashboardPage  = lazy(() => import('./pages/DashboardPage'));
@@ -61,7 +63,11 @@ function App() {
         <ErrorBoundary>
           <Suspense fallback={<LoadingSpinner fullScreen />}>
           <Routes>
-            {/* Public Routes */}
+            {/* Public Informational & Marketing Routes */}
+            <Route path="/" element={<HomePage />} />
+            <Route path="/how-it-works" element={<HowItWorksPage />} />
+
+            {/* Public Authentication Routes */}
             <Route path="/login" element={
               <PublicRoute><LoginPage /></PublicRoute>
             } />
@@ -70,13 +76,12 @@ function App() {
             } />
 
             {/* Protected Routes - inside DashboardLayout */}
-            <Route path="/" element={
+            <Route element={
               <ProtectedRoute>
                 <DashboardLayout />
               </ProtectedRoute>
             }>
-              <Route index element={<Navigate to="/dashboard" replace />} />
-              <Route path="dashboard"          element={<DashboardPage />} />
+              <Route path="/dashboard"          element={<DashboardPage />} />
               <Route path="projects"           element={<ProjectsPage />} />
               <Route path="projects/new"       element={<SubmitProject />} />
               <Route path="projects/:id"       element={<ProjectDetail />} />

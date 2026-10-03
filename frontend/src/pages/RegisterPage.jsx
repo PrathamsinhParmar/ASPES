@@ -6,10 +6,10 @@ const RegisterPage = () => {
   return (
     <>
       <SEO
-        title="Register | Create Student or Faculty Account"
-        description="Join ASPES (AI Smart Academic Project Evaluation System). Create a student or faculty account to submit projects, run automated code evaluations, and detect plagiarism."
-        canonical="/register"
-        keywords="ASPES register, sign up ASPES, academic project evaluation account, automated grading student registration"
+        title="Register – ASPES | AI Project Evaluation System"
+        description="Create an ASPES student or faculty account. Submit codebases for automated AST grading, multi-model AI plagiarism detection, and comprehensive feedback."
+        canonicalPath="/register"
+        keywords="ASPES register, create ASPES account, academic project evaluation registration, student faculty code grading portal"
       />
       <Register />
     </>

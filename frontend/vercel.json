@@ -101,6 +101,10 @@
   ],
   "rewrites": [
     {
+      "source": "/how-it-works",
+      "destination": "/how-it-works/index.html"
+    },
+    {
       "source": "/login",
       "destination": "/login/index.html"
     },

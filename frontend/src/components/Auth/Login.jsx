@@ -310,7 +310,7 @@ const Login = () => {
                   <Cpu className="w-4 h-4" />
                 </div>
                 <div>
-                  <h4 className="text-xs font-bold text-slate-900 dark:text-white">AI Engine Status</h4>
+                  <p className="text-xs font-bold text-slate-900 dark:text-white">AI Engine Status</p>
                   <p className="text-[10px] text-slate-400 font-medium">Neural AST v3.2</p>
                 </div>
               </div>
@@ -481,7 +481,7 @@ const Login = () => {
                   <ShieldCheck className="w-4 h-4" />
                 </div>
                 <div>
-                  <h4 className="text-xs font-bold text-slate-900 dark:text-white">Audit Protocol</h4>
+                  <p className="text-xs font-bold text-slate-900 dark:text-white">Audit Protocol</p>
                   <p className="text-[10px] text-slate-400 font-medium">Multi-Layer Guard</p>
                 </div>
               </div>
@@ -518,19 +518,19 @@ const Login = () => {
               {/* Light Mode Logo */}
               <img
                 src="/ASPESLight.png"
-                alt="ASPES KPGU AI Evaluation System"
+                alt="ASPES - AI Smart Project Evaluation System"
                 className="h-12 sm:h-14 md:h-15 w-auto max-w-[250px] sm:max-w-[275px] object-contain block dark:hidden select-none drop-shadow-xs"
               />
               {/* Dark Mode Logo */}
               <img
                 src="/ASPESDark.png"
-                alt="ASPES KPGU AI Evaluation System"
+                alt="ASPES - AI Smart Project Evaluation System"
                 className="h-12 sm:h-14 md:h-15 w-auto max-w-[250px] sm:max-w-[275px] object-contain hidden dark:block select-none drop-shadow-xs"
               />
             </div>
 
             <h1 className="text-xl sm:text-2xl font-bold tracking-tight text-slate-900 dark:text-white">
-              Welcome Back
+              Sign In to ASPES Academic Portal
             </h1>
             <p className="mt-1 text-xs sm:text-[13px] text-slate-500 dark:text-slate-400 font-normal">
               Sign in to continue to <span className="font-semibold text-slate-800 dark:text-slate-200">ASPES</span> Evaluation Portal

@@ -6,10 +6,10 @@ const LoginPage = () => {
   return (
     <>
       <SEO
-        title="Login | AI Academic Project Evaluation Portal"
-        description="Access your ASPES account. Secure AI-powered academic project grading, multi-model plagiarism detection, and automated feedback for students and faculty."
-        canonical="/login"
-        keywords="ASPES login, AI project evaluation, academic code grading, automated grading portal, student faculty login"
+        title="Login – ASPES | AI Project Evaluation System"
+        description="Sign in to the ASPES academic portal to access automated code evaluations, AI-generated code detection scores, and university project reports."
+        canonicalPath="/login"
+        keywords="ASPES login, AI project evaluation login, university code grader portal, academic plagiarism detection login"
       />
       <Login />
     </>

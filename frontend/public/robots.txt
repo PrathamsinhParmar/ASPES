@@ -6,6 +6,7 @@ User-agent: *
 
 # Allowed Public Routes
 Allow: /$
+Allow: /how-it-works
 Allow: /login
 Allow: /register
 

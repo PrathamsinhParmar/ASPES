@@ -109,13 +109,13 @@ function DashboardLayout() {
             {/* Light Mode Logo (Visible when not in dark mode) */}
             <img 
               src="/ASPESLight.png" 
-              alt="ASPES Light" 
+              alt="ASPES - AI Smart Project Evaluation System" 
               className="h-10 sm:h-20 w-auto max-w-[210px] object-contain block dark:hidden"
             />
             {/* Dark Mode Logo (Visible only in dark mode) */}
             <img 
               src="/ASPESDark.png" 
-              alt="ASPES Dark" 
+              alt="ASPES - AI Smart Project Evaluation System" 
               className="h-10 sm:h-20 w-auto max-w-[202px] object-contain hidden dark:block"
             />
           </div>

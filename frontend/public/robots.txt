@@ -9,6 +9,9 @@ Allow: /$
 Allow: /how-it-works
 Allow: /login
 Allow: /register
+Allow: /sitemap.xml
+Allow: /robots.txt
+
 
 # Disallowed Private & Authenticated Routes
 Disallow: /dashboard

@@ -316,10 +316,10 @@ const HomePage = () => {
   return (
     <>
       <SEO
-        title="ASPES – AI-Powered Academic Project Evaluation System"
-        description="ASPES automates student code grading with AI: AST syntax audits, multi-vector AI code detection, plagiarism checks, and instant rubric feedback. Try live demo."
+        title="ASPES – AI Smart Project Evaluation System | KPGU"
+        description="ASPES is KPGU's AI-powered project evaluation portal — automated code quality analysis, AI-generated code detection, and plagiarism checks for student projects at Drs. Kiran & Pallavi Patel Global, design and developed by Prathamsinh Parmar(Pratham Rajput)."
         canonicalPath="/"
-        keywords="AI project evaluation system, automated code grading, AI plagiarism detection, AI-generated code detector, academic integrity tool, automated programming assignment grading, ASPES"
+        keywords="aspes, aspes kpgu, ai evaluation portal kpgu, ai portal kpgu, ai smart project evaluation system, ai project evaluation system, kpgu ai project evaluation, aspes ai portal, pratham rajput, prathamsinh parmar"
         schema={getHomePageStructuredData(faqItems)}
       />
 
@@ -573,11 +573,10 @@ const HomePage = () => {
                     transition={{ duration: 0.5, delay: 0.1 }}
                     className="text-2xl sm:text-4xl lg:text-5xl 2xl:text-6xl font-extrabold tracking-tight text-slate-900 dark:text-white leading-[1.15] sm:leading-[1.12]"
                   >
-                    AI Project Evaluation &{' '}
+                    AI Smart Project Evaluation System for{' '}
                     <span className="text-transparent bg-clip-text bg-[linear-gradient(to_right,#1E3A8A_0%,#DC2626_35%,#D97706_70%,#059669_100%)] dark:bg-[linear-gradient(to_right,#60A5FA_0%,#F87171_35%,#FBBF24_70%,#34D399_100%)]">
-                      Automated Code Grading
-                    </span>{' '}
-                    System
+                      KPGU Students
+                    </span>
                   </motion.h1>
 
                   {/* Value Proposition Subtitle */}
@@ -1413,8 +1412,13 @@ const HomePage = () => {
             </div>
 
             <div className="pt-8 border-t border-slate-200/60 dark:border-slate-800/60 flex flex-col sm:flex-row items-center justify-between text-xs text-slate-500 dark:text-slate-400 gap-4">
-              <div>
-                © {new Date().getFullYear()} ASPES (AI Smart Project Evaluation System). All rights reserved.
+              <div className="space-y-1">
+                <p className="text-sm text-gray-500">
+                  ASPES — AI Smart Project Evaluation System. Developed at Drs. Kiran &amp; Pallavi Patel Global University (KPGU), Krishna School of Emerging Technology &amp; Applied Research.
+                </p>
+                <div>
+                  © {new Date().getFullYear()} ASPES (AI Smart Project Evaluation System). All rights reserved.
+                </div>
               </div>
               <div className="flex flex-wrap items-center gap-5 font-medium">
                 <Link to="/" className="hover:text-[#5E60CE] dark:hover:text-[#7275E0] transition-colors">Home</Link>

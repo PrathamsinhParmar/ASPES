@@ -6,8 +6,10 @@ const NotFoundPage = () => {
   return (
     <>
       <SEO
-        title="404: Page Not Found"
-        description="The requested page could not be found on ASPES."
+        title="Page Not Found – ASPES"
+        description="The page you're looking for doesn't exist on ASPES."
+        keywords=""
+        canonicalPath="/404"
         noindex={true}
       />
       <div className="min-h-screen flex flex-col justify-center items-center p-6 text-center bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-white">

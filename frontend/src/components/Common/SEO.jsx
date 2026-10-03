@@ -21,7 +21,7 @@ const SEO = ({
 }) => {
   // Prevent duplicate branding suffix if title already contains ASPES
   const fullTitle = title
-    ? (title.includes('ASPES') ? title : `${title} – ASPES | AI Project Evaluation System`)
+    ? (title.includes('ASPES') ? title : `${title} | ASPES`)
     : DEFAULT_TITLE;
 
   const effectivePath = canonicalPath || canonical || '';
@@ -61,9 +61,13 @@ const SEO = ({
         <meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1" />
       )}
 
+      {/* Author & Application Identification */}
+      <meta name="author" content="ASPES Team, KPGU" />
+      <meta name="application-name" content="ASPES" />
+
       {/* Open Graph / Facebook / LinkedIn / WhatsApp */}
       <meta property="og:type" content={ogType} />
-      <meta property="og:site_name" content="ASPES" />
+      <meta property="og:site_name" content="ASPES - KPGU" />
       <meta property="og:url" content={canonicalUrl} />
       <meta property="og:title" content={fullTitle} />
       <meta property="og:description" content={description} />

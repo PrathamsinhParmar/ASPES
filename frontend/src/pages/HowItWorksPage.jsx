@@ -174,10 +174,10 @@ const HowItWorksPage = () => {
   return (
     <>
       <SEO
-        title="How It Works – ASPES | 6-Layer AI Project Evaluation System"
-        description="Explore how ASPES evaluates student code: 6-layer neural pipeline with AST parsing, multi-vector AI detection, cross-repo plagiarism checks, and rubric grading."
+        title="How ASPES Works – AI Project Evaluation at KPGU"
+        description="Learn how ASPES evaluates academic programming projects using six AI components: code analysis, AI-generated code detection, plagiarism detection, documentation review, and GPT-4 feedback — built for KPGU's Krishna School of Emerging Technology, design and developed by Prathamsinh Parmar(Pratham Rajput)."
         canonicalPath="/how-it-works"
-        keywords="how AI detects plagiarism in code, automated code grading architecture, AI project evaluation system, AST code analysis, AI code detector for students"
+        keywords="aspes, aspes portal kpgu, kpgu ai portal, aspes project evaluation portal, aspes portal, ai based project evaluation kpgu, automated project evaluation tool, ai code plagiarism detector, ai generated code detector, krishna school of emerging technology ai project, automated code quality analyzer"
         schema={getHowItWorksStructuredData()}
       />
 
@@ -371,11 +371,10 @@ const HowItWorksPage = () => {
                 transition={{ duration: 0.5, delay: 0.1 }}
                 className="text-2xl sm:text-4xl lg:text-5xl 2xl:text-6xl font-extrabold tracking-tight text-slate-900 dark:text-white leading-[1.15] sm:leading-[1.12]"
               >
-                How the ASPES AI Project{' '}
+                How ASPES Evaluates Your{' '}
                 <span className="text-transparent bg-clip-text bg-[linear-gradient(to_right,#1E3A8A_0%,#DC2626_35%,#D97706_70%,#059669_100%)] dark:bg-[linear-gradient(to_right,#60A5FA_0%,#F87171_35%,#FBBF24_70%,#34D399_100%)]">
-                  Evaluation Engine
-                </span>{' '}
-                Works
+                  Academic Projects
+                </span>
               </motion.h1>
 
               <motion.p
@@ -687,7 +686,14 @@ const HowItWorksPage = () => {
                   className="h-8 w-auto hidden dark:block object-contain"
                 />
               </picture>
-              <span>© {new Date().getFullYear()} ASPES Platform. Academic AI Evaluation Infrastructure.</span>
+              <div className="space-y-1">
+                <p className="text-sm text-gray-500">
+                  ASPES — AI Smart Project Evaluation System. Developed at Drs. Kiran &amp; Pallavi Patel Global University (KPGU), Krishna School of Emerging Technology &amp; Applied Research.
+                </p>
+                <div>
+                  © {new Date().getFullYear()} ASPES Platform. Academic AI Evaluation Infrastructure.
+                </div>
+              </div>
             </div>
 
             <div className="flex gap-6 font-semibold">

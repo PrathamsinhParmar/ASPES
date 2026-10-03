@@ -18,10 +18,10 @@ const LoginPage = () => {
   return (
     <>
       <SEO
-        title="Login – ASPES | AI Project Evaluation System"
-        description="Sign in to the ASPES academic portal to review student code evaluations, inspect multi-vector AI detection telemetry, and access automated rubric scorecards."
+        title="Login – ASPES KPGU AI Evaluation Portal"
+        description="Log in to ASPES, KPGU's AI-based project evaluation system, to submit and track your academic project assessments."
+        keywords="aspes kpgu, kpgu ai portal, ai evaluation portal"
         canonicalPath="/login"
-        keywords="ASPES login, AI project evaluation login, university code grader portal, academic plagiarism detection login"
         schema={loginSchema}
       />
       <Login />

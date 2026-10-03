@@ -18,10 +18,10 @@ const RegisterPage = () => {
   return (
     <>
       <SEO
-        title="Register – ASPES | AI Project Evaluation System"
-        description="Create an ASPES student or faculty account. Submit codebases for automated AST grading, multi-model AI plagiarism detection, and comprehensive feedback."
+        title="Register – ASPES KPGU AI Evaluation Portal"
+        description="Create your ASPES account to access KPGU's AI-powered academic project evaluation and feedback system."
+        keywords="aspes kpgu project, kpgu student project ai tool, ai evaluation portal kpgu"
         canonicalPath="/register"
-        keywords="ASPES register, create ASPES account, academic project evaluation registration, student faculty code grading portal"
         schema={registerSchema}
       />
       <Register />

@@ -14,12 +14,12 @@ export const getOrganizationSchema = (isGraphNode = false) => ({
   ...(isGraphNode ? {} : { '@context': 'https://schema.org' }),
   '@type': 'Organization',
   '@id': `${SITE_URL}/#organization`,
-  name: 'ASPES',
-  alternateName: 'AI Smart Project Evaluation System',
+  name: 'ASPES - AI Smart Project Evaluation System',
+  alternateName: 'ASPES KPGU',
   url: `${SITE_URL}/`,
   logo: `${SITE_URL}/logo512.png`,
   image: `${SITE_URL}/og-preview.png`,
-  description: 'AI Smart Project Evaluation System for automated academic programming project assessment and plagiarism detection.',
+  description: 'An AI-powered academic project evaluation portal developed at Drs. Kiran & Pallavi Patel Global University (KPGU), Krishna School of Emerging Technology & Applied Research.',
   sameAs: [
     'https://github.com/PrathamsinhParmar/ASPES'
   ]
@@ -55,6 +55,7 @@ export const getSoftwareApplicationSchema = (isGraphNode = false) => ({
   operatingSystem: 'Web',
   description: 'An AI-powered system for evaluating academic software projects with automated code analysis, plagiarism detection, AI-generated code detection, and comprehensive feedback generation.',
   url: `${SITE_URL}/`,
+  keywords: 'ASPES, ASPES KPGU, AI evaluation portal, AI portal KPGU, AI smart project evaluation system, AI project evaluation system, AI code plagiarism detector, AI generated code detector, KPGU AI project evaluation',
   aggregateRating: {
     '@type': 'AggregateRating',
     ratingValue: '4.9',

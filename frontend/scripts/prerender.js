@@ -24,8 +24,9 @@ const baseHtml = fs.readFileSync(indexPath, 'utf-8');
 const routes = [
   {
     path: '/',
-    title: 'ASPES – AI-Powered Academic Project Evaluation System',
-    description: 'ASPES automates student code grading with AI: AST syntax audits, multi-vector AI code detection, plagiarism checks, and instant rubric feedback. Try live demo.',
+    title: 'ASPES – AI Smart Project Evaluation System | KPGU',
+    description: "ASPES is KPGU's AI-powered project evaluation portal — automated code quality analysis, AI-generated code detection, and plagiarism checks for student projects at Drs. Kiran & Pallavi Patel Global, design and developed by Prathamsinh Parmar(Pratham Rajput).",
+    keywords: 'aspes, aspes kpgu, ai evaluation portal kpgu, ai portal kpgu, ai smart project evaluation system, ai project evaluation system, kpgu ai project evaluation, aspes ai portal, pratham rajput, prathamsinh parmar',
     canonical: 'https://aspeskpgu.vercel.app/',
     schema: {
       '@context': 'https://schema.org',
@@ -33,12 +34,12 @@ const routes = [
         {
           '@type': 'Organization',
           '@id': 'https://aspeskpgu.vercel.app/#organization',
-          name: 'ASPES',
-          alternateName: 'AI Smart Project Evaluation System',
+          name: 'ASPES - AI Smart Project Evaluation System',
+          alternateName: 'ASPES KPGU',
           url: 'https://aspeskpgu.vercel.app/',
           logo: 'https://aspeskpgu.vercel.app/logo512.png',
           image: 'https://aspeskpgu.vercel.app/og-preview.png',
-          description: 'AI Smart Project Evaluation System for automated academic programming project assessment and plagiarism detection.',
+          description: 'An AI-powered academic project evaluation portal developed at Drs. Kiran & Pallavi Patel Global University (KPGU), Krishna School of Emerging Technology & Applied Research.',
           sameAs: ['https://github.com/PrathamsinhParmar/ASPES']
         },
         {
@@ -60,6 +61,7 @@ const routes = [
           operatingSystem: 'Web',
           description: 'An AI-powered system for evaluating academic software projects with automated code analysis, plagiarism detection, AI-generated code detection, and comprehensive feedback generation.',
           url: 'https://aspeskpgu.vercel.app/',
+          keywords: 'ASPES, ASPES KPGU, AI evaluation portal, AI portal KPGU, AI smart project evaluation system, AI project evaluation system, AI code plagiarism detector, AI generated code detector, KPGU AI project evaluation',
           aggregateRating: {
             '@type': 'AggregateRating',
             ratingValue: '4.9',
@@ -132,8 +134,9 @@ const routes = [
   },
   {
     path: '/how-it-works',
-    title: 'How It Works – ASPES | 6-Layer AI Project Evaluation System',
-    description: 'Explore how ASPES evaluates student code: 6-layer neural pipeline with AST parsing, multi-vector AI detection, cross-repo plagiarism checks, and rubric grading.',
+    title: 'How ASPES Works – AI Project Evaluation at KPGU',
+    description: "Learn how ASPES evaluates academic programming projects using six AI components: code analysis, AI-generated code detection, plagiarism detection, documentation review, and GPT-4 feedback — built for KPGU's Krishna School of Emerging Technology, design and developed by Prathamsinh Parmar(Pratham Rajput).",
+    keywords: 'aspes, aspes portal kpgu, kpgu ai portal, aspes project evaluation portal, aspes portal, ai based project evaluation kpgu, automated project evaluation tool, ai code plagiarism detector, ai generated code detector, krishna school of emerging technology ai project, automated code quality analyzer',
     canonical: 'https://aspeskpgu.vercel.app/how-it-works',
     schema: {
       '@context': 'https://schema.org',
@@ -141,10 +144,10 @@ const routes = [
         {
           '@type': 'Organization',
           '@id': 'https://aspeskpgu.vercel.app/#organization',
-          name: 'ASPES',
+          name: 'ASPES - AI Smart Project Evaluation System',
           url: 'https://aspeskpgu.vercel.app/',
           logo: 'https://aspeskpgu.vercel.app/logo512.png',
-          description: 'AI Smart Project Evaluation System for automated academic programming project assessment'
+          description: 'An AI-powered academic project evaluation portal developed at Drs. Kiran & Pallavi Patel Global University (KPGU).'
         },
         {
           '@type': 'BreadcrumbList',
@@ -156,8 +159,8 @@ const routes = [
         {
           '@type': 'TechArticle',
           '@id': 'https://aspeskpgu.vercel.app/how-it-works#article',
-          headline: 'How the ASPES AI Project Evaluation Engine Works',
-          description: 'Architectural breakdown of the 6-layer neural evaluation pipeline: AST analysis, multi-vector AI code detection, semantic plagiarism search, and rubric grading.',
+          headline: 'How ASPES Evaluates Your Academic Projects',
+          description: "Learn how ASPES evaluates academic programming projects using six AI components: code analysis, AI-generated code detection, plagiarism detection, documentation review, and GPT-4 feedback — built for KPGU's Krishna School of Emerging Technology.",
           url: 'https://aspeskpgu.vercel.app/how-it-works',
           inLanguage: 'en-US'
         }
@@ -166,8 +169,9 @@ const routes = [
   },
   {
     path: '/login',
-    title: 'Login – ASPES | AI Project Evaluation System',
-    description: 'Sign in to the ASPES academic portal to review student code evaluations, inspect multi-vector AI detection telemetry, and access automated rubric scorecards.',
+    title: 'Login – ASPES KPGU AI Evaluation Portal',
+    description: "Log in to ASPES, KPGU's AI-based project evaluation system, to submit and track your academic project assessments.",
+    keywords: 'aspes kpgu, kpgu ai portal, ai evaluation portal',
     canonical: 'https://aspeskpgu.vercel.app/login',
     schema: {
       '@context': 'https://schema.org',
@@ -175,7 +179,7 @@ const routes = [
         {
           '@type': 'Organization',
           '@id': 'https://aspeskpgu.vercel.app/#organization',
-          name: 'ASPES',
+          name: 'ASPES - AI Smart Project Evaluation System',
           url: 'https://aspeskpgu.vercel.app/',
           logo: 'https://aspeskpgu.vercel.app/logo512.png'
         },
@@ -191,8 +195,9 @@ const routes = [
   },
   {
     path: '/register',
-    title: 'Register – ASPES | AI Project Evaluation System',
-    description: 'Create an ASPES university account to submit student repositories, execute automated AST code analysis, detect AI-generated code, and streamline project grading.',
+    title: 'Register – ASPES KPGU AI Evaluation Portal',
+    description: "Create your ASPES account to access KPGU's AI-powered academic project evaluation and feedback system.",
+    keywords: 'aspes kpgu project, kpgu student project ai tool, ai evaluation portal kpgu',
     canonical: 'https://aspeskpgu.vercel.app/register',
     schema: {
       '@context': 'https://schema.org',
@@ -200,7 +205,7 @@ const routes = [
         {
           '@type': 'Organization',
           '@id': 'https://aspeskpgu.vercel.app/#organization',
-          name: 'ASPES',
+          name: 'ASPES - AI Smart Project Evaluation System',
           url: 'https://aspeskpgu.vercel.app/',
           logo: 'https://aspeskpgu.vercel.app/logo512.png'
         },
@@ -221,19 +226,24 @@ routes.forEach((route) => {
 
   // Replace Title
   routeHtml = routeHtml.replace(/<title>.*?<\/title>/gi, `<title>${route.title}</title>`);
-  routeHtml = routeHtml.replace(/<meta name="title" content=".*?" \/>/gi, `<meta name="title" content="${route.title}" />`);
-  routeHtml = routeHtml.replace(/<meta property="og:title" content=".*?" \/>/gi, `<meta property="og:title" content="${route.title}" />`);
-  routeHtml = routeHtml.replace(/<meta name="twitter:title" content=".*?" \/>/gi, `<meta name="twitter:title" content="${route.title}" />`);
+  routeHtml = routeHtml.replace(/<meta\s+name=["']title["']\s+content=["'][^"']*?["']\s*\/?>/gi, `<meta name="title" content="${route.title}" />`);
+  routeHtml = routeHtml.replace(/<meta\s+property=["']og:title["']\s+content=["'][^"']*?["']\s*\/?>/gi, `<meta property="og:title" content="${route.title}" />`);
+  routeHtml = routeHtml.replace(/<meta\s+name=["']twitter:title["']\s+content=["'][^"']*?["']\s*\/?>/gi, `<meta name="twitter:title" content="${route.title}" />`);
 
   // Replace Description
-  routeHtml = routeHtml.replace(/<meta name="description" content=".*?" \/>/gi, `<meta name="description" content="${route.description}" />`);
-  routeHtml = routeHtml.replace(/<meta property="og:description" content=".*?" \/>/gi, `<meta property="og:description" content="${route.description}" />`);
-  routeHtml = routeHtml.replace(/<meta name="twitter:description" content=".*?" \/>/gi, `<meta name="twitter:description" content="${route.description}" />`);
+  routeHtml = routeHtml.replace(/<meta\s+name=["']description["']\s+content=["'][^"']*?["']\s*\/?>/gi, `<meta name="description" content="${route.description}" />`);
+  routeHtml = routeHtml.replace(/<meta\s+property=["']og:description["']\s+content=["'][^"']*?["']\s*\/?>/gi, `<meta property="og:description" content="${route.description}" />`);
+  routeHtml = routeHtml.replace(/<meta\s+name=["']twitter:description["']\s+content=["'][^"']*?["']\s*\/?>/gi, `<meta name="twitter:description" content="${route.description}" />`);
+
+  // Replace Keywords
+  if (route.keywords) {
+    routeHtml = routeHtml.replace(/<meta\s+name=["']keywords["']\s+content=["'][^"']*?["']\s*\/?>/gi, `<meta name="keywords" content="${route.keywords}" />`);
+  }
 
   // Replace Canonical & URL
-  routeHtml = routeHtml.replace(/<link rel="canonical" href=".*?" \/>/gi, `<link rel="canonical" href="${route.canonical}" />`);
-  routeHtml = routeHtml.replace(/<meta property="og:url" content=".*?" \/>/gi, `<meta property="og:url" content="${route.canonical}" />`);
-  routeHtml = routeHtml.replace(/<meta name="twitter:url" content=".*?" \/>/gi, `<meta name="twitter:url" content="${route.canonical}" />`);
+  routeHtml = routeHtml.replace(/<link\s+rel=["']canonical["']\s+href=["'][^"']*?["']\s*\/?>/gi, `<link rel="canonical" href="${route.canonical}" />`);
+  routeHtml = routeHtml.replace(/<meta\s+property=["']og:url["']\s+content=["'][^"']*?["']\s*\/?>/gi, `<meta property="og:url" content="${route.canonical}" />`);
+  routeHtml = routeHtml.replace(/<meta\s+name=["']twitter:url["']\s+content=["'][^"']*?["']\s*\/?>/gi, `<meta name="twitter:url" content="${route.canonical}" />`);
 
   // Inject or Replace JSON-LD Schema with id="schema-jsonld" and data-rh="true"
   if (route.schema) {

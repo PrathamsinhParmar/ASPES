@@ -84,6 +84,7 @@ function DashboardLayout() {
   const { user, logout } = useAuth();
   const { unreadCount } = useNotifications();
   const [sidebarOpen, setSidebarOpen] = useState(true);
+  const location = useLocation();
 
   const toggleSidebar = () => setSidebarOpen(!sidebarOpen);
 
@@ -91,7 +92,13 @@ function DashboardLayout() {
 
   return (
     <div className="min-h-screen bg-transparent dark:bg-slate-950 flex text-gray-900 dark:text-gray-100 font-sans">
-      <SEO noindex={true} title="Dashboard" />
+      <SEO
+        title="Dashboard – ASPES"
+        description="ASPES evaluation dashboard."
+        keywords=""
+        canonicalPath={location.pathname}
+        noindex={true}
+      />
       {/* ---- Sidebar ---- */}
       <aside className={`
         fixed inset-y-0 left-0 z-40 flex flex-col

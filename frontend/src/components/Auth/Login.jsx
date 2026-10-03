@@ -646,6 +646,7 @@ const Login = () => {
               className="font-semibold text-indigo-600 dark:text-indigo-400 hover:text-indigo-500 dark:hover:text-indigo-300 transition-colors"
             >
               Create an account
+            </Link>
           </div>
 
           {/* Secondary Public Navigation */}

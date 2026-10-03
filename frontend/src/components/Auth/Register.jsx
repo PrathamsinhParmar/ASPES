@@ -536,17 +536,29 @@ const Register = () => {
             {/* Theme-Adaptive Logos */}
             <div className="flex justify-center mb-3 sm:mb-3.5">
               {/* Light Mode Logo */}
-              <img
-                src="/ASPESLight.png"
-                alt="ASPES - AI Smart Project Evaluation System"
-                className="h-12 sm:h-14 md:h-15 w-auto max-w-[250px] sm:max-w-[275px] object-contain block dark:hidden select-none drop-shadow-xs"
-              />
+              <picture>
+                <source srcSet="/ASPESLight.webp" type="image/webp" />
+                <img
+                  src="/ASPESLight.png"
+                  alt="ASPES - AI Smart Project Evaluation System"
+                  width="240"
+                  height="58"
+                  fetchPriority="high"
+                  className="h-12 sm:h-14 md:h-15 w-auto max-w-[250px] sm:max-w-[275px] object-contain block dark:hidden select-none drop-shadow-xs"
+                />
+              </picture>
               {/* Dark Mode Logo */}
-              <img
-                src="/ASPESDark.png"
-                alt="ASPES - AI Smart Project Evaluation System"
-                className="h-12 sm:h-14 md:h-15 w-auto max-w-[250px] sm:max-w-[275px] object-contain hidden dark:block select-none drop-shadow-xs"
-              />
+              <picture>
+                <source srcSet="/ASPESDark.webp" type="image/webp" />
+                <img
+                  src="/ASPESDark.png"
+                  alt="ASPES - AI Smart Project Evaluation System"
+                  width="240"
+                  height="58"
+                  fetchPriority="high"
+                  className="h-12 sm:h-14 md:h-15 w-auto max-w-[250px] sm:max-w-[275px] object-contain hidden dark:block select-none drop-shadow-xs"
+                />
+              </picture>
             </div>
 
             <h1 className="text-xl sm:text-2xl font-bold tracking-tight text-slate-900 dark:text-white">

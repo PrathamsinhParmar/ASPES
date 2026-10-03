@@ -138,6 +138,9 @@ const ProfilePage = () => {
                     <img 
                       src={`${API_BASE_URL}${user.profile_photo}?v=${new Date(user.updated_at || Date.now()).getTime()}`} 
                       alt={user.full_name} 
+                      width="80"
+                      height="80"
+                      loading="lazy"
                       className="w-full h-full object-cover" 
                     />
                   </div>

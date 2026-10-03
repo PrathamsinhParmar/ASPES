@@ -150,6 +150,9 @@ const FacultyDashboardViewPage = () => {
               <img
                 src={`${API_BASE_URL}${faculty.profile_photo}?v=${new Date(faculty.updated_at || Date.now()).getTime()}`}
                 alt={faculty.full_name}
+                width="64"
+                height="64"
+                loading="lazy"
                 className="w-14 h-14 sm:w-16 sm:h-16 rounded-xl object-cover ring-2 ring-indigo-500/20 shadow-xs flex-shrink-0"
               />
             ) : (

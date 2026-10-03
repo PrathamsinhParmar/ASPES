@@ -197,16 +197,28 @@ const HowItWorksPage = () => {
         <header className="sticky top-0 z-50 backdrop-blur-2xl bg-white/85 dark:bg-[#0B0F19]/85 border-b border-slate-200/70 dark:border-slate-800/70 transition-all">
           <div className="max-w-7xl 2xl:max-w-[1536px] mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
             <Link to="/" className="flex items-center gap-3 group shrink-0">
-              <img
-                src="/ASPESLight.png"
-                alt="ASPES - AI Smart Project Evaluation System"
-                className="h-9 sm:h-11 w-auto dark:hidden object-contain drop-shadow-xs transition-transform duration-300 group-hover:scale-105"
-              />
-              <img
-                src="/ASPESDark.png"
-                alt="ASPES - AI Smart Project Evaluation System"
-                className="h-9 sm:h-11 w-auto hidden dark:block object-contain drop-shadow-xs transition-transform duration-300 group-hover:scale-105"
-              />
+              <picture>
+                <source srcSet="/ASPESLight.webp" type="image/webp" />
+                <img
+                  src="/ASPESLight.png"
+                  alt="ASPES - AI Smart Project Evaluation System"
+                  width="180"
+                  height="44"
+                  fetchPriority="high"
+                  className="h-9 sm:h-11 w-auto dark:hidden object-contain drop-shadow-xs transition-transform duration-300 group-hover:scale-105"
+                />
+              </picture>
+              <picture>
+                <source srcSet="/ASPESDark.webp" type="image/webp" />
+                <img
+                  src="/ASPESDark.png"
+                  alt="ASPES - AI Smart Project Evaluation System"
+                  width="180"
+                  height="44"
+                  fetchPriority="high"
+                  className="h-9 sm:h-11 w-auto hidden dark:block object-contain drop-shadow-xs transition-transform duration-300 group-hover:scale-105"
+                />
+              </picture>
             </Link>
 
             <nav className="hidden md:flex items-center gap-6 lg:gap-8">
@@ -651,16 +663,30 @@ const HowItWorksPage = () => {
         <footer className="mt-14 sm:mt-18 border-t border-slate-200/80 dark:border-slate-800/80 py-8 bg-white/70 dark:bg-[#0B0F19]/70 backdrop-blur-xl text-xs text-slate-500 dark:text-slate-400 relative z-10">
           <div className="max-w-7xl 2xl:max-w-[1536px] mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-center sm:text-left">
             <div className="flex items-center gap-3">
-              <img
-                src="/ASPESLight.png"
-                alt="ASPES - AI Smart Project Evaluation System"
-                className="h-8 w-auto dark:hidden"
-              />
-              <img
-                src="/ASPESDark.png"
-                alt="ASPES - AI Smart Project Evaluation System"
-                className="h-8 w-auto hidden dark:block"
-              />
+              <picture>
+                <source srcSet="/ASPESLight.webp" type="image/webp" />
+                <img
+                  src="/ASPESLight.png"
+                  alt="ASPES - AI Smart Project Evaluation System"
+                  width="130"
+                  height="32"
+                  loading="lazy"
+                  decoding="async"
+                  className="h-8 w-auto dark:hidden object-contain"
+                />
+              </picture>
+              <picture>
+                <source srcSet="/ASPESDark.webp" type="image/webp" />
+                <img
+                  src="/ASPESDark.png"
+                  alt="ASPES - AI Smart Project Evaluation System"
+                  width="130"
+                  height="32"
+                  loading="lazy"
+                  decoding="async"
+                  className="h-8 w-auto hidden dark:block object-contain"
+                />
+              </picture>
               <span>© {new Date().getFullYear()} ASPES Platform. Academic AI Evaluation Infrastructure.</span>
             </div>
 

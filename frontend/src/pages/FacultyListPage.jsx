@@ -154,7 +154,7 @@ function CreateFacultyModal({ onClose, onCreated }) {
           <div className="flex flex-col items-center gap-3 py-2 border-b border-gray-100 dark:border-slate-800">
             <div className="relative">
               {photoPreview ? (
-                <img src={photoPreview} alt="Preview" className="w-20 h-20 rounded-full object-cover border-2 border-indigo-100 dark:border-indigo-900/30 shadow-md" />
+                <img src={photoPreview} alt="Preview" width="80" height="80" loading="lazy" className="w-20 h-20 rounded-full object-cover border-2 border-indigo-100 dark:border-indigo-900/30 shadow-md" />
               ) : (
                 <div className="w-20 h-20 rounded-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center border-2 border-dashed border-gray-300 dark:border-slate-700">
                   <UserIcon className="w-8 h-8 text-gray-400 dark:text-slate-500" />
@@ -452,7 +452,7 @@ function EditFacultyModal({ faculty, onClose, onUpdated }) {
           <div className="flex flex-col items-center gap-3 py-2 border-b border-gray-100 dark:border-slate-800">
             <div className="relative">
               {photoPreview ? (
-                <img src={photoPreview} alt="Preview" className="w-20 h-20 rounded-full object-cover border-2 border-indigo-100 dark:border-indigo-900/30 shadow-md" />
+                <img src={photoPreview} alt="Preview" width="80" height="80" loading="lazy" className="w-20 h-20 rounded-full object-cover border-2 border-indigo-100 dark:border-indigo-900/30 shadow-md" />
               ) : (
                 <div className="w-20 h-20 rounded-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center border-2 border-dashed border-gray-300 dark:border-slate-700">
                   <UserIcon className="w-8 h-8 text-gray-400 dark:text-slate-500" />
@@ -824,6 +824,9 @@ const FacultyListPage = () => {
                     <img
                       src={`${API_BASE_URL}${faculty.profile_photo}?v=${new Date(faculty.updated_at || Date.now()).getTime()}`}
                       alt={faculty.full_name}
+                      width="48"
+                      height="48"
+                      loading="lazy"
                       className="w-12 h-12 rounded-lg object-cover shadow-sm flex-shrink-0 group-hover:-translate-y-0.5 transition-transform"
                     />
                   ) : (

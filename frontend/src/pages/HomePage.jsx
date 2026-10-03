@@ -333,16 +333,28 @@ const HomePage = () => {
         <header className="sticky top-0 z-50 backdrop-blur-xl bg-white/85 dark:bg-[#0B0F19]/85 border-b border-slate-200/70 dark:border-slate-800/70 transition-all">
           <div className="max-w-7xl 2xl:max-w-[1536px] mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
             <Link to="/" className="flex items-center gap-3 group shrink-0">
-              <img
-                src="/ASPESLight.png"
-                alt="ASPES - AI Smart Project Evaluation System"
-                className="h-9 sm:h-11 w-auto dark:hidden object-contain transition-transform duration-300 group-hover:scale-[1.02]"
-              />
-              <img
-                src="/ASPESDark.png"
-                alt="ASPES - AI Smart Project Evaluation System"
-                className="h-9 sm:h-11 w-auto hidden dark:block object-contain transition-transform duration-300 group-hover:scale-[1.02]"
-              />
+              <picture>
+                <source srcSet="/ASPESLight.webp" type="image/webp" />
+                <img
+                  src="/ASPESLight.png"
+                  alt="ASPES - AI Smart Project Evaluation System"
+                  width="180"
+                  height="44"
+                  fetchPriority="high"
+                  className="h-9 sm:h-11 w-auto dark:hidden object-contain transition-transform duration-300 group-hover:scale-[1.02]"
+                />
+              </picture>
+              <picture>
+                <source srcSet="/ASPESDark.webp" type="image/webp" />
+                <img
+                  src="/ASPESDark.png"
+                  alt="ASPES - AI Smart Project Evaluation System"
+                  width="180"
+                  height="44"
+                  fetchPriority="high"
+                  className="h-9 sm:h-11 w-auto hidden dark:block object-contain transition-transform duration-300 group-hover:scale-[1.02]"
+                />
+              </picture>
             </Link>
 
             {/* Desktop Navigation Links */}
@@ -1345,16 +1357,30 @@ const HomePage = () => {
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6 sm:gap-8 mb-8">
               <div className="md:col-span-2 space-y-3">
                 <Link to="/" className="inline-block">
-                  <img
-                    src="/ASPESLight.png"
-                    alt="ASPES - AI Smart Project Evaluation System"
-                    className="h-9 w-auto dark:hidden object-contain"
-                  />
-                  <img
-                    src="/ASPESDark.png"
-                    alt="ASPES - AI Smart Project Evaluation System"
-                    className="h-9 w-auto hidden dark:block object-contain"
-                  />
+                  <picture>
+                    <source srcSet="/ASPESLight.webp" type="image/webp" />
+                    <img
+                      src="/ASPESLight.png"
+                      alt="ASPES - AI Smart Project Evaluation System"
+                      width="150"
+                      height="36"
+                      loading="lazy"
+                      decoding="async"
+                      className="h-9 w-auto dark:hidden object-contain"
+                    />
+                  </picture>
+                  <picture>
+                    <source srcSet="/ASPESDark.webp" type="image/webp" />
+                    <img
+                      src="/ASPESDark.png"
+                      alt="ASPES - AI Smart Project Evaluation System"
+                      width="150"
+                      height="36"
+                      loading="lazy"
+                      decoding="async"
+                      className="h-9 w-auto hidden dark:block object-contain"
+                    />
+                  </picture>
                 </Link>
                 <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 max-w-md leading-relaxed">
                   ASPES is an autonomous academic evaluation system designed for university computer science and engineering coursework. Combining 6-layer neural inspection with human-in-the-loop faculty control.

@@ -20,6 +20,7 @@ import {
   BellIcon
 } from '@heroicons/react/24/outline';
 import NotificationBell from '../Notification/NotificationBell';
+import SEO from './SEO';
 
 const API_BASE_URL = api.defaults.baseURL?.replace('/api/v1', '') ?? '';
 
@@ -90,6 +91,7 @@ function DashboardLayout() {
 
   return (
     <div className="min-h-screen bg-transparent dark:bg-slate-950 flex text-gray-900 dark:text-gray-100 font-sans">
+      <SEO noindex={true} title="Dashboard" />
       {/* ---- Sidebar ---- */}
       <aside className={`
         fixed inset-y-0 left-0 z-40 flex flex-col

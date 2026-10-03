@@ -10,6 +10,7 @@
   "scripts": {
     "start": "cross-env NODE_OPTIONS=--openssl-legacy-provider react-scripts start",
     "build": "cross-env CI=false NODE_OPTIONS=--openssl-legacy-provider react-scripts build",
+    "postbuild": "node scripts/generate-sitemap.js && node scripts/prerender.js",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
     "lint": "eslint src --ext .js,.jsx,.ts,.tsx",
@@ -45,6 +46,7 @@
     "react-dropzone": "^14.2.3",
     "react-gauge-chart": "^0.4.1",
     "react-hook-form": "^7.52.1",
+    "react-helmet-async": "^2.0.5",
     "react-hot-toast": "^2.4.1",
     "react-markdown": "^9.0.1",
     "react-pdf": "^9.0.0",

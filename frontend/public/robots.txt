@@ -1,0 +1,41 @@
+# ASPES - Robots.txt
+# AI Smart Academic Project Evaluation System
+# Production URL: https://aspeskpgu.vercel.app
+
+User-agent: *
+
+# Allowed Public Routes
+Allow: /$
+Allow: /login
+Allow: /register
+
+# Disallowed Private & Authenticated Routes
+Disallow: /dashboard
+Disallow: /dashboard/*
+Disallow: /student/
+Disallow: /student/*
+Disallow: /faculty
+Disallow: /faculty/*
+Disallow: /admin
+Disallow: /admin/*
+Disallow: /projects
+Disallow: /projects/*
+Disallow: /groups
+Disallow: /groups/*
+Disallow: /assigned
+Disallow: /assigned/*
+Disallow: /review-portal
+Disallow: /review-portal/*
+Disallow: /notifications
+Disallow: /notifications/*
+Disallow: /profile
+Disallow: /profile/*
+Disallow: /evaluations/
+Disallow: /evaluations/*
+Disallow: /ai-layers/
+Disallow: /ai-layers/*
+Disallow: /api/
+Disallow: /api/*
+
+# Sitemap Location
+Sitemap: https://aspeskpgu.vercel.app/sitemap.xml

@@ -7,6 +7,7 @@ import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 import { ToastContainer } from 'react-toastify';
 import { AuthProvider } from './context/AuthContext';
 
+import { HelmetProvider } from 'react-helmet-async';
 import App from './App';
 import { store } from './store';
 import './index.css';
@@ -27,12 +28,13 @@ const root = ReactDOM.createRoot(document.getElementById('root'));
 
 root.render(
   <React.StrictMode>
-    <Provider store={store}>
-      <QueryClientProvider client={queryClient}>
-        <BrowserRouter>
-          <AuthProvider>
-            <App />
-          </AuthProvider>
+    <HelmetProvider>
+      <Provider store={store}>
+        <QueryClientProvider client={queryClient}>
+          <BrowserRouter>
+            <AuthProvider>
+              <App />
+            </AuthProvider>
           <ToastContainer
             position="top-right"
             autoClose={4000}
@@ -48,5 +50,6 @@ root.render(
         {process.env.NODE_ENV === 'development' && <ReactQueryDevtools initialIsOpen={false} />}
       </QueryClientProvider>
     </Provider>
+    </HelmetProvider>
   </React.StrictMode>
 );

@@ -6,7 +6,7 @@ import { getOrganizationSchema } from '../../utils/structuredData';
 const DEFAULT_TITLE = 'ASPES – AI-Powered Academic Project Evaluation System';
 const DEFAULT_DESCRIPTION = 'ASPES automates student code grading with AI: AST syntax audits, multi-vector AI code detection, plagiarism checks, and instant rubric feedback. Try live demo.';
 const SITE_URL = 'https://aspeskpgu.vercel.app';
-const DEFAULT_OG_IMAGE = `${SITE_URL}/og-preview.png`;
+const DEFAULT_OG_IMAGE = `${SITE_URL}/og-image.png`;
 
 const SEO = ({
   title,
@@ -52,7 +52,7 @@ const SEO = ({
 
       {/* Open Graph / Facebook / LinkedIn / WhatsApp */}
       <meta property="og:type" content={ogType} />
-      <meta property="og:site_name" content="ASPES - AI Project Evaluation System" />
+      <meta property="og:site_name" content="ASPES" />
       <meta property="og:url" content={canonicalUrl} />
       <meta property="og:title" content={fullTitle} />
       <meta property="og:description" content={description} />
